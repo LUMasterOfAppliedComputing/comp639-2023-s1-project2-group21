@@ -43,9 +43,8 @@ def addOrUpdateUser():
 def login():
     email = request.form.get("email")
     password = request.form.get("password")
-    role = request.form.get("role")
 
-    userData = UsersQueries.getUserByEmail(email, role)  # check if the email and role is matched
+    userData = UsersQueries.getUserByEmail(email)  # check if the email and role is matched
     if len(userData) > 0:
         data = userData[0]
         checkResult = MD5Helper.check_match(data['password'], password)
@@ -53,18 +52,19 @@ def login():
             return render_template("users.html", errorMsg="Login details incorrect. Please try again")
         session['user_id'] = data['user_id']  # if matched, put the user on session variable.
         session['name'] = data['first_name'] +" "+ data['last_name']
-        session['role'] = data['role']
+        role = data['role']
+        session['role'] = role
         session['email'] = data['email']
         match role:  # render different page by role
-            case '0':
+            case 0:
                 # staff
-                return render_template('staffPortal.html')
-            case '1':
+                return render_template('staff/staffbase.html')
+            case 1:
                 # Mentor
-                return render_template('mentorPortal.html')
-            case '2':
+                return render_template('mentor/mentorbase.html')
+            case 2:
                 # Student
-                return render_template('studentPortal.html')
+                return render_template('student/studentbase.html')
 
 
     else:  # if not matched, pop-up return error message

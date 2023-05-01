@@ -1,28 +1,86 @@
+<!-- Name: CP Jiang / Student ID: 1148594 -->
+<!-- root route for public access -->
+<!-- Use Bootstrap nav class to give the nav bar a modern view -->
+<!-- Added a about page -->
+
 {% extends "base.html" %}
-
-{% block title %}About Us{% endblock %}
-
 {% block content %}
-asdas
-<!--go back button-->
-<div style="text-align: left; margin: 20px;">
-    <a href="{{ url_for('home') }}">< Back</a>
-</div>
-
-<div class="container">
-    <div>
-        <h2>About Us</h2><br>
-        <div style="width: 800px;">
-        <p>Supporting Selwyn community since 1979. Lincoln Fitness is the biggest gym in Selwyn, with brand new facilities and equipment available. Offering world-class Les Mills programmes with more than 40 group exercise classes per week.</p>
-        <p>Our gym is open 24/7, so you can train whenever you want. We have a wide range of cardio and strength equipment, including free weights and resistance machines. We also have a dedicated functional training area, with a range of equipment to help you improve your strength, power, and speed.</p>
-        </div>
-    </div>
-</div>
 
 
-<div style="text-align: center;">
-    <a href="/register" style="color: black;"><button>Join Us</button></a>
-</div>
+<body>
+<section class="w3l-wecome-content-6">
+	<!-- /content-6-section -->
+	  <div class="ab-content-6-mian py-5">
+			 <div class="container py-lg-5">
+					<div class="welcome-grids row">
+							<div class="col-lg-6 mb-lg-0 mb-5">
+								<h6>About Us</h6>
+								<h3 class="hny-title">
+									Improving Lives Through Learning
+									</h3>
+								<p class="my-4">     Our Internship Program allows candidates the unique opportunity to achieve a valuable work experience in almost any industry across New Zealand. It is designed both for those completing an Internship as part of their study (for which you will receive academic credits), or for those wishing to gain work exposure in their field of interest. 
 
+									</p>
+								<p class="mb-4">An Internship is an excellent way to gain the skills and experience required to launch your career. All placements are initial un-paid positions, but might turn into employment. They are available at any time of the year and their duration, location and other specifics are left entirely up to you.</p>
+								<div class="button-4-pink">
+									<div class="eff-4-pink"></div>
+									<a href="services.html"> Read More</a>
+								  </div>
+							</div>
+							<div class="col-lg-6 welcome-image">
+								<img src="assets/images/ab.jpg" class="img-fluid" alt="" />
+							</div>	
+						
+						</div>	
+				 
+				 </div>
+			 </div>
+	 </section>
+ 
+
+<section class="w3l-content-5">
+	<!-- /content-6-section -->
+	  <div class="content-5-main">
+			 <div class="container">
+					 <div class="content-info-in row">
+							 <div class="content-gd col-lg-6">
+									 <h3 class="hny-title two">
+									
+We work hard to prepare every student for their professional life</h3>
+							 </div>
+							 <div class="content-gd col-lg-6">
+									<p></p>
+									 <p></p>
+									
+							 </div>
+							
+					 </div>
+				 
+				 </div>
+			 </div>
+	 </section>
+   <!-- //content-6-section -->
+
+  
+
+
+</section>
+<!-- //footer -->
+</body>
+
+
+
+<script src="assets/js/jquery-3.3.1.min.js"></script>
+<!-- disable body scroll which navbar is in active -->
+<script>
+  $(function () {
+    $('.navbar-toggler').click(function () {
+      $('body').toggleClass('noscroll');
+    })
+  });
+</script>
+<!-- disable body scroll which navbar is in active -->
+<!-- //jQuery-Photo-filter-lightbox-portfolio-plugin -->
+<script src="assets/js/bootstrap.min.js"></script>
 
 {% endblock %}

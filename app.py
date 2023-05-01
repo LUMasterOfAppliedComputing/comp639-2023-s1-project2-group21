@@ -36,8 +36,35 @@ app.register_blueprint(studentSkillRoute)
 
 @app.route("/")  # home page
 def home():
-    return render_template("base.html")
+    return render_template("index.html")
 
+@app.route("/about")
+def about():
+    return render_template("/about.html")
+
+@app.route("/contact")
+def contact():
+    return render_template("/contact.html")
+
+@app.route("/login")
+def login():
+    return render_template("/login.html")
+
+@app.route("/project")
+def project():
+    return render_template("/project.html")
+
+@app.route("/student")
+def student():
+    return render_template("student/studentbase.html")
+
+@app.route("/mentor")
+def mentor():
+    return render_template("mentor/mentorbase.html")
+
+@app.route("/staff")
+def staff():
+    return render_template("staff/staffbase.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
