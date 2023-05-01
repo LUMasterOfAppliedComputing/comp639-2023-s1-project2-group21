@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+asdas
+<!--go back button-->
+<div style="text-align: left; margin: 20px;">
+    <a href="{{ url_for('home') }}">< Back</a>
+</div>
+
+<div class="container">
+    <div>
+        <h2>About Us</h2><br>
+        <div style="width: 800px;">
+        <p>Supporting Selwyn community since 1979. Lincoln Fitness is the biggest gym in Selwyn, with brand new facilities and equipment available. Offering world-class Les Mills programmes with more than 40 group exercise classes per week.</p>
+        <p>Our gym is open 24/7, so you can train whenever you want. We have a wide range of cardio and strength equipment, including free weights and resistance machines. We also have a dedicated functional training area, with a range of equipment to help you improve your strength, power, and speed.</p>
+        </div>
+    </div>
+</div>
+
+
+<div style="text-align: center;">
+    <a href="/register" style="color: black;"><button>Join Us</button></a>
+</div>
+
+
+{% endblock %}
