@@ -29,7 +29,7 @@ def delete(id):
     return selectResult
 
 
-def getUserByEmail(email, role):
-    sqlCommand = """SELECT * FROM user where email = '%s' and role ='%s' """ % (email, role)
+def getUserByEmail(email):
+    sqlCommand = """SELECT * FROM user where email = '%s' """ % (email)
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
