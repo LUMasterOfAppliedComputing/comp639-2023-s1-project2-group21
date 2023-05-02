@@ -15,30 +15,27 @@
                 <div class="apply-grids-info">
                     <form action="/users/addUser" method="post">
                         <div class="form-group">
-                            <label>First name</label>
-
-                            <input type="text" name="firstname" id="lastname" class="form-control"
-                                   id="validationDefault01"
-                                   placeholder="" required="">
+                            <input type="text" hidden name="role" id="role" class="form-control"
+                                   placeholder="" value="2">
+                            <label>*First name</label>
+                            <input type="text" name="firstname" id="firstname" class="form-control">
                         </div>
-
                         <div class="form-group">
-                            <label>Last name</label>
-
-                            <input type="text" name="lastname" id="lastname" class="form-control"
-                                   id="validationDefault01"
-                                   placeholder="" required="">
+                            <label>*Last name</label>
+                            <input type="text" name="lastname" id="lastname" class="form-control">
+                        </div>
+                         <div class="form-group">
+                            <label>*Student Number</label>
+                            <input type="text" name="studentNo" id="studentNo" class="form-control">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="mb-2">*Password</label>
+                            <input type="password" name="password" class="form-control" id="password">
                         </div>
 
                         <div class="form-group mb-4">
-                            <label class="mb-2">Password</label>
-                            <input type="password" name="password" class="form-control" id="password" placeholder=""
-                                   required="">
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label class="mb-2">Email</label>
-                            <input type="email" name="email" class="form-control" id="email" placeholder="" required="">
+                            <label class="mb-2">*Email</label>
+                            <input type="email" name="email" class="form-control" id="email" >
                         </div>
 
                         <button type="submit" class="btn btn-primary submit">Login Now</button>
