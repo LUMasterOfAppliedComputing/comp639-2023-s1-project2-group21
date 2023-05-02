@@ -1,224 +1,57 @@
-{% if session['loginUser'] %}
-    {% set title = "Update Member" %} 
-{% else %}
-    {% set title = "Register" %}
-{% endif %}
+<!-- Name: CP Jiang / Student ID: 1148594 -->
+<!-- root route for public access -->
+<!-- Use Bootstrap nav class to give the nav bar a modern view -->
+<!-- Added a home page -->
 
 {% extends "base.html" %}
-
-{% block title %}{{ title }}{% endblock %}
-
 {% block content %}
 
-<!--go back button-->
-{% if userData or (session['loginUser'] and session['loginUser'][3] =='0') %}
-    <div style="text-align: left; margin: 20px;">
-        <a href="{{url_for('navi',id=  session['loginUser'][0],email=  session['loginUser'][2],name=  session['loginUser'][1],role=  session['loginUser'][3])}}">< Back</a>
-    </div>
-{% else %}
-<div style="text-align: left; margin: 20px;">
-    <a href="{{ url_for('home') }}">< Back</a>
-</div>
-{% endif %}
+    <body>
+    <!-- //portfolio -->
+    <section class="w3l-apply-6">
+        <!-- /apply-6-->
+        <div class="apply-info py-5">
+            <div class="container py-lg-5">
+                <div class="apply-grids-info">
+                    <form action="/users/addUser" method="post">
+                        <div class="form-group">
+                            <input type="text" hidden name="role" id="role" class="form-control"
+                                   placeholder="" value="2">
+                            <label>*First name</label>
+                            <input type="text" name="firstname" id="firstname" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>*Last name</label>
+                            <input type="text" name="lastname" id="lastname" class="form-control">
+                        </div>
+                         <div class="form-group">
+                            <label>*Student Number</label>
+                            <input type="text" name="studentNo" id="studentNo" class="form-control">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="mb-2">*Password</label>
+                            <input type="password" name="password" class="form-control" id="password">
+                        </div>
 
+                        <div class="form-group mb-4">
+                            <label class="mb-2">*Email</label>
+                            <input type="email" name="email" class="form-control" id="email" >
+                        </div>
 
-{% if not userData %}
-    <h2>KICK START YOUR FITNESS JOURNEY</h2><!--register page-->
-{% elif session['loginUser'][3] =='2' %}
-    <h2>My Profile</h2><!--update profile page-->
-{% else %}
-    <h2>Update Profile</h2>
-{% endif %}
+                        <button type="submit" class="btn btn-primary submit">Login Now</button>
+                        <a class="btn btn-primary" href="register">Sign Up</a>
 
-<div class="container">
-
-    <form id = "regiForm">
-
-    <fieldset {% if notEditable  %} disabled {% endif %}>
-        <input type="hidden" class="inputBox" name="memberId" id="memberId" maxlength="45"
-                   value="{%  if userData %}{{userData[0][0]}}{% endif %}" >
-            <input type="hidden" class="inputBox" name="role" id="role" maxlength="45" value="2" >
-        {% if session['loginUser'] and  session['loginUser'][3] == '0'  %}
-            <input type="hidden" class="inputBox" name="addedBy" id="role" maxlength="45" value="0" >
-        {% else %}
-        <input type="hidden" class="inputBox" name="addedBy" id="role" maxlength="45" value="2" >
-        {% endif %}
-        <div class="flexbox">
-            <!--firstname and familyname-->          
-            <div class="inputBox">
-                <label for="firstname">First Name*</label>
-                <input type="text" name="firstname" id="firstname" maxlength="45" required="required"
-                       value="{%  if userData %}{{userData[0][1]}}{% endif %}" ><!--required to check for empty-->
-            </div>
-            <div class="inputBox">
-                <label for="familyname">Family Name*</label>
-                <input type="text" name="familyname" id="familyname" maxlength="45" required="required"
-                 value="{%  if userData %}{{userData[0][2]}}{% endif %}"><!--required to check for empty-->
-            </div>
-        </div>
-
-        <!--email as login username, no password required-->
-        <div>
-            <label for="email">Email*</label>
-            <input type="email" name="email" id="email" maxlength="45" required="required"
-             value="{% if userData %}{{userData[0][6]}}{% endif %}"><!--required to check for empty-->
-        </div>
-
-        
-        <div class="flexbox">
-            <!--gender-->
-            <div class="inputBox">
-                <label for="gender">Gender*</label>
-                {% if userData %}
-                    <select name="gender" id="gender">
-                        <option value="0" {% if userData[0][15] == 0 %} selected {% endif %}>Male</option>
-                        <option value="1" {% if userData[0][15] == 1 %} selected {% endif %} > Female</option>
-                        <option value="2" {% if userData[0][15] == 2 %} selected {% endif %} > Neutral</option>
-                    </select>
-                {% else %}
-                    <select name="gender" id="gender">
-                        <option value="0">Male</option>
-                        <option value="1">Female</option>
-                        <option value="2">Neutral</option>
-                    </select>
-                {% endif %}
-            </div>
-
-            <!--dob-->
-            <div class="inputBox">
-                <label for="dateofbirth">Date of Birth*</label>
-                <input type="date" name="dateofbirth" id="dateofbirth" required="required"
-                value="{%  if userData %}{{userData[0][8]}}{% endif %}"><!--required to check for empty-->
-                <!--check dob is valid-->
-                <script>
-                    var today = new Date();
-                    var dd = today.getDate();
-                    var mm = today.getMonth()+1;
-                    var yyyy = today.getFullYear();
-                    if(dd<10){
-                        dd='0'+dd
-                    }
-                    if(mm<10){
-                        mm='0'+mm
-                    }
-                    today = yyyy+'-'+mm+'-'+dd;
-                    document.getElementById("dateofbirth").setAttribute("max", today);
-                </script>
-            </div>
-        </div>
-    </fieldset>
-
-
-        {%  if userData %}
-        <!--Address section-->
-        <fieldset>
-            <legend>Address</legend>
-                <div class="flexbox">
-                    <div class="inputBox">
-                        <label for="street">Street</label>
-                        <input type="text" name="street" id="street" maxlength="20"
-                        value="{%  if userData %}{{userData[0][3]}}{% endif %}">
-                    </div>
-                    <div class="inputBox">
-                        <label for="city">City</label>
-                        <input type="text" name="city" id="city" maxlength="25"
-                        value="{%  if userData %}{{userData[0][4]}}{% endif %}">
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <label for="state">State</label>
-                        <input type="text" name="state" id="state" maxlength="25"
-                        value="{%  if userData %}{{userData[0][5]}}{% endif %}">
-                    </div>
+                    </form>
 
                 </div>
-        </fieldset>
-
-        {% else %}
-        <!--subscription-->
-        <legend style="color: gold; text-align: center;">Monthly Subscription - $109</legend>
-
-        {% endif %}
-
-        <!--payment-->
-        <legend>Payment Details</legend>
-        <div>
-            <label>CARD NUMBER</label>
-            <input type="text" name="cardNo" id ="cardNo" maxlength="16" required value ="{% if paymentData %}{{ paymentData['cardNo']}}{% endif%}" >
-        </div>
-        <div>
-            <label>CARD HOLDER</label>
-            <input type="text" name="cardHolder" id ="cardHolder" required value ="{% if paymentData %}{{ paymentData['cardHolder']}}{% endif%}">
-        </div>
-        <div class="flexbox">
-            <div class="inputBox">
-                <label>EXPIRATION MM</label>
-                <select name="month" id="month">
-                    <option value="month" selected disabled>month</option>
-                    <option value="01">01</option>
-                    <option value="02">02</option>
-                    <option value="03">03</option>
-                    <option value="04">04</option>
-                    <option value="05">05</option>
-                    <option value="06">06</option>
-                    <option value="07">07</option>
-                    <option value="08">08</option>
-                    <option value="09">09</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                </select>
-            </div>
-            <div class="inputBox">
-                <label>EXPIRATION YY</label>
-                <select name="year" id="year">
-                    <option value="year" selected disabled>year</option>
-                    <option value="2022">2022</option>
-                    <option value="2023">2023</option>
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
-                    <option value="2029">2029</option>
-                    <option value="2030">2030</option>
-                    <option value="2031">2031</option>
-                    <option value="2032">2032</option>
-                    <option value="2033">2033</option>
-                </select>
-            </div>
-            <div class="inputBox">
-                <label>CVV</label>
-                <input type="text" maxlength="4" required name="cvv" value ="{% if paymentData %}{{ paymentData['cvv']}}{% endif%}">
             </div>
         </div>
-
-        {% if not session['loginUser'] %}
-        <div style="text-align: center;">
-            <input type="button" onclick="updateMembers('member')" value="JOIN NOW" name="submitBtn"/>
         </div>
-        {% endif %}
+    </section>
 
-        <script>
-            {% if paymentData %}
-           $('#year').each(function() {
-              $(this).find('option[value="{{ paymentData['year'] }}"]').prop('selected', true);
-            });
-           $('#month').each(function() {
-              $(this).find('option[value="{{ paymentData['month'] }}"]').prop('selected', true);
-            });
-            {% endif %}
-         </script>
+    <!-- //footer -->
+    </body>
 
-        <!--save button-->
-        <div style="text-align: right">
-            {% if session['loginUser'] %}
-                <input type="button" onclick="updateMembers('member')" value="Save"/>
-            {% endif %}
-        </div>
-    </form>
-</div>
 
-{%endblock%}
+
+{% endblock %}
