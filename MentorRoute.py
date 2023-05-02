@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, session
 
-from queries import UsersQueries, MentorQueries
+from queries import UsersQueries, MentorQueries, ProjectQueries
 from utils import MD5Helper
 
 mentorRoute = Blueprint('mentorRoute', __name__)
@@ -28,5 +28,10 @@ def addOrUpdate():
     #  MentorQueries.update(mentorId, phone, summary)
 
     return render_template("mentors.html",errorMsg="add mentors wrong")
+
+@mentorRoute.route('/mentor/project')
+def mentorproject():
+    projects = ProjectQueries.getAll()
+    return render_template("mentor/project.html", projects=projects)
 
 
