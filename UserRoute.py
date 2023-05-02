@@ -69,3 +69,15 @@ def login():
 
     else:  # if not matched, pop-up return error message
         return render_template("users.html", errorMsg="Login details incorrect. Please try again")
+
+
+
+# user logout, email and role need to be passed, to match the database stored data.
+@userRoute.route("/users/logOut")
+def logOut():
+    session['user_id'] =None  # if matched, put the user on session variable.
+    session['name'] = None
+    session['role'] = None
+    session['email'] = None
+    return render_template('student/studentbase.html')
+
