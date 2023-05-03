@@ -2,16 +2,16 @@ import db
 
 
 
-def insert(student_id_no, alternative_name, preferred_name, phone, cv, project_preference,
-           personal_statements, placement_status):
+def insert(id,student_id_no, alternative_name, preferred_name, phone, cv, project_preference,
+           personal_statements, placement_status,gender,dob):
     sqlCommand = """INSERT INTO student (id, student_id_no, alternative_name,
-                        preferred_name, phone, cv, project_preference,
-                        personal_statements, placement_status) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')""" \
-                 % (student_id_no, alternative_name, preferred_name, phone, cv, project_preference, personal_statements,
-                    placement_status)
+                        preferred_name, cv, project_preference,
+                        personal_statements, placement_status,phone,gender,dateofbirth) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')""" \
+                 % (id,student_id_no, alternative_name, preferred_name, cv, project_preference, personal_statements,
+                    placement_status,phone,gender,dob)
      
-    id = db.DBOperatorInsertedId(sqlCommand)
-    return id;
+    newId = db.DBOperatorInsertedId(sqlCommand)
+    return newId;
 
 
 def getAll():
@@ -37,3 +37,8 @@ def delete(id):
      
     id = db.DBOperator_update(sqlCommand)
     return id;
+
+def getStudentByStudentNo(studentNo):
+    sqlCommand = """SELECT * FROM student where student_id_no = '%s' """ % (studentNo)
+    selectResult = db.DBOperator(sqlCommand)
+    return selectResult

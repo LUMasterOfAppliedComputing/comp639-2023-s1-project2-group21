@@ -2,6 +2,6 @@ import enum
 
 
 class UserRole(enum.Enum):
-    MANAGER = 0
-    TRAINER = 1
-    MEMBER = 2
+    STAFF = 0
+    MENTOR = 1
+    STUDENT = 2
