@@ -1,0 +1,74 @@
+<!-- Name: CP Jiang / Student ID: 1148594 -->
+<!-- Use Bootstrap nav class to give the nav bar a modern view -->
+<!-- Added a project page for role mentor -->
+
+{% extends "mentor/mentorbase.html" %}
+{% block content %}
+
+
+<body>
+	<!-- portfolio -->
+
+	<section class="w3-gallery">
+		<div class="porfolio-inf py-5">
+			<div class="container pt-lg-5 pb-lg-4">
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Project Title</th>
+							<th scope="col">Description</th>
+							<th scope="col">number of students</th>
+							<th scope="col">project type</th>
+							<th scope="col">strat date</th>
+							<th scope="col">ending date</th>
+							<th scope="col">remain number of students</th>
+							<th scope="col">company name</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for project in projects %}
+						<tr>
+							<th scope="row">{{project['id']}}</th>
+							<td>{{project['project_title']}}</td>
+							<td>{{project['description']}}</td>
+							<td>{{project['number_of_student']}}</td>
+							<td>{{project['project_type']}}</td>
+							<td>{{project['start_date']}}</td>
+							<td>{{project['end_date']}}</td>
+							<td>{{project['remain_number_of_student']}}</td>
+							<td>{{project['company_id']}}</td>
+							<td><button type="button" class="btn btn-primary">prefered students</button></td>
+						</tr>
+						{% endfor %}
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+
+
+
+
+
+	</section>
+	<!-- //footer -->
+</body>
+
+
+
+<script src="assets/js/jquery-3.3.1.min.js"></script>
+<!-- disable body scroll which navbar is in active -->
+<script>
+	$(function () {
+		$('.navbar-toggler').click(function () {
+			$('body').toggleClass('noscroll');
+		})
+	});
+</script>
+<!-- disable body scroll which navbar is in active -->
+<!-- //jQuery-Photo-filter-lightbox-portfolio-plugin -->
+<script src="assets/js/bootstrap.min.js"></script>
+
+{% endblock %}
