@@ -3,16 +3,6 @@ jQuery.validator.setDefaults({
     success: "valid"
 });
 
-function searchByName(currentPage) {
-    var searchname = $("#searchByName").val()
-    if (searchname == null || searchname == "") {
-        searchname = ''
-    }
-    if (currentPage <= 0) {
-        currentPage = 0
-    }
-    location.href = "/getAllUserByUserType?role=2&to=memberList&name=" + searchname + "&currentPage=" + currentPage
-}
 
 $(function () {
     $("#noti").on("click", function (func) {
@@ -246,17 +236,6 @@ function doUnsubscribe(data) {
 }
 
 function deleteMember(data, ifDirect) {
-    // $.confrim({
-    //     title: 'Are you sure to update profile',
-    //     content: 'Confirm! Confirm! Confirm!',
-    //     confirm: function(){
-    //         $.MessageBox('the user clicked confirm');
-    //     },
-    //     cancel: function(){
-    //         $.MessageBox('the user clicked cancel')
-    //     }
-    // });
-    data
     var formData = {'userId': data}
     console.log(formData)
 
@@ -267,7 +246,7 @@ function deleteMember(data, ifDirect) {
 function bookingClass(classId, userId) {
     $.confirm({
         theme: 'dark',
-        title: 'Booking',
+        title: 'Send Email',
         content: 'Are you sure?',
         buttons: {
             confirm: function () {
@@ -282,12 +261,34 @@ function bookingClass(classId, userId) {
 }
 
 // need more work for the ClassBooking confirmation pop up
-function confirmBooking(classId, userId) {
-    data
-    var formData = {'classId': classId, 'userId': userId}
-    console.log(formData)
-
-    sendRequest('/member/bookingClass', formData, "get");
+function sendEmailPassword(email) {
+    $.ajax({
+        url: "/users/checkEmail",
+        type: "get",
+        dataType: "JSON",
+        data: {"email": email},
+    }).then(data => {
+        if (data.code == 'ok') {
+            $.ajax({
+                url: "/users/sendPasswordEmail",
+                type: "get",
+                dataType: "JSON",
+                data: {"email": email},
+            }).then(data => {
+                console.log(data)
+            })
+        } else {
+            $.confirm({
+                theme: 'dark',
+                title: 'Send Email',
+                content: 'Email doesn\'t exist',
+                buttons: {
+                    confirm: function () {
+                    }
+                }
+            });
+        }
+    })
 }
 
 
@@ -379,7 +380,6 @@ function validateForm() {
     let valid = form.valid();
     if (!valid) {
         $.MessageBox("please fill out all required information in correct format");
-
     }
     return valid
 }
@@ -393,10 +393,79 @@ function processPayment(data, userId) {
     sendRequest("/addPayment", data, "post")
 }
 
-function processBook(data) {
+function updatePassword(role) {
+    var formData = serializeData("form#forgotPass");
 
-    data = {"sessionId": data}
-    sendRequest("/bookingClassFromCalender", data, "get")
+    $.validator.addMethod("passwordEqual", function (value, element) {
+        let forpassword = $('#forpassword').val();
+        let conpassword = $('#forconpassword').val();
+        console.log(forpassword, conpassword)
+        return forpassword == conpassword;
+    }, "Passwords must be same");
+    var form = $("#forgotPass");
+    form.validate({
+            rules: {
+                forpassword: {
+                    required: true,
+                    passwordEqual: true
+                },
+                conpassword: {
+                    required: true,
+                    passwordEqual: true
+                }
+
+            },
+            errorPlacement: function (error, element) {
+                return true;
+            }
+
+        }
+    )
+    let valid = form.valid();
+    if (!valid) {
+        $.MessageBox("Passwords must be same");
+    } else {
+        $.ajax({
+            url: "/users/changePassword",
+            type: "POST",
+            data: formData
+        }).then(data => {
+            if (data.code == 'ok') {
+                $.MessageBox("your password has been changed.")
+            } else {
+                $.MessageBox(data.message)
+            }
+        })
+    }
+
+}
+
+function checksendEmail() {
+    $.confirm({
+        theme: 'dark',
+        title: 'Enter your email',
+        content: '' +
+            '<form action="" class="formName">' +
+            '<div class="form-group">' +
+            '<label>Your email address</label>' +
+            '<input type="text" placeholder="John.Doe@gmail.com" class="email form-control" required />' +
+            '</div>' +
+            '</form>',
+
+        buttons: {
+            Send: function () {
+                var email = this.$content.find('.email').val();
+                if (!email) {
+                    $.alert('provide a valid email');
+                    return false;
+                }
+                sendEmailPassword(email)
+            },
+            cancel: function () {
+            }
+
+        }
+    });
 }
 
 function addOrUpdateUser(type) {
@@ -413,11 +482,14 @@ function addOrUpdateUser(type) {
             }).then(data => {
                 console.log(data)
                 if (data.code != 'ERROR') {
-
                     $.ajax({
                         url: "/users/addOrUpdate",
                         type: "POST",
                         data: formData
+                    }).then(data => {
+                        if (data.code == 'ok') {
+                            $.MessageBox("Welcome, you have successfully registered, please login and start your journey!");
+                        }
                     })
 
                 } else {
@@ -425,28 +497,15 @@ function addOrUpdateUser(type) {
                 }
             });
 
-            sendRequest('/users/addOrUpdate', formData, "POST", "form#regiForm");
+
         }
     } else {
         if (validateTrainerForm()) {
-            // $.confrim({
-            //     title: 'Are you sure to update profile',
-            //     content: 'Confirm! Confirm! Confirm!',
-            //     confirm: function(){
-            //         $.MessageBox('the user clicked confirm');
-            //     },
-            //     cancel: function(){
-            //         $.MessageBox('the user clicked cancel')
-            //     }
-            // });
             var formData = serializeData("form#trainerRegiForm");
             console.log(formData)
-
             sendRequest('/addOrUpdateMember', formData, "POST", "form#trainerRegiForm");
         }
     }
-
-
 }
 
 function serializeData(form, include, exclude) {
