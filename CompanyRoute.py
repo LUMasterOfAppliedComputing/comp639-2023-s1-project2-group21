@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, make_response, jsonify
 from flask import render_template
 
 from queries import CompanyQueries
@@ -10,6 +10,12 @@ companyRoute = Blueprint('companyRoute', __name__)
 def get_users():
     companys = CompanyQueries.getAll()
     return render_template("company.html", companys=companys)
+
+@companyRoute.route('/company/getAllJson')
+def getCompanys():
+    companys = CompanyQueries.getAll()
+    return make_response(jsonify(companys),200)
+
 
 
 @companyRoute.route('/company/addCompany')

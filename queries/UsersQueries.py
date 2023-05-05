@@ -14,6 +14,11 @@ def getAll():
     result = db.DBOperator(sqlCommand)
     return result
 
+def getAllByRole(role):
+    sqlCommand = """SELECT * FROM user where role = %s """%role
+    result = db.DBOperator(sqlCommand)
+    return result
+
 
 def update(id, first_name, last_name, password, email, role):
     sqlCommand = """UPDATE user SET first_name = '%s', last_name = '%s', 
