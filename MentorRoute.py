@@ -48,4 +48,9 @@ def mentorproject():
     projects = ProjectQueries.getAll()
     return render_template("mentor/project.html", projects=projects)
 
+@mentorRoute.route('/mentor/profile')
+def mentorprofile():
+    projects = ProjectQueries.getAll()
+    return render_template("mentor/mentorprofile.html", projects=projects)
+
 
