@@ -23,7 +23,7 @@ def deleteUser(id):
 def checkEmail():
     email = request.args.get("email")
     user = UsersQueries.getUserByEmail(email)
-    if len(user) > 0:
+    if len(user) > 0: #if found a row return ok , if nothing found return error
         data = {"message": "ok", "code": "ok"}
     else:
         data = {"message": "user email doesn't exist", "code": "error"}
@@ -79,7 +79,8 @@ def addOrUpdateUser():
                 match role:  # render different page by role
                     case "1":
                         # Mentor
-                        MentorQueries.insert(id, phone, "")
+                        cid = request.form.get("menCompany")
+                        MentorQueries.insert(id, phone, "",cid)
                     case "2":
                         # Student
                         dob = request.form.get("dob")
@@ -91,9 +92,9 @@ def addOrUpdateUser():
                         StudentQueries.insert(id, studentNo, alternativeName, preferName, phone, "", "", "",
                                               SubscripStatus.not_available.value, gender,
                                               dob)
-                        data = {'message': 'ok', 'code': 'ok'}
         else:
             UsersQueries.update(userId, firstname, lastname, encrypted, email, role)
+        data = {'message': 'ok', 'code': 'ok'}
     except:
         data = {'message': 'Something wrong, please try again later', 'code': 'ERROR'}
 

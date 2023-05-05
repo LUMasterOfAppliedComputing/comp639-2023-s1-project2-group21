@@ -260,7 +260,46 @@ function bookingClass(classId, userId) {
     });
 }
 
-// need more work for the ClassBooking confirmation pop up
+function checkEmail(email, id) {
+    $.ajax({
+        url: "/users/checkEmail",
+        type: "get",
+        dataType: "JSON",
+        data: {"email": email},
+    }).then(data => {
+        console.log("asdasd")
+        if (data.code == "ok") {
+            if (id) {
+                id = "#" + id
+                $(id).addClass("error")
+            }
+            $.alert("email is already registered")
+        } else {
+            if (id) {
+                id = "#" + id
+                $(id).removeClass("error")
+            }
+        }
+    })
+}
+
+function addMentor(fromdata) {
+
+    $.ajax({
+        url: "/users/addOrUpdate",
+        type: "POST",
+        dataType: "JSON",
+        data: fromdata,
+    }).then(data => {
+        if (data.code == 'ok') {
+            $.alert("Mentor has been added successfully")
+
+        }
+    })
+
+}
+
+
 function sendEmailPassword(email) {
     $.ajax({
         url: "/users/checkEmail",
@@ -466,6 +505,166 @@ function checksendEmail() {
 
         }
     });
+}
+
+
+async function addNewMentor() {
+    $.ajax({
+        url: "/company/getAllJson",
+        type: "GET",
+
+    }).then(data => {
+        console.log(data);
+        var options = "";
+        for (let dataKey in data) {
+            options += "<option value='" + data[dataKey]['id'] + "'>" + data[dataKey]['company_name'] + "</option>"
+        }
+        console.log(options)
+        $.confirm({
+            theme: 'dark',
+            title: 'Enter mentor information',
+            content: '' +
+                '<form id="mentorForm" class="formName">' +
+                '<div class="form-group">' +
+                '<input type="hidden" name="role" value="1" />' +
+                '<label>Mentor email address</label>' +
+                '<input type="text" placeholder="John.Doe@gmail.com" id="mentorEmail" name="email" class="email form-control" ' +
+                'required onblur="checkEmail(this.value,this.id)" />' +
+                '<label>Password</label>' +
+                '<input type="password" name="password" class="password form-control" required />' +
+                '<label>Phone</label>' +
+                '<input type="text" name="phone" class="password form-control" required />' +
+                '<label>Mentor First Name</label>' +
+                '<input type="text" placeholder="Jone" name="firstname" class="fname form-control" required />' +
+                '<label>Mentor Last Name</label>' +
+                '<input type="text" placeholder="Doe" name="lastname" class="lastname form-control" required />' +
+                '<label>Mentor Company</label>' +
+                '<select id="menCompany" name="menCompany" class="menCompany form-control">' + options + '</select>' +
+                '</div>' +
+                '</form>',
+
+            buttons: {
+                Save: async function () {
+                    var email = this.$content.find('.email').val();
+                    var fname = this.$content.find('.fname').val();
+                    var password = this.$content.find('.password').val();
+                    var lastname = this.$content.find('.lastname').val();
+                    var menCompany = this.$content.find('.menCompany').val();
+                    if (!email) {
+                        $.alert('provide a valid email');
+                        return false;
+                    }
+                    var formData = serializeData("form#mentorForm")
+                    const checkResult = await ajaxCall("/users/checkEmail", "get", {"email": formData.email})
+
+
+                    if (checkResult.code == 'ok') {
+                        $.alert('email is already registered, please change another email address');
+                        return false;
+                    } else {
+                        addMentor(formData)
+                        getAllMentors("#myTable", "/mentor/getAllJson")
+                    }
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+}
+//
+// function packagingdatatabledata(data) {
+//
+//     var editHtml = ' ';
+//
+//     var a = []; //全部行数据的list
+//
+//     var banddata = data.test_env_all;
+//
+//     for (var key in banddata) {
+//
+//         var tempObj = []; //一行数据的list
+//
+//         tempObj.push(banddata[key].id);
+//
+//         tempObj.push(banddata[key].name);
+//
+//         tempObj.push(banddata[key].url);
+//
+//         tempObj.push(banddata[key].desc);
+//
+//         tempObj.push(editHtml);
+//
+//         a.push(tempObj);
+//
+//     }
+//
+//     return a;
+//
+// }
+
+function getAllMentors(formId, url) {
+    setTimeout(3000);
+    $.ajax({
+            url: url,
+            type: "get",
+            dataType: "JSON",
+            success: function (data) {
+                if ($.fn.dataTable.isDataTable(formId)) {
+                    console.log("dataTable1")
+                    let dataTable1 = $(formId).dataTable();
+                    dataTable1.fnClearTable()
+                    dataTable1.fnAddData(data, true)
+                } else {
+                     $(formId).DataTable({
+                        "bAutoWidth": true,
+                        "dataSrc": "",
+                        "order": [[0, "desc"]],  // HERE !! ERROR TRIGGER!
+                        "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
+                        "data": data,
+                        "columns": [
+                            {"data": "first_name"},
+                            {"data": "phone"},
+                            {"data": "email"},
+                            {"data": "company_name"},
+                        ]
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+
+            }
+        }
+    );
+}
+
+
+async function ajaxCall(url, type, data) {
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url: url,
+            type: type,
+            dataType: "JSON",
+            data: data,
+            success: function (data) {
+                resolve(data);
+            },
+            error: function (xhr, status, error) {
+                reject(error);
+            }
+        });
+    });
+}
+
+async function myFunction() {
+    try {
+        const myData = await ajaxCall();
+        // do something with myData
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 function addOrUpdateUser(type) {

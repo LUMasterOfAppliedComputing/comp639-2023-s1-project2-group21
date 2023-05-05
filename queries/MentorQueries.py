@@ -1,16 +1,25 @@
 import db
 
 
-def insert(mentor_id, phone, summary):
-    sqlCommand = """INSERT INTO mentor ( mentor_id, phone, summary)
-         VALUES ('%s', '%s', '%s')""" % ( mentor_id, phone, summary)
+def insert(mentor_id, phone, summary,cid):
+    sqlCommand = """INSERT INTO mentor ( mentor_id, phone, summary,company_id)
+         VALUES ('%s', '%s', '%s', '%s')""" % ( mentor_id, phone, summary,cid)
      
     id = db.DBOperatorInsertedId(sqlCommand)
     return id
 
 
 def getAll():
-    sqlCommand = """SELECT * FROM mentor """
+    sqlCommand = """
+                    SELECT
+                        *
+                    FROM
+                        mentor m
+                        LEFT JOIN company c ON m.company_id = c.id
+                        LEFT JOIN user u ON u.user_id = m.mentor_id
+                    WHERE
+                        u.role =1
+                """
      
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
