@@ -111,14 +111,17 @@
                             </ul>
                         </div>
                     {% endif %}
-                    {% if session['role'] == 2 %}
+                    {% if session['role'] == 2 %} <!-- student -->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
                                     <a class="nav-link" href="/">My profile</a>
                                 </li>
+                                  <li class="nav-item active">
+                                    <a class="nav-link" href="/">Placement Survey</a>
+                                </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/about">Companies</a>
+                                    <a class="nav-link" href="/company/getAll">Companies</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="/project">Projects</a>
@@ -126,7 +129,7 @@
                             </ul>
                         </div>
                     {% endif %}
-                    {% if session['role'] == 0 %}
+                    {% if session['role'] == 0 %} <!-- staff -->
                         <!--STAFF -->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
@@ -149,7 +152,7 @@
                             </ul>
                         </div>
                     {% endif %}
-                    {% if session['role'] == 1 %}
+                    {% if session['role'] == 1 %} <!-- mentor -->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">

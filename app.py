@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, request
+from flask import Flask, request, session
 from flask import render_template
 
 from CompanyRoute import companyRoute

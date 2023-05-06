@@ -30,6 +30,8 @@ def DBOperator(sqlCommands):
         return []
     select_result = cur.fetchall()
     column_names = [i[0] for i in cur.description]
+    dbconn.close()
+    connection.close()
     return [dict(zip(column_names, row)) for row in select_result]
 
 
