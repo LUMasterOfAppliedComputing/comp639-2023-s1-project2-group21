@@ -20,12 +20,8 @@ def DBConnect():
 
 
 def DBOperator(sqlCommands):
-    """
-
-    :rtype: object
-    """
     cur = DBConnect()
-    rows_affected = cur.execute(sqlCommands)
+    cur.execute(sqlCommands)
     if(cur.with_rows == False):
         return []
     select_result = cur.fetchall()
