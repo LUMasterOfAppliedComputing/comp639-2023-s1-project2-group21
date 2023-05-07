@@ -109,6 +109,7 @@
                         </div>
                     {% endif %}
                     {% if session['role'] == 2 %}
+                    <!--student role-->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
@@ -124,6 +125,7 @@
                         </div>
                     {% endif %}
                     {% if session['role'] == 0 %}
+                    <!--staff role-->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
@@ -143,16 +145,23 @@
                         </div>
                     {% endif %}
                     {% if session['role'] == 1 %}
+                       <!--mentor role-->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
-                                    <a class="nav-link" href="/">My Profile </a>
+                                    <a class="nav-link" href="/mentor/profile">My Profile </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/about">View Students</a>
+                                    <a class="nav-link" href="/mentor/company">View Company</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/project">My Projects</a>
+                                    <a class="nav-link" href="/mentor/student">View Students</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/">View Placement</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/mentor/project">Projects</a>
                                 </li>
 
                                 <li class="nav-item">

@@ -15,44 +15,48 @@
                 <div class="apply-grids-info widthRegi">
                     <label class="mb-1">Update Mentor Profile</label><p>
                         {% for profile in profile %}
-                    <form role="form" method="get" action="/mentor/updateprofile">
+                    <form role="form" method="post" action="/mentor/Update">
                         <div class="sideContainer">
                            
 
      
                           
                             <div class="form-group left">
+                                
+                                <input type="text" hidden name="mentorid" id="role" class="form-control"
+                                       placeholder="" value="{{profile['mentor_id']}}">
                                 <input type="text" hidden name="role" id="role" class="form-control"
                                        placeholder="" value="2">
-                                <label for="firstname">*First name  </label>
-                                <input type="text" name="firstname" id="firstname" class="form-control" value="{{profile['first_name']}}" placeholder="Disabled input" disabled>
+                                <label for="firstname">*First name {{profile['mentor_Id']}} </label>
+                                <input type="text" name="firstname" id="firstname" class="form-control" value="{{profile['first_name']}}">
                             </div>
                             <div class="form-group right">
                                 <label for="lastname">*Last name </label>
-                                <input type="text" name="lastname" id="lastname" class="form-control" value="{{profile['last_name']}}" placeholder="Disabled input" disabled>
+                                <input type="text" name="lastname" id="lastname" class="form-control" value="{{profile['last_name']}}">
                             </div>
                         </div>
+
                         <div class="sideContainer">
 
                             <div class="form-group mb-4">
                                 <label>*Phone</label>
-                                <input type="text" name="phone" id="phone" class="form-control" value="{{profile['phone']}}" placeholder="Disabled input" disabled>
+                                <input type="text" name="phone" id="phone" class="form-control" value="{{profile['phone']}}">
                             </div>
                         </div>
                         <div class="form-group mb-4">
                             <label class="mb-2">*Email</label>
-                            <input type="email" name="email" class="form-control" id="email" value="{{profile['email']}}" placeholder="Disabled input" disabled>
+                            <input type="email" name="email" class="form-control" id="email" value="{{profile['email']}}">
                         </div>
                         <div class="sideContainer">
                             <div class="form-group mb-4 left">
                                 <label class="mb-2">Summary</label>
-                                <input type="text" name="summary" class="input-group-text" id="dob" value="{{profile['summary']}}" placeholder="Disabled input" disabled>
+                                <input type="text" name="summary" class="input-group-text" id="dob" value="{{profile['summary']}}">
 
                             </div>
 
                         </div>
 
-                        <button type="submit" class="btn btn-primary">edit</button>
+                        <button type="submit" class="btn btn-primary">UPDATE NOW</button>
 
                         <button type="reset" class="btn btn-primary" href="#">Reset</button>
 
