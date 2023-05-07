@@ -1,0 +1,44 @@
+/*footer {*/
+/*     position: fixed;*/
+/*    bottom: 0;*/
+/*    width:100%;*/
+/*    }*/
+
+.signInLeft{
+    padding-left: 0px !important;
+}
+.backgroundColor{
+    background: #2b4ae7;
+}
+.widthRegi{
+    width: 30% !important;
+}
+.error {
+  border: 2px solid red !important;
+}
+.containerSlim{
+   display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.subContainer{
+    padding-top: 50px;
+}
+.containerWider{
+    max-width: 80%;
+    align-content: center;
+}
+.sideContainer {
+  display: flex; /* 使用 flex 布局 */
+}
+
+.left {
+  flex: 1; /* 设置左边的 div 占据剩余宽度的比例 */
+    max-width: 50%!important;
+}
+
+.right {
+  flex: 1; /* 设置右边的 div 占据剩余宽度的比例 */
+     max-width: 50%!important;
+}

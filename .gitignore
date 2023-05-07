@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+connect.py
 build/
 develop-eggs/
 dist/
@@ -127,3 +128,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.vscode/launch.json
+connect.py
+connect.py
+connect.py

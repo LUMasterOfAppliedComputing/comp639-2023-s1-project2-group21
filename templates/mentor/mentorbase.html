@@ -1,52 +1,8 @@
-<!-- Name: CP Jiang / Student ID: 1148594 -->
-<!-- root route for mentor access -->
-<!-- Added a father page of mentor template-->
+{% extends "base.html" %}
 
-<!doctype html>
-<html lang="zxx">
-
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Contact</title>
-  <!-- Template CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style-starter.css') }}">
-  <!-- Template CSS -->
-  <link href="http://fonts.googleapis.com/css?family=Muli:300,300i,400,500,600,700,800,900&display=swap" rel="stylesheet">
-  <link href="http://fonts.googleapis.com/css?family=Roboto:300,300i,400,500,700,900&display=swap" rel="stylesheet">
-  <!-- Template CSS -->
-
-</head>
-<body>
-
-<!--/top-header-content-->
-<section class="w3l-top-header-content">
-	<div class="hny-top-menu">
-		<div class="top-hd">
-			<div class="container-fluid">
-				<div class="row">
-					<ul class="social-top col-md-7">
-						<li class="log-link mr-3"><a class="sign-in"  href="/login"><span class="fa fa-user"></span> Sign In</a></li>
-                        <span style="color: white"> MENTOR </span>
-					</ul>
-					<ul class="accounts col-md-5">
-						<li class="top_li"><span class="fa fa-mobile"></span><a href="tel:+64273344770">+64273344770</a>
-						</li>
-
-						<li class="top_li mr-lg-0"><span class="fa fa-envelope-o"></span><a href="mailto:Changpo.jiang@lincolnuni.ac.nz">Need help? Contact Us </a>
-
-						</li>
-						
-					</ul>
-				</div>
-			</div>
-		</div>
-
-	</div>
-
-</section>
 <!--//top-header-content-->
+{% block title %}Student Portal{% endblock %}
+
 
 <!--w3l-banner-slider-main-->
 <section class="w3l-banner-slider-main w3l-inner-page-main">
@@ -55,7 +11,7 @@
         <!--/nav-->
         <nav class="navbar navbar-expand-lg navbar-light fill">
           <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">
+            <a class="navbar-brand" href="/">
               <label class="lohny"><span class="fa fa-graduation-cap" aria-hidden="true"></span>LU</label>
               Internship</a>
             <!-- if logo is image enable this   
@@ -71,19 +27,23 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mx-lg-auto ml-auto">
                 <li class="nav-item active">
+                  <a class="nav-link" href="/mentor/profile">mentor profile</a>
+                </li>
+                <li class="nav-item active">
                   <a class="nav-link" href="#">company profile</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="#">student profile</a>
                 </li>
                 <li class="nav-item">
+                  <a class="nav-link" href="/mentor/project">project</a>
+                </li>
+                <li class="nav-item">
                   <a class="nav-link" href="#">placement</a>
                 </li>
   
   
-                <li class="nav-item">
-                  <a class="nav-link" href="#">help</a>
-                </li>
+
               </ul>
   
             </div>
@@ -178,19 +138,9 @@
 </footer>
 <!-- //footer -->
 
-<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
-<!-- disable body scroll which navbar is in active -->
-<script>
-  $(function () {
-    $('.navbar-toggler').click(function () {
-      $('body').toggleClass('noscroll');
-    })
-  });
-</script>
-<!-- disable body scroll which navbar is in active -->
-<!-- //jQuery-Photo-filter-lightbox-portfolio-plugin -->
-<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
+{% block content %}
 
-</body>
-</html>
+mentor
+
+{% endblock  %}

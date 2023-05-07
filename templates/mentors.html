@@ -1,25 +1,27 @@
-
-
-{% block title %}About Us{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
+    <div style="padding-top:50px;min-height: 700px">
+        <div class="container">
+            <table id="myTable" class="display">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Company</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>
 
-<!--go back button-->
-<div style="text-align: left; margin: 20px;">
-    <a href="{{ url_for('home') }}">< Back</a>
-</div>
-
-<div class="container">
-    <div>
-           you successfully logged in,  this is mentors portal
-
+        </div>
     </div>
-</div>
+    <script>
+        $(function () {
+            getAllMentors('#myTable', '/mentor/getAllJson');
+        })
 
-
-<div style="text-align: center;">
-    <a href="/register" style="color: black;"><button>Join Us</button></a>
-</div>
-
-
+    </script>
 {% endblock %}
