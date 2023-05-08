@@ -589,6 +589,7 @@ function checkUserStatus(id) {
 }
 
 function getAllMentors(formId, url, columns, flag) {
+    debugger
     setTimeout(3000);
     $.ajax({
             url: url,
@@ -603,7 +604,8 @@ function getAllMentors(formId, url, columns, flag) {
                             "render": function (data, type, full, meta) {
                                 return "<input type='button' onclick='alert(2)' value='edit'> <input type='button' onclick='alert(1)' value='delete' {%end if%}>"
                             }
-                        }]
+                        }
+                    ]
                 }
                 if ($.fn.dataTable.isDataTable(formId)) {
                     console.log("dataTable1")
