@@ -71,7 +71,8 @@ def DBOperator_search(sqlCommands, searchtext_tuple):
 def DBOperator_update(sqlCommands):
     print(sqlCommands)
     cur = DBConnect()
-    rows_affected = cur.execute(sqlCommands)
+    cur.execute(sqlCommands)
+    rows_affected = cur.rowcount
     dbconn.close()
     connection.close()
     return rows_affected
