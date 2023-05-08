@@ -1,26 +1,35 @@
-
-
-{% block title %}About Us{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
+    <div style="padding-top:50px;min-height: 700px">
+        <div class="container">
+            <table id="myTableCompany" class="display">
+                <thead>
+                <tr>
+                    <th>Company Name</th>
+                    <th>Street</th>
+                    <th>City</th>
+                    <th>Region</th>
+                    <th>Website</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>
 
-<!--go back button-->
-<div style="text-align: left; margin: 20px;">
-    <a href="{{ url_for('home') }}">< Back</a>
-</div>
-
-<div class="container">
-    <div>
-     {% for company in companys %}
-         {{ companys }}
-       {% endfor %}
+        </div>
     </div>
-</div>
+    <script>
+        var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
+        $(function () {
+            getAllMentors('#myTableCompany', '/company/getAllJson', [
+                {"data": "company_name"},
+                {"data": "street"},
+                {"data": "city"},
+                {"data": "region"},
+                {"data": "website"},
+            ],flag);
+        })
 
-
-<div style="text-align: center;">
-    <a href="/register" style="color: black;"><button>Join Us</button></a>
-</div>
-
-
+    </script>
 {% endblock %}

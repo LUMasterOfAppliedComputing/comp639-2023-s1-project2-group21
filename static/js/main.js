@@ -575,62 +575,53 @@ async function addNewMentor() {
         })
     })
 }
-//
-// function packagingdatatabledata(data) {
-//
-//     var editHtml = ' ';
-//
-//     var a = []; //全部行数据的list
-//
-//     var banddata = data.test_env_all;
-//
-//     for (var key in banddata) {
-//
-//         var tempObj = []; //一行数据的list
-//
-//         tempObj.push(banddata[key].id);
-//
-//         tempObj.push(banddata[key].name);
-//
-//         tempObj.push(banddata[key].url);
-//
-//         tempObj.push(banddata[key].desc);
-//
-//         tempObj.push(editHtml);
-//
-//         a.push(tempObj);
-//
-//     }
-//
-//     return a;
-//
-// }
 
-function getAllMentors(formId, url) {
+function checkUserStatus(id) {
+    $.ajax({
+        url: "/student/getStudentById",
+        type: "get",
+        dataType: "JSON",
+        data: {"id": id}
+    }).then(data => {
+        if (data.data == 2) {
+            $.alert("Looks like you haven't completed our survey, before you use our system you must complete all the them")
+        }
+    })
+}
+
+function getAllMentors(formId, url, columns, flag) {
+    debugger
     setTimeout(3000);
     $.ajax({
             url: url,
             type: "get",
             dataType: "JSON",
             success: function (data) {
+                var columnDefs = []
+                if (flag) {
+                    columnDefs = [
+                        {
+                            "targets": -1,
+                            "render": function (data, type, full, meta) {
+                                return "<input type='button' onclick='alert(2)' value='edit'> <input type='button' onclick='alert(1)' value='delete' {%end if%}>"
+                            }
+                        }
+                    ]
+                }
                 if ($.fn.dataTable.isDataTable(formId)) {
                     console.log("dataTable1")
                     let dataTable1 = $(formId).dataTable();
                     dataTable1.fnClearTable()
                     dataTable1.fnAddData(data, true)
                 } else {
-                     $(formId).DataTable({
+                    $(formId).dataTable({
                         "bAutoWidth": true,
                         "dataSrc": "",
                         "order": [[0, "desc"]],  // HERE !! ERROR TRIGGER!
                         "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
                         "data": data,
-                        "columns": [
-                            {"data": "first_name"},
-                            {"data": "phone"},
-                            {"data": "email"},
-                            {"data": "company_name"},
-                        ]
+                        "columns": columns,
+                        "columnDefs": columnDefs
                     });
                 }
             },
@@ -688,7 +679,7 @@ function addOrUpdateUser(type) {
                         data: formData
                     }).then(data => {
                         if (data.code == 'ok') {
-                            $.MessageBox("Welcome, you have successfully registered, please login and start your journey!");
+                            $.MessageBox(data.message);
                         }
                     })
 
@@ -709,7 +700,8 @@ function addOrUpdateUser(type) {
 }
 
 function serializeData(form, include, exclude) {
-    var obj = $(form).serializeArray();
+    let form2 = $(form);
+    var obj = form2.serializeArray();
     include = include || [];
     exclude = exclude || [];
     var holder = {};
