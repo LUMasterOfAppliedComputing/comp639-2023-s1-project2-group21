@@ -14,11 +14,16 @@ def getAll():
     result = db.DBOperator(sqlCommand)
     return result
 
+def getAllByRole(role):
+    sqlCommand = """SELECT * FROM user where role = %s """%role
+    result = db.DBOperator(sqlCommand)
+    return result
 
-def update(id, first_name, last_name, password, email, role):
-    sqlCommand = """UPDATE user SET first_name = '%s', last_name = '%s', 
-                  password = '%s', email = '%s',  role = '%s' WHERE user_id = '%s' """%(first_name, last_name, password, email, role,id)
-     
+
+def update(id, first_name, last_name):
+    sqlCommand = """UPDATE user SET first_name = '%s', last_name = '%s' WHERE user_id = '%s' """ % (
+    first_name, last_name, id)
+
     selectResult = db.DBOperator_update(sqlCommand)
     return selectResult
 
@@ -32,4 +37,10 @@ def delete(id):
 def getUserByEmail(email):
     sqlCommand = """SELECT * FROM user where email = '%s' """ % (email)
     selectResult = db.DBOperator(sqlCommand)
+    return selectResult
+
+
+def changePassword(id, password):
+    sqlCommand = """UPDATE user SET password = '%s' WHERE user_id = '%s' """ % (password, id)
+    selectResult = db.DBOperator_update(sqlCommand)
     return selectResult

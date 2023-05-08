@@ -15,64 +15,110 @@
                 <div class="apply-grids-info widthRegi">
                     <form id="regiForm">
                         <div class="sideContainer">
+                            <input type="hidden" name="user_id" id="user_id"
+                                    {% if user %} value="{{ user['user_id'] }}" {% endif %} class="form-control">
                             <div class="form-group left">
                                 <input type="text" hidden name="role" id="role" class="form-control"
                                        placeholder="" value="2">
                                 <label for="firstname">*First name</label>
-                                <input type="text" name="firstname" id="firstname" class="form-control">
+                                <input type="text" name="firstname" id="firstname"
+                                        {% if user %} value="{{ user['first_name'] }}" {% endif %} class="form-control">
                             </div>
                             <div class="form-group right">
                                 <label for="lastname">*Last name</label>
-                                <input type="text" name="lastname" id="lastname" class="form-control">
+                                <input type="text" name="lastname"
+                                        {% if user %} value="{{ user['last_name'] }}" {% endif %}
+                                       id="lastname" class="form-control">
                             </div>
                         </div>
                         <div class="sideContainer">
                             <div class="form-group left">
                                 <label for="alternativeName">*Alternative name</label>
-                                <input type="text" name="alternativeName" id="alternativeName" class="form-control">
+                                <input type="text" name="alternativeName" id="alternativeName"
+                                        {% if user %} value="{{ user['alternative_name'] }}" {% endif %}
+                                       class="form-control">
                             </div>
                             <div class="form-group right">
                                 <label for="preferName">*Prefer name</label>
-                                <input type="text" name="preferName" id="preferName" class="form-control">
+                                <input type="text" name="preferName" id="preferName"
+                                        {% if user %} value="{{ user['preferred_name'] }}" {% endif %}
+                                       class="form-control">
                             </div>
                         </div>
-                        <div class="form-group mb-4">
-                            <label class="mb-2">*Password</label>
-                            <input type="password" name="password" class="form-control" id="password">
-                        </div>
+                         {% if user %}
+                            <div class="form-group mb-4">
+                                <label class="mb-2">*Password</label>
+                                <input type="password" name="password"
+                                        hidden
+                                       class="form-control" id="password">
+                            </div>
+                        {% endif %}
                         <div class="sideContainer">
                             <div class="form-group left">
                                 <label>*Student Number</label>
-                                <input type="text" name="studentNo" id="studentNo" class="form-control">
+                                <input type="text" name="studentNo" id="studentNo"
+                                        {% if user %} value="{{ user['student_id_no'] }}" readonly  {% endif %}
+                                       class="form-control">
                             </div>
                             <div class="form-group right">
                                 <label>*Phone</label>
-                                <input type="text" name="phone" id="phone" class="form-control">
+                                <input type="text" name="phone" id="phone"
+                                        {% if user %} value="{{ user['phone'] }}" {% endif %}
+                                       class="form-control">
                             </div>
                         </div>
                         <div class="form-group mb-4">
                             <label class="mb-2">*Email</label>
-                            <input type="email" name="email" class="form-control" id="email">
+                            <input type="email" name="email" class="form-control"
+                                    {% if user %} value="{{ user['email'] }}" {% endif %}
+                                   id="email">
                         </div>
                         <div class="sideContainer">
                             <div class="form-group mb-4 left">
                                 <label class="mb-2">*Date of Birth</label>
-                                <input type="date" name="dob" class="form-control" id="dob">
-
+                                <input type="date" name="dob" class="form-control"
+                                        {% if user %} value="{{ user['dateofbirth'] }}" {% endif %}
+                                       id="dob">
                             </div>
                             <div class="form-group mb-4 right">
                                 <label class="mb-2">*Gender</label>
                                 <select class="form-control" name="gender" id="gender">
-                                    <option value="0">Male</option>
-                                    <option value="1">Female</option>
-                                    <option value="2">Neutral</option>
+                                    <option value="0"  {% if user and user['gender']== 0 %} selected  {% endif %}>
+                                        Male
+                                    </option>
+                                    <option value="1" {% if user and user['gender']== 1 %} selected  {% endif %}>
+                                        Female
+                                    </option>
+                                    <option value="2" {% if user and user['gender']== 2 %} selected  {% endif %}>
+                                        Neutral
+                                    </option>
                                 </select>
                             </div>
                         </div>
+                        <div class="form-group mb-4">
+                            <label class="mb-2">*Project Preference</label>
+                            <textarea type="text" name="project_preference" class="form-control"
+                                      id="project_preference" {% if user %} value="{{ user['project_preference'] }}"{% endif %}></textarea>
+                        </div>
 
-
-                        <input type="button" class="btn btn-primary" onclick="addOrUpdateUser(2)" value="JOIN NOW"
-                               name="submitBtn"/>
+                        <div class="form-group mb-4">
+                            <label class="mb-2">*Project Preference</label>
+                            <textarea type="text" name="personal_statement" class="form-control"
+                                      id="personal_statement" {% if user %} value="{{ user['personal_statement'] }}"{% endif %}></textarea>
+                        </div>
+                        <div class="form-group mb-4 left">
+                            <label class="mb-2" for="cv">*CV</label>
+                            <input type="file" id="fileUp" name="fileUp" value="Choose a file">
+                            <span id="text" name="fileLocation"> {% if user %}
+                                <a href="{{ user['cv'] }}"> {{ user['cv'] }} </a>{% endif %}</span>
+                        </div>
+                        {% if user %}
+                            <input type="button" class="btn btn-primary" onclick="addOrUpdateUser(2)" value="Update"
+                                   name="submitBtn"/>
+                        {% else %}
+                            <input type="button" class="btn btn-primary" onclick="addOrUpdateUser(2)" value="JOIN NOW"
+                                   name="submitBtn"/>
+                        {% endif %}
                         <button type="reset" class="btn btn-primary" href="register">Reset</button>
 
                     </form>
@@ -85,7 +131,18 @@
 
     <!-- //footer -->
     </body>
-
+    <script>
+        $(function () {
+            {% if user %}
+            let $cv = $("#file");
+            console.log($cv)
+            var ifCV ='{{ user['cv'] }}'
+            if (ifCV) {
+                $cv.html("")
+            }
+            {% endif %}
+        })
+    </script>
 
 
 {% endblock %}
