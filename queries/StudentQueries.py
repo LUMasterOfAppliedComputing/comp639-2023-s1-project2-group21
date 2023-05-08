@@ -26,12 +26,12 @@ def getOneById(id):
     return selectResult
 
 
-def update(id, company_name, street, city, region, mentor_id, website):
+def update(id, alternative_name, preferred_name, phone, cv, project_preference, personal_statements):
     sqlCommand = """UPDATE student SET student_id_no,alternative_name
                         ,preferred_name,phone,cv,project_preference,
                         personal_statements,placement_status
                         WHERE id = '%s'""" \
-                 % (company_name, street, city, region, mentor_id, website, id)
+                 % (alternative_name, preferred_name, phone, cv, project_preference, personal_statements, id)
 
     id = db.DBOperatorInsertedId(sqlCommand)
     return id;
