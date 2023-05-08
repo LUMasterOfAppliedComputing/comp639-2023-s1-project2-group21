@@ -5,9 +5,9 @@
             <table id="myTableOne" class="display">
                 <thead>
                 <tr>
-                    <th>Sutdent</th>
-                    <th>CV</th>
-                    <th>Prol</th>
+                    <th>Mentor Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
                     <th>Company</th>
                 </tr>
                 </thead>
@@ -20,7 +20,12 @@
     </div>
     <script>
         $(function () {
-            getAllMentors('#myTableOne', '/student/getAllJson');
+            getAllMentors('#myTableOne', '/mentor/getAllJson',[
+                            {"data": "first_name"},
+                            {"data": "phone"},
+                            {"data": "email"},
+                            {"data": "company_name"},
+                        ]);
         })
 
     </script>

@@ -10,7 +10,13 @@ studentRoute = Blueprint('StudentRoute', __name__)
 @studentRoute.route('/student/getAll')
 def get_users():
     students = StudentQueries.getAll()
-    return render_template("studentPortal.html", students=students)
+    return render_template("students.html", students=students)
+
+
+@studentRoute.route('/student/getAllJson')
+def get_students():
+    students = StudentQueries.getAll()
+    return make_response(jsonify(students), 200)
 
 @studentRoute.route('/student/getStudentById')
 def getStudentById():

@@ -1,8 +1,35 @@
 {% extends "base.html" %}
-
-{% block title %}About Us{% endblock %}
-
 {% block content %}
+    <div style="padding-top:50px;min-height: 700px">
+        <div class="container">
+            <table id="myTableCompany" class="display">
+                <thead>
+                <tr>
+                    <th>Company Name</th>
+                    <th>Street</th>
+                    <th>City</th>
+                    <th>Region</th>
+                    <th>Website</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>
 
+        </div>
+    </div>
+    <script>
+        var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
+        $(function () {
+            getAllMentors('#myTableCompany', '/company/getAllJson', [
+                {"data": "company_name"},
+                {"data": "street"},
+                {"data": "city"},
+                {"data": "region"},
+                {"data": "website"},
+            ],flag);
+        })
 
+    </script>
 {% endblock %}

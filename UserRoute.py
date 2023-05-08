@@ -110,16 +110,19 @@ def addOrUpdateUser():
                         StudentQueries.insert(id, studentNo, alternativeName, preferName, phone, "", "", "",
                                               SubscripStatus.not_available.value, gender,
                                               dob)
+            data = {'message': 'Profile has been added successfully', 'code': 'ok'}
+
         else:
             rowCount = UsersQueries.update(userId, firstname, lastname)
-            alternative_name = request.form.get("alternative_name")
-            preferred_name = request.form.get("preferred_name")
-            cv = request.form.get("cv") if request.form.get("cv") is not None else ''
+            alternative_name = request.form.get("alternativeName")
+            preferred_name = request.form.get("preferName")
+            dob = request.form.get("dob")
+            cv = request.form.get("file") if request.form.get("file") is not None else ''
             project_preference = request.form.get("project_preference") if request.form.get("project_preference") is not None else ''
-            personal_statements = request.form.get("personal_statements") if request.form.get("personal_statements") is not None else ''
-            StudentQueries.update( alternative_name, preferred_name, phone, cv, project_preference, personal_statements)
-            print(rowCount)
-        data = {'message': 'ok', 'code': 'ok'}
+            personal_statements = request.form.get("personal_statement") if request.form.get("personal_statement") is not None else ''
+            rowCountStu = StudentQueries.update(userId,alternative_name, preferred_name, phone, cv, project_preference, personal_statements,dob)
+            print(rowCountStu)
+        data = {'message': 'Profile has been updated successfully', 'code': 'ok'}
     except:
         data = {'message': 'Something wrong, please try again later', 'code': 'ERROR'}
 

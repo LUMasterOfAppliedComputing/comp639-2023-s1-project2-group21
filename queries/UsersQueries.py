@@ -21,8 +21,7 @@ def getAllByRole(role):
 
 
 def update(id, first_name, last_name):
-    sqlCommand = """UPDATE user SET first_name = '%s', last_name = '%s', 
-                 WHERE user_id = '%s' """ % (
+    sqlCommand = """UPDATE user SET first_name = '%s', last_name = '%s' WHERE user_id = '%s' """ % (
     first_name, last_name, id)
 
     selectResult = db.DBOperator_update(sqlCommand)
