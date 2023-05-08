@@ -2,12 +2,12 @@
 {% block content %}
     <div style="padding-top:50px;min-height: 700px">
         <div class="container">
-            <table id="myTable" class="display">
+            <table id="myTableOne" class="display">
                 <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Email</th>
+                    <th>Sutdent</th>
+                    <th>CV</th>
+                    <th>Prol</th>
                     <th>Company</th>
                 </tr>
                 </thead>
@@ -20,7 +20,7 @@
     </div>
     <script>
         $(function () {
-            getAllMentors('#myTable', '/mentor/getAllJson');
+            getAllMentors('#myTableOne', '/student/getAllJson');
         })
 
     </script>

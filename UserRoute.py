@@ -80,7 +80,7 @@ def changePassword():
 @userRoute.route('/users/addOrUpdate', methods=["post"])
 def addOrUpdateUser():
     firstname = request.form.get("firstname")
-    userId = request.form.get("userId")
+    userId = request.form.get("user_id")
     lastname = request.form.get("lastname")
     email = request.form.get("email")
     password = request.form.get("password")
@@ -111,7 +111,14 @@ def addOrUpdateUser():
                                               SubscripStatus.not_available.value, gender,
                                               dob)
         else:
-            UsersQueries.update(userId, firstname, lastname, encrypted, email, role)
+            rowCount = UsersQueries.update(userId, firstname, lastname)
+            alternative_name = request.form.get("alternative_name")
+            preferred_name = request.form.get("preferred_name")
+            cv = request.form.get("cv") if request.form.get("cv") is not None else ''
+            project_preference = request.form.get("project_preference") if request.form.get("project_preference") is not None else ''
+            personal_statements = request.form.get("personal_statements") if request.form.get("personal_statements") is not None else ''
+            StudentQueries.update( alternative_name, preferred_name, phone, cv, project_preference, personal_statements)
+            print(rowCount)
         data = {'message': 'ok', 'code': 'ok'}
     except:
         data = {'message': 'Something wrong, please try again later', 'code': 'ERROR'}
@@ -121,20 +128,23 @@ def addOrUpdateUser():
 
 @userRoute.route('/users/checkStudentExsit', methods=["post"])
 def checkStudentExsit():
-    studentNo = request.form.get("studentNo")
-    studentData = ExternalStudentQueries.getOneByStudentNo(studentNo)
-    if len(studentData) > 0:
-        if studentData[0]['ifCurrentlyEnrolled'] == '1':
-            studentRegiData = StudentQueries.getStudentByStudentNo(studentNo)
-            if len(studentRegiData) == 0:
-                data = {'message': 'ok', 'code': 'ok'}
-            else:
-                data = {'message': 'student is already registered', 'code': 'ERROR'}
-        else:
-            data = {'message': 'student is not enrolled', 'code': 'ERROR'}
+    if request.form.get("user_id"):
+        data = {'message': 'ok', 'code': 'ok'}
+        return make_response(jsonify(data), 200)
     else:
-        data = {'message': 'student no doesn\'t  exist', 'code': 'ERROR'}
-
+        studentNo = request.form.get("studentNo")
+        studentData = ExternalStudentQueries.getOneByStudentNo(studentNo)
+        if len(studentData) > 0:
+            if studentData[0]['ifCurrentlyEnrolled'] == '1':
+                studentRegiData = StudentQueries.getStudentByStudentNo(studentNo)
+                if len(studentRegiData) == 0:
+                    data = {'message': 'ok', 'code': 'ok'}
+                else:
+                    data = {'message': 'student is already registered', 'code': 'ERROR'}
+            else:
+                data = {'message': 'student is not enrolled', 'code': 'ERROR'}
+        else:
+            data = {'message': 'student no doesn\'t  exist', 'code': 'ERROR'}
     return make_response(jsonify(data), 200)
 
 
