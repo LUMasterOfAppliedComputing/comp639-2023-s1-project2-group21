@@ -574,36 +574,19 @@ async function addNewMentor() {
         })
     })
 }
-//
-// function packagingdatatabledata(data) {
-//
-//     var editHtml = ' ';
-//
-//     var a = []; //全部行数据的list
-//
-//     var banddata = data.test_env_all;
-//
-//     for (var key in banddata) {
-//
-//         var tempObj = []; //一行数据的list
-//
-//         tempObj.push(banddata[key].id);
-//
-//         tempObj.push(banddata[key].name);
-//
-//         tempObj.push(banddata[key].url);
-//
-//         tempObj.push(banddata[key].desc);
-//
-//         tempObj.push(editHtml);
-//
-//         a.push(tempObj);
-//
-//     }
-//
-//     return a;
-//
-// }
+
+function checkUserStatus(id) {
+    $.ajax({
+        url: "/student/getStudentById",
+        type: "get",
+        dataType: "JSON",
+        data: {"id": id}
+    }).then(data=>{
+        if(data.data == 2){
+            $.alert("Looks like you haven't completed our survey, before you use our system you must complete all the them")
+        }
+    })
+}
 
 function getAllMentors(formId, url) {
     setTimeout(3000);
@@ -618,7 +601,7 @@ function getAllMentors(formId, url) {
                     dataTable1.fnClearTable()
                     dataTable1.fnAddData(data, true)
                 } else {
-                     $(formId).DataTable({
+                    $(formId).DataTable({
                         "bAutoWidth": true,
                         "dataSrc": "",
                         "order": [[0, "desc"]],  // HERE !! ERROR TRIGGER!

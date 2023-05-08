@@ -1,3 +1,5 @@
+import functools
+
 from flask import Blueprint, render_template, request, session, make_response, jsonify
 
 from enums.PlacementStatus import SubscripStatus
@@ -7,7 +9,23 @@ from utils import MD5Helper, SMTPHelper
 userRoute = Blueprint('userRoute', __name__)
 
 
+def login_require(func):
+
+    @functools.wraps(func)
+    def login_wrapper(*args, **kwargs):
+        userId = session.__contains__('user_id')
+        if not userId:
+            return render_template("error.html", data='you have to login first!')
+        else:
+            print('start request')
+            res = func(*args, **kwargs)
+            return res
+
+    return login_wrapper
+
+
 @userRoute.route('/users/getAll')
+@login_require
 def get_users():
     users = UsersQueries.getAll()
     return render_template("users.html", users=users)
@@ -23,7 +41,7 @@ def deleteUser(id):
 def checkEmail():
     email = request.args.get("email")
     user = UsersQueries.getUserByEmail(email)
-    if len(user) > 0: #if found a row return ok , if nothing found return error
+    if len(user) > 0:  # if found a row return ok , if nothing found return error
         data = {"message": "ok", "code": "ok"}
     else:
         data = {"message": "user email doesn't exist", "code": "error"}
@@ -41,14 +59,14 @@ def sendPasswordEmail():
     return make_response(jsonify(data), 200)
 
 
-@userRoute.route('/users/changePassword',methods=["post"])
+@userRoute.route('/users/changePassword', methods=["post"])
 def changePassword():
     email = request.form.get("email")
     password = request.form.get("password")
     try:
         user = UsersQueries.getUserByEmail(email)
         if len(user) > 0:
-            encryped =MD5Helper.md5_encrypt(password)
+            encryped = MD5Helper.md5_encrypt(password)
             UsersQueries.changePassword(user[0]['user_id'], encryped)
             data = {"message": "ok", "code": "ok"}
         else:
@@ -62,7 +80,7 @@ def changePassword():
 @userRoute.route('/users/addOrUpdate', methods=["post"])
 def addOrUpdateUser():
     firstname = request.form.get("firstname")
-    userId = request.form.get("userId")
+    userId = request.form.get("user_id")
     lastname = request.form.get("lastname")
     email = request.form.get("email")
     password = request.form.get("password")
@@ -80,7 +98,7 @@ def addOrUpdateUser():
                     case "1":
                         # Mentor
                         cid = request.form.get("menCompany")
-                        MentorQueries.insert(id, phone, "",cid)
+                        MentorQueries.insert(id, phone, "", cid)
                     case "2":
                         # Student
                         dob = request.form.get("dob")
@@ -93,7 +111,14 @@ def addOrUpdateUser():
                                               SubscripStatus.not_available.value, gender,
                                               dob)
         else:
-            UsersQueries.update(userId, firstname, lastname, encrypted, email, role)
+            rowCount = UsersQueries.update(userId, firstname, lastname)
+            alternative_name = request.form.get("alternative_name")
+            preferred_name = request.form.get("preferred_name")
+            cv = request.form.get("cv") if request.form.get("cv") is not None else ''
+            project_preference = request.form.get("project_preference") if request.form.get("project_preference") is not None else ''
+            personal_statements = request.form.get("personal_statements") if request.form.get("personal_statements") is not None else ''
+            StudentQueries.update( alternative_name, preferred_name, phone, cv, project_preference, personal_statements)
+            print(rowCount)
         data = {'message': 'ok', 'code': 'ok'}
     except:
         data = {'message': 'Something wrong, please try again later', 'code': 'ERROR'}
@@ -103,20 +128,23 @@ def addOrUpdateUser():
 
 @userRoute.route('/users/checkStudentExsit', methods=["post"])
 def checkStudentExsit():
-    studentNo = request.form.get("studentNo")
-    studentData = ExternalStudentQueries.getOneByStudentNo(studentNo)
-    if len(studentData) > 0:
-        if studentData[0]['ifCurrentlyEnrolled'] == '1':
-            studentRegiData = StudentQueries.getStudentByStudentNo(studentNo)
-            if len(studentRegiData) == 0:
-                data = {'message': 'ok', 'code': 'ok'}
-            else:
-                data = {'message': 'student is already registered', 'code': 'ERROR'}
-        else:
-            data = {'message': 'student is not enrolled', 'code': 'ERROR'}
+    if request.form.get("user_id"):
+        data = {'message': 'ok', 'code': 'ok'}
+        return make_response(jsonify(data), 200)
     else:
-        data = {'message': 'student no doesn\'t  exist', 'code': 'ERROR'}
-
+        studentNo = request.form.get("studentNo")
+        studentData = ExternalStudentQueries.getOneByStudentNo(studentNo)
+        if len(studentData) > 0:
+            if studentData[0]['ifCurrentlyEnrolled'] == '1':
+                studentRegiData = StudentQueries.getStudentByStudentNo(studentNo)
+                if len(studentRegiData) == 0:
+                    data = {'message': 'ok', 'code': 'ok'}
+                else:
+                    data = {'message': 'student is already registered', 'code': 'ERROR'}
+            else:
+                data = {'message': 'student is not enrolled', 'code': 'ERROR'}
+        else:
+            data = {'message': 'student no doesn\'t  exist', 'code': 'ERROR'}
     return make_response(jsonify(data), 200)
 
 
@@ -156,6 +184,7 @@ def login():
 # user logout, email and role need to be passed, to match t
 # he database stored data.
 @userRoute.route("/users/logOut")
+@login_require
 def logOut():
     session['user_id'] = None  # if matched, put the user on session variable.
     session['name'] = None

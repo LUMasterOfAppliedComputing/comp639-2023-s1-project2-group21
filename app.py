@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, request
+from flask import Flask, request, session
 from flask import render_template
 
 from CompanyRoute import companyRoute
@@ -16,6 +16,7 @@ from StudentRoute import studentRoute
 from StudentSkillRoute import studentSkillRoute
 from TechSkillRoute import techSkillRoute
 from UserRoute import userRoute
+from queries import StudentQueries
 
 app = Flask(__name__)
 
@@ -42,7 +43,19 @@ def home():
 
 @app.route("/register")  # home page
 def register():
-    return render_template("register.html")
+    id = session.__contains__('user_id')
+    if id:
+        user_id_ = session['user_id']
+        user = StudentQueries.getStudentById(user_id_)
+        if len(user) > 0:  # if found a row return ok , if nothing found return error
+            data = {"message": "ok", "code": "ok", "data": user[0]}
+
+        else:
+            data = {"message": "User doesn't exist", "code": "ERROR"}
+
+        return render_template("register.html", user=user[0])
+    else:
+        return render_template("register.html")
 
 
 @app.route("/about")
@@ -84,6 +97,7 @@ def staff():
 def forgotPassword():
     email = request.args.get("key")
     return render_template("forgotPassword.html", email=email)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
