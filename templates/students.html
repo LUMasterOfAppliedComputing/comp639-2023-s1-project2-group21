@@ -22,7 +22,7 @@
         </div>
     </div>
     <script>
-
+        var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
         $(function () {
             getAllMentors('#myTableStudent', '/student/getAllJson', [
                 {"data": "first_name"},
@@ -32,7 +32,7 @@
                 {"data": "email"},
                 {"data": "cv"},
                 {"data": null},
-            ],false);
+            ],flag);
         })
 
     </script>
