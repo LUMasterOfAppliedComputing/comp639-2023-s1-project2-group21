@@ -30,6 +30,8 @@ def DBOperator(sqlCommands):
         return []
     select_result = cur.fetchall()
     column_names = [i[0] for i in cur.description]
+    dbconn.close()
+    connection.close()
     return [dict(zip(column_names, row)) for row in select_result]
 
 
@@ -69,7 +71,8 @@ def DBOperator_search(sqlCommands, searchtext_tuple):
 def DBOperator_update(sqlCommands):
     print(sqlCommands)
     cur = DBConnect()
-    rows_affected = cur.execute(sqlCommands)
+    cur.execute(sqlCommands)
+    rows_affected = cur.rowcount
     dbconn.close()
     connection.close()
     return rows_affected
