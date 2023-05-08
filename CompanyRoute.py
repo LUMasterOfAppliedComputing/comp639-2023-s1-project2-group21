@@ -10,7 +10,6 @@ companyRoute.register_blueprint(studentRoute)
 
 
 @companyRoute.route('/company/getAll')
-@checkStudentProfileAndSurvey
 def getAll():
     companys = CompanyQueries.getAll()
     return render_template("company.html", companys=companys)

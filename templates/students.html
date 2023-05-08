@@ -1,27 +1,39 @@
-
-
-{% block title %}About Us{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
+    <div style="padding-top:50px;min-height: 700px">
+        <div class="container">
+            <table id="myTableStudent" class="display">
+                <thead>
+                <tr>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Student No</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>CV</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>
 
-<!--go back button-->
-<div style="text-align: left; margin: 20px;">
-    <a href="{{ url_for('home') }}">< Back</a>
-</div>
-
-<div class="container">
-    <div>
-        All students:
-       {% for student in students %}
-         {{ student }}
-       {% endfor %}
+        </div>
     </div>
-</div>
+    <script>
 
+        $(function () {
+            getAllMentors('#myTableStudent', '/student/getAllJson', [
+                {"data": "first_name"},
+                {"data": "last_name"},
+                {"data": "student_id_no"},
+                {"data": "phone"},
+                {"data": "email"},
+                {"data": "cv"},
+                {"data": null},
+            ],false);
+        })
 
-<div style="text-align: center;">
-    <a href="/register" style="color: black;"><button>Join Us</button></a>
-</div>
-
-
+    </script>
 {% endblock %}
