@@ -162,3 +162,34 @@ def logOut():
     session['role'] = None
     session['email'] = None
     return render_template('student/studentbase.html')
+
+@userRoute.route('/users/checkPassword')
+def checkPassword():
+    id = request.args.get("id")
+    password = request.args.get("oldpassword")
+    userData = UsersQueries.getUserById(id)  # check if the email and role is matched
+    if len(userData) > 0:
+        data = userData[0]
+        checkResult = MD5Helper.check_match(data['password'], password)
+        if not checkResult:
+            data = {"message": "user email doesn't exist", "code": "error"}
+            return make_response(jsonify(data), 200)
+        else:
+            data = {"message": "ok", "code": "ok"}
+            return make_response(jsonify(data), 200)
+
+
+@userRoute.route('/users/resetpassword', methods=["post"])
+def resetpassword():
+    userId = request.form.get("userId")
+    email = request.form.get("email")
+    password = request.form.get("password")
+    
+    encrypted = MD5Helper.md5_encrypt(password);
+    try:
+        UsersQueries.changePassword(userId, encrypted)
+        data = {'message': 'ok', 'code': 'ok'}
+    except:
+        data = {'message': 'Something wrong, please try again later', 'code': 'ERROR'}
+
+    return make_response(jsonify(data), 200)

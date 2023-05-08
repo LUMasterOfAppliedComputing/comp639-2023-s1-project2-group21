@@ -434,6 +434,7 @@ function processPayment(data, userId) {
 
 function updatePassword(role) {
     var formData = serializeData("form#forgotPass");
+//
 
     $.validator.addMethod("passwordEqual", function (value, element) {
         let forpassword = $('#forpassword').val();
@@ -721,4 +722,78 @@ function serializeData(form, include, exclude) {
         }
     }
     return holder;
+}
+
+// reset password for all user
+
+async function resetPassword(id) {
+    $.ajax({
+        url: "/company/getAllJson",
+        type: "GET",
+
+    }).then(data => {
+        console.log(data);
+        //  var options = "";
+        // for (let dataKey in data) {
+        //     options += "<option value='" + data[dataKey]['id'] + "'>" + data[dataKey]['company_name'] + "</option>"
+        // }
+        // console.log(options)
+        $.confirm({
+            theme: 'dark',
+            title: 'Enter mentor information',
+            content: '' +
+                '<form id="mentorForm" class="formName">' +
+                '<div class="form-group">' +
+                '<input type="hidden" name="role" value="1" />' +
+                '<label>Old password</label>' +
+                '<input type="password" name="oldpassword" class="password form-control" required />' +
+                '<label>Password</label>' +
+                '<input type="password" name="password" class="password form-control" required />' +
+                '</form>',
+
+            buttons: {
+                Save: async function () {
+ 
+                    var password = this.$content.find('.password').val();
+                    var oldpassword = this.$content.find('.oldpassword').val();
+                    // if (!email) {
+                    //     $.alert('provide a valid email');
+                    //     return false;
+                    // }
+                     var formData = serializeData("form#mentorForm")
+                     const checkResult = await ajaxCall("/users/checkPassword", "get", {"id": id,"oldpassword": formData.oldpassword})
+
+
+                    if (checkResult.code == 'error') {
+                        $.alert('Password is wrong, please input again');
+                        return false;
+                    } else {
+                        resetPassword2(formData)
+                        getAllMentors("#myTable", "/mentor/getAllJson")
+                    }
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+}
+
+
+function resetPassword2(fromdata) {
+
+    $.ajax({
+        url: "/users/addOrUpdate",
+        type: "POST",
+        dataType: "JSON",
+        data: fromdata,
+    }).then(data => {
+        if (data.code == 'ok') {
+            $.alert("Password has been reset")
+
+        }
+    })
+
 }
