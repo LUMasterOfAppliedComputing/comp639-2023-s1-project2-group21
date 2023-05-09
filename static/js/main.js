@@ -604,7 +604,21 @@ function checkUserStatus(id) {
         }
     })
 }
-
+/**
+ *  a function to initial a Datatable by passing
+ *      formId:     the pre-required empty <table id="formId" > and with initialed <th>(s)
+ *
+ *      URL:        the back-end route as datasource to load the data of a datatable
+ *
+ *      columns:    the columns where each column should be put
+ *
+ *      flag:       indicate if a set of button is required
+ *
+ *      target:     if button required then target is where the but located in the table.
+ *
+ *      btns:       an array of object that represent the button name and function to be called on click the button
+ *
+ **/
 function renderDataTable(formId, url, columns, flag, target, btns) {
     setTimeout(3000);
     $.ajax({
@@ -618,18 +632,10 @@ function renderDataTable(formId, url, columns, flag, target, btns) {
                         {
                             "targets": target,
                             "render": function (data, type, meta, row) {
-                                console.log(data)
-                                console.log(type)
-                                console.log(meta)
-                                console.log(row)
                                 var btn = ""
                                 btns.forEach(button => {
                                     btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='"+ button['btnName']+"'> "
-
                                 })
-                                for (const botton in btns) {
-                                }
-                                console.log(btn)
                                 return btn
                             }
                         }
