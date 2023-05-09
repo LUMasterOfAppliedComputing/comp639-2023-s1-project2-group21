@@ -43,3 +43,14 @@ def getMentorinfo(userid):
      
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
+
+def getProjectAll():
+    sqlCommand = """
+                    SELECT
+                        *,c.company_name as company_name
+                    FROM
+                        project p inner join company c on p.company_id = c.id
+                """
+     
+    selectResult = db.DBOperator(sqlCommand)
+    return selectResult

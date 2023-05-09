@@ -53,6 +53,44 @@
 
 
 	</section>
+
+	<div style="padding-top:50px;min-height: 700px">
+        <div class="container">
+            <table id="myTableOne" class="display">
+                <thead>
+                <tr>
+					<th scope="col">Project Title</th>
+					<th scope="col">Description</th>
+					<th scope="col">number of students</th>
+					<th scope="col">project type</th>
+					<th scope="col">strat date</th>
+					<th scope="col">ending date</th>
+					<th scope="col">remain number of students</th>
+					<th scope="col">company name</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>
+
+        </div>
+    </div>
+    <script>
+        $(function () {
+            getAllMentors('#myTableOne', '/mentor/getProjectAllJson',[
+                            {"data": "project_title"},
+                            {"data": "description"},
+                            {"data": "number_of_student"},
+                            {"data": "project_type"},
+							{"data": "start_date"},
+							{"data": "end_date"},
+							{"data": "remain_number_of_student"},
+							{"data": "company_name"},
+                        ]);
+        })
+
+    </script>
 	<!-- //footer -->
 </body>
 
@@ -72,3 +110,4 @@
 <script src="assets/js/bootstrap.min.js"></script>
 
 {% endblock %}
+
