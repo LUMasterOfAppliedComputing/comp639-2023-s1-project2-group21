@@ -9,6 +9,7 @@
                     <th>Phone</th>
                     <th>Email</th>
                     <th>Company</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -22,12 +23,13 @@
         var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
         var btn = [
             {
-                "btnName": "edit",
+                "btnName": "view Detail",
                 "func": "alert"
             }, {
                 "btnName": "delete",
                 "func": "testFunc"
-            }];
+            }
+            ];
         $(function () {
 
             renderDataTable("#myTableOne", "/mentor/getAllJson", [
@@ -35,7 +37,7 @@
                 {"data": "phone"},
                 {"data": "email"},
                 {"data": "company_name"},
-            ], true, 3, btn)
+            ], true, 4, btn)
         })
 
     </script>
