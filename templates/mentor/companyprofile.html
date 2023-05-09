@@ -1,0 +1,23 @@
+
+{% extends "mentor/mentorbase.html" %}
+{% block content %}
+
+
+<form action="/updatecompanyprofile" method="POST">
+    <input type="hidden" name="companyid" value="{{company[0]['id']}}">
+    <label for="companyname">Company name:</label><br>
+    <input type="text" id="cname" name="company_name" value="{{company[0]['company_name']}}"><br>
+    <label for="region">Region:</label><br>
+    <input type="text" id="region" name="region" value="{{company[0]['region']}}"><br>
+    <label for="city">City:</label><br>
+    <input type="text" id="city" name="city" value="{{company[0]['city']}}"><br>
+    <label for="street">Street:</label><br>
+    <input type="text" id="street" name="street" value="{{company[0]['street']}}"><br>
+    <label for="website">Website:</label><br>
+    <input type="text" id="webname" name="website" value="{{company[0]['website']}}"><br><br>
+    <input type="submit" value="Update">
+</form>
+
+  
+
+{% endblock %}
