@@ -15,20 +15,19 @@
                 <tbody>
                 </tbody>
             </table>
-            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>
 
         </div>
     </div>
     <script>
         var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
         $(function () {
-            getAllMentors('#myTableCompany', '/company/getAllJson', [
+            renderDataTable('#myTableCompany', '/company/getAllJson', [
                 {"data": "company_name"},
                 {"data": "street"},
                 {"data": "city"},
                 {"data": "region"},
                 {"data": "website"},
-            ],flag);
+            ],false,5);
         })
 
     </script>
