@@ -508,6 +508,9 @@ function checksendEmail() {
     });
 }
 
+function testFunc(){
+    alert("123")
+}
 
 async function addNewMentor() {
     $.ajax({
@@ -564,7 +567,20 @@ async function addNewMentor() {
                         return false;
                     } else {
                         addMentor(formData)
-                        getAllMentors("#myTable", "/mentor/getAllJson")
+                        var btn = [
+                            {
+                                "btnName": "edit",
+                                "func": "alert"
+                            }, {
+                                "btnName": "delete",
+                                "func": "alert"
+                            }];
+                        renderDataTable("#myTable", "/mentor/getAllJson", [
+                            {"data": "first_name"},
+                            {"data": "phone"},
+                            {"data": "email"},
+                            {"data": "company_name"},
+                        ], true, 3, btn)
                     }
 
                 },
@@ -589,8 +605,7 @@ function checkUserStatus(id) {
     })
 }
 
-function getAllMentors(formId, url, columns, flag) {
-    debugger
+function renderDataTable(formId, url, columns, flag, target, btns) {
     setTimeout(3000);
     $.ajax({
             url: url,
@@ -601,9 +616,21 @@ function getAllMentors(formId, url, columns, flag) {
                 if (flag) {
                     columnDefs = [
                         {
-                            "targets": -1,
-                            "render": function (data, type, full, meta) {
-                                return "<input type='button' onclick='alert(2)' value='edit'> <input type='button' onclick='alert(1)' value='delete' {%end if%}>"
+                            "targets": target,
+                            "render": function (data, type, meta, row) {
+                                console.log(data)
+                                console.log(type)
+                                console.log(meta)
+                                console.log(row)
+                                var btn = ""
+                                btns.forEach(button => {
+                                    btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='"+ button['btnName']+"'> "
+
+                                })
+                                for (const botton in btns) {
+                                }
+                                console.log(btn)
+                                return btn
                             }
                         }
                     ]
@@ -750,29 +777,32 @@ async function resetPassword(id) {
                     var oldpassword = this.$content.find('.oldpassword').val();
                     var password = this.$content.find('.password').val();
                     var conpassword = this.$content.find('.conpassword').val();
-                    console.log(password,oldpassword,conpassword)
+                    console.log(password, oldpassword, conpassword)
                     // if (!email) {
                     //     $.alert('provide a valid email');
                     //     return false;
                     // }
-                    if (password != conpassword){
+                    if (password != conpassword) {
                         $.alert('Please input the same password');
                         return false;
 
                     }
-                     var formData = serializeData("form#mentorForm")
-                     const checkResult = await ajaxCall("/users/checkPassword", "get", {"id": id,"oldpassword": formData.oldpassword})
+                    var formData = serializeData("form#mentorForm")
+                    const checkResult = await ajaxCall("/users/checkPassword", "get", {
+                        "id": id,
+                        "oldpassword": formData.oldpassword
+                    })
 
-                      var jsonData ={
-                        "userId":id,
-                        "password":password
-                      }  
+                    var jsonData = {
+                        "userId": id,
+                        "password": password
+                    }
                     if (checkResult.code == 'error') {
                         $.alert('Password is wrong, please input again');
                         return false;
                     } else {
                         resetPassword2(jsonData)
-                       // getAllMentors("#myTable", "/mentor/getAllJson")
+                        // renderDataTable("#myTable", "/mentor/getAllJson")
                     }
 
                 },

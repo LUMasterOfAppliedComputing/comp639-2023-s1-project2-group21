@@ -19,13 +19,23 @@
         </div>
     </div>
     <script>
+        var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
+        var btn = [
+            {
+                "btnName": "edit",
+                "func": "alert"
+            }, {
+                "btnName": "delete",
+                "func": "testFunc"
+            }];
         $(function () {
-            getAllMentors('#myTableOne', '/mentor/getAllJson',[
-                            {"data": "first_name"},
-                            {"data": "phone"},
-                            {"data": "email"},
-                            {"data": "company_name"},
-                        ]);
+
+            renderDataTable("#myTableOne", "/mentor/getAllJson", [
+                {"data": "first_name"},
+                {"data": "phone"},
+                {"data": "email"},
+                {"data": "company_name"},
+            ], true, 3, btn)
         })
 
     </script>

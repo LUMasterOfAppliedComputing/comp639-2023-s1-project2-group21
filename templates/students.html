@@ -11,28 +11,26 @@
                     <th>Phone</th>
                     <th>Email</th>
                     <th>CV</th>
-                    <th>Actions</th>
+{#                    <th>Actions</th>#}
                 </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
-            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>
 
         </div>
     </div>
     <script>
-        var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
+        //var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
         $(function () {
-            getAllMentors('#myTableStudent', '/student/getAllJson', [
+            renderDataTable('#myTableStudent', '/student/getAllJson', [
                 {"data": "first_name"},
                 {"data": "last_name"},
                 {"data": "student_id_no"},
                 {"data": "phone"},
                 {"data": "email"},
                 {"data": "cv"},
-                {"data": null},
-            ],flag);
+            ],false,5);
         })
 
     </script>
