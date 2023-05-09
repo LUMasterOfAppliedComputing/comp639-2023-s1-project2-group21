@@ -1,8 +1,34 @@
 {% extends "base.html" %}
-
-{% block title %}About Us{% endblock %}
-
 {% block content %}
+    <div style="padding-top:50px;min-height: 700px">
+        <div class="container">
+            <table id="myTableCompany" class="display">
+                <thead>
+                <tr>
+                    <th>Company Name</th>
+                    <th>Street</th>
+                    <th>City</th>
+                    <th>Region</th>
+                    <th>Website</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
 
+        </div>
+    </div>
+    <script>
+        var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
+        $(function () {
+            renderDataTable('#myTableCompany', '/company/getAllJson', [
+                {"data": "company_name"},
+                {"data": "street"},
+                {"data": "city"},
+                {"data": "region"},
+                {"data": "website"},
+            ],false);
+        })
 
+    </script>
 {% endblock %}
