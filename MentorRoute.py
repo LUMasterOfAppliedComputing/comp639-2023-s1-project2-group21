@@ -51,8 +51,30 @@ def mentorproject():
 
 @mentorRoute.route('/mentor/profile')
 def mentorprofile():
-    projects = ProjectQueries.getAll()
-    return render_template("mentor/mentorprofile.html", projects=projects)
+    id = session['user_id']
+    profile = MentorQueries.getMentorinfo(id)
+    return render_template("mentor/mentorprofile.html", profile=profile)
+
+@mentorRoute.route('/mentor/updateprofile')
+def mentorupdateprofile():
+    id = session['user_id']
+    profile = MentorQueries.getMentorinfo(id)
+    return render_template("mentor/mentorUpdateprofile.html", profile=profile)
+
+@mentorRoute.route('/mentor/Update',methods=["POST"])
+def Update():
+    id = request.form.get("mentorid")
+    first_name = request.form.get("firstname")
+    last_name = request.form.get("lastname")
+    # password = request.form.get("password")
+    email = request.form.get("email")
+    phone = request.form.get("phone")
+    summary = request.form.get("summary")
+    UsersQueries.updateprofile(id, first_name, last_name, email)
+    MentorQueries.update(id, phone, summary)
+
+    profile = MentorQueries.getMentorinfo(id)
+    return render_template("mentor/mentorprofile.html", profile=profile)
 
 
 

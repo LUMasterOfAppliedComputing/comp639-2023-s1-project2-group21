@@ -111,7 +111,9 @@
                             </ul>
                         </div>
                     {% endif %}
-                    {% if session['role'] == 2 %} <!-- student -->
+                    {% if session['role'] == 2 %}
+                    <!--student role-->
+        
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
@@ -129,8 +131,9 @@
                             </ul>
                         </div>
                     {% endif %}
-                    {% if session['role'] == 0 %} <!-- staff -->
-                        <!--STAFF -->
+                    {% if session['role'] == 0 %}
+                    <!--staff role-->
+
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
@@ -152,7 +155,9 @@
                             </ul>
                         </div>
                     {% endif %}
-                    {% if session['role'] == 1 %} <!-- mentor -->
+                    {% if session['role'] == 1 %}
+                       <!--mentor role-->
+   
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
@@ -167,6 +172,20 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="/project">Preferred Student Selection</a>
+                                    <a class="nav-link" href="/mentor/profile">My Profile </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/mentor/company">View Company</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/mentor/student">View Students</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/">View Placement</a>
+                                    <a class="nav-link" href="/student/getAll">View Students</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/mentor/project">Projects</a>
                                 </li>
 
                                 <li class="nav-item">

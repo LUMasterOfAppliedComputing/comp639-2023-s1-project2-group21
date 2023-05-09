@@ -9,6 +9,7 @@
                     <th>Phone</th>
                     <th>Email</th>
                     <th>Company</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -19,13 +20,24 @@
         </div>
     </div>
     <script>
+        var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
+        var btn = [
+            {
+                "btnName": "view Detail",
+                "func": "alert"
+            }, {
+                "btnName": "delete",
+                "func": "testFunc"
+            }
+            ];
         $(function () {
-            getAllMentors('#myTableOne', '/mentor/getAllJson',[
-                            {"data": "first_name"},
-                            {"data": "phone"},
-                            {"data": "email"},
-                            {"data": "company_name"},
-                        ]);
+
+            renderDataTable("#myTableOne", "/mentor/getAllJson", [
+                {"data": "first_name"},
+                {"data": "phone"},
+                {"data": "email"},
+                {"data": "company_name"},
+            ], true, 4, btn)
         })
 
     </script>

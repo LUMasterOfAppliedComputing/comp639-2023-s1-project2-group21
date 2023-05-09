@@ -434,6 +434,7 @@ function processPayment(data, userId) {
 
 function updatePassword(role) {
     var formData = serializeData("form#forgotPass");
+//
 
     $.validator.addMethod("passwordEqual", function (value, element) {
         let forpassword = $('#forpassword').val();
@@ -507,6 +508,9 @@ function checksendEmail() {
     });
 }
 
+function testFunc(){
+    alert("123")
+}
 
 async function addNewMentor() {
     $.ajax({
@@ -563,7 +567,20 @@ async function addNewMentor() {
                         return false;
                     } else {
                         addMentor(formData)
-                        getAllMentors("#myTable", "/mentor/getAllJson")
+                        var btn = [
+                            {
+                                "btnName": "edit",
+                                "func": "alert"
+                            }, {
+                                "btnName": "delete",
+                                "func": "alert"
+                            }];
+                        renderDataTable("#myTable", "/mentor/getAllJson", [
+                            {"data": "first_name"},
+                            {"data": "phone"},
+                            {"data": "email"},
+                            {"data": "company_name"},
+                        ], true, 3, btn)
                     }
 
                 },
@@ -587,9 +604,22 @@ function checkUserStatus(id) {
         }
     })
 }
-
-function getAllMentors(formId, url, columns, flag) {
-    debugger
+/**
+ *  a function to initial a Datatable by passing
+ *      formId:     the pre-required empty <table id="formId" > and with initialed <th>(s)
+ *
+ *      URL:        the back-end route as datasource to load the data of a datatable
+ *
+ *      columns:    the columns where each column should be put
+ *
+ *      flag:       indicate if a set of button is required
+ *
+ *      target:     if button required then target is where the but located in the table.
+ *
+ *      btns:       an array of object that represent the button name and function to be called on click the button
+ *
+ **/
+function renderDataTable(formId, url, columns, flag, target, btns) {
     setTimeout(3000);
     $.ajax({
             url: url,
@@ -600,9 +630,13 @@ function getAllMentors(formId, url, columns, flag) {
                 if (flag) {
                     columnDefs = [
                         {
-                            "targets": -1,
-                            "render": function (data, type, full, meta) {
-                                return "<input type='button' onclick='alert(2)' value='edit'> <input type='button' onclick='alert(1)' value='delete' {%end if%}>"
+                            "targets": target,
+                            "render": function (data, type, meta, row) {
+                                var btn = ""
+                                btns.forEach(button => {
+                                    btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='"+ button['btnName']+"'> "
+                                })
+                                return btn
                             }
                         }
                     ]
@@ -713,4 +747,92 @@ function serializeData(form, include, exclude) {
         }
     }
     return holder;
+}
+
+// reset password for all user
+
+async function resetPassword(id) {
+    $.ajax({
+        url: "/company/getAllJson",
+        type: "GET",
+
+    }).then(data => {
+        console.log(data);
+        //  var options = "";
+        // for (let dataKey in data) {
+        //     options += "<option value='" + data[dataKey]['id'] + "'>" + data[dataKey]['company_name'] + "</option>"
+        // }
+        // console.log(options)
+        $.confirm({
+            theme: 'dark',
+            title: 'Enter mentor information',
+            content: '' +
+                '<form id="mentorForm" class="formName">' +
+                '<div class="form-group">' +
+                '<input type="hidden" name="role" value="1" />' +
+                '<label>Old password</label>' +
+                '<input type="password" name="oldpassword" class="oldpassword form-control" required />' +
+                '<label>Password</label>' +
+                '<input type="password" name="password" class="password form-control" required />' +
+                '<label>Confirm Password</label>' +
+                '<input type="password" name="conpassword" class="conpassword form-control" required />' +
+                '</form>',
+
+            buttons: {
+                Save: async function () {
+                    var oldpassword = this.$content.find('.oldpassword').val();
+                    var password = this.$content.find('.password').val();
+                    var conpassword = this.$content.find('.conpassword').val();
+                    console.log(password, oldpassword, conpassword)
+                    // if (!email) {
+                    //     $.alert('provide a valid email');
+                    //     return false;
+                    // }
+                    if (password != conpassword) {
+                        $.alert('Please input the same password');
+                        return false;
+
+                    }
+                    var formData = serializeData("form#mentorForm")
+                    const checkResult = await ajaxCall("/users/checkPassword", "get", {
+                        "id": id,
+                        "oldpassword": formData.oldpassword
+                    })
+
+                    var jsonData = {
+                        "userId": id,
+                        "password": password
+                    }
+                    if (checkResult.code == 'error') {
+                        $.alert('Password is wrong, please input again');
+                        return false;
+                    } else {
+                        resetPassword2(jsonData)
+                        // renderDataTable("#myTable", "/mentor/getAllJson")
+                    }
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+}
+
+
+function resetPassword2(fromdata) {
+    debugger
+    $.ajax({
+        url: "/users/resetpassword",
+        type: "POST",
+        dataType: "JSON",
+        data: fromdata,
+    }).then(data => {
+        if (data.code == 'ok') {
+            $.alert("Password has been reset")
+
+        }
+    })
+
 }
