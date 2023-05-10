@@ -67,6 +67,7 @@
 					<th scope="col">ending date</th>
 					<th scope="col">remain number of students</th>
 					<th scope="col">company name</th>
+					<th scope="col">Prefered student</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -77,8 +78,14 @@
         </div>
     </div>
     <script>
+		    var btn = [
+            {
+                "btnName": "Prefered Students",
+                "func": "alert"
+            }
+            ];
         $(function () {
-            getAllMentors('#myTableOne', '/mentor/getProjectAllJson',[
+            renderDataTable('#myTableOne', '/mentor/getProjectAllJson',[
                             {"data": "project_title"},
                             {"data": "description"},
                             {"data": "number_of_student"},
@@ -87,9 +94,10 @@
 							{"data": "end_date"},
 							{"data": "remain_number_of_student"},
 							{"data": "company_name"},
-                        ]);
+                        ], true, 8, btn);
         })
 
+	
     </script>
 	<!-- //footer -->
 </body>
