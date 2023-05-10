@@ -38,19 +38,20 @@ def delete(id):
     deleteResult = db.DBOperator_update(sqlCommand)
     return deleteResult
 
+def updatecompany(company_name, region,city,street,website,companyid):
+    sqlCommand ="""
+        UPDATE company
+        SET company_name = '%s', region = '%s',city = '%s', street = '%s',  website = '%s'
+        WHERE id = '%s'
+        """%(company_name, region,city,street,website,companyid)
+    updateid = db.DBOperator_update(sqlCommand)
+    print(updateid)
+    return updateid
+
+
+
 def getMentorinfo(userid):
     sqlCommand = """SELECT * FROM mentor m  join user u on m.mentor_id = u.user_id where u.user_id = '%s' """ % userid
-     
-    selectResult = db.DBOperator(sqlCommand)
-    return selectResult
-
-def getProjectAll():
-    sqlCommand = """
-                    SELECT
-                        *,c.company_name as company_name
-                    FROM
-                        project p inner join company c on p.company_id = c.id
-                """
      
     selectResult = db.DBOperator(sqlCommand)
     return selectResult

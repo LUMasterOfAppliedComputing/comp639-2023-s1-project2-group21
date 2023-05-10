@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, session, jsonify, make_response
+from flask import Blueprint, render_template, request, session,redirect, jsonify, make_response
 
-from queries import UsersQueries, MentorQueries, ProjectQueries
+
+from queries import UsersQueries, MentorQueries, ProjectQueries, CompanyQueries
 from utils import MD5Helper
 
 mentorRoute = Blueprint('mentorRoute', __name__)
@@ -80,3 +81,26 @@ def Update():
 def getProjectAllJson():
     mentors = MentorQueries.getProjectAll()
     return make_response(jsonify(mentors), 200)
+
+
+
+@mentorRoute.route('/companyprofile')
+def companyprofile():
+    company = CompanyQueries.getAll()
+    print(company)
+    return render_template("mentor/companyprofile.html", company=company)
+
+
+@mentorRoute.route('/updatecompanyprofile',methods=['POST'])
+def updatecompanyprofile():
+    companyid = request.form.get("companyid")
+    company_name = request.form.get("company_name")
+    region = request.form.get("region")
+    city = request.form.get("city")
+    street = request.form.get("street")
+    website = request.form.get("website")
+    updateid = MentorQueries.updatecompany(company_name, region,city,street,website,companyid)
+    if updateid >0:
+        return redirect("/companyprofile")
+
+    return redirect("/companyprofile",errorMsg="add mentors wrong")
