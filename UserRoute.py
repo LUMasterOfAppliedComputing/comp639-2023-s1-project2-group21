@@ -83,14 +83,15 @@ def addOrUpdateUser():
     userId = request.form.get("user_id")
     lastname = request.form.get("lastname")
     email = request.form.get("email")
-    password = request.form.get("password")
 
     phone = request.form.get("phone")
     role = request.form.get("role")
-    encrypted = MD5Helper.md5_encrypt(password);
 
     try:
         if not userId:
+            password = request.form.get("password")
+            encrypted = MD5Helper.md5_encrypt(password);
+
             id = UsersQueries.insert(firstname, lastname, encrypted, email, role)
             if id > 0:
                 # check the role to see which sub table we need to insert
@@ -114,6 +115,7 @@ def addOrUpdateUser():
 
         else:
             rowCount = UsersQueries.update(userId, firstname, lastname)
+            session['name'] = firstname + " " + lastname
             alternative_name = request.form.get("alternativeName")
             preferred_name = request.form.get("preferName")
             dob = request.form.get("dob")

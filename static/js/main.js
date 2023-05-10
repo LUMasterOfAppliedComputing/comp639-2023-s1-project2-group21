@@ -508,8 +508,15 @@ function checksendEmail() {
     });
 }
 
-function testFunc(){
-    alert("123")
+function preferStudents() {
+    var idArr = []
+  $('input:checkbox').each(function() {
+    if ($(this).prop('checked') ==true) {
+        idArr.push($(this).val());
+    }
+});
+    //todo add to mentor prefer student table.
+    alert(idArr)
 }
 
 async function addNewMentor() {
@@ -592,6 +599,7 @@ async function addNewMentor() {
     })
 }
 
+
 function checkUserStatus(id) {
     $.ajax({
         url: "/student/getStudentById",
@@ -600,10 +608,54 @@ function checkUserStatus(id) {
         data: {"id": id}
     }).then(data => {
         if (data.data == 2) {
-            $.alert("Looks like you haven't completed our survey, before you use our system you must complete all the them")
+            $.alert("Looks like you haven't completed our survey, before you use our system you must complete all of them")
         }
     })
 }
+
+function checkStudentProfile(studentId) {
+    $.ajax({
+        url: "/studentQuestions/getByStudentId",
+        type: "get",
+        dataType: "JSON",
+        data: {"studentId": studentId}
+    }).then(data => {
+        if (data.code = 'ok') {
+            let questionData = data.data;
+            console.log(questionData)
+            var td = ''
+            questionData.forEach(question => {
+                td += '<tr><td>'
+                console.log(question.question)
+                var que = JSON.parse(question.question)
+                td += que.title + "</td><td>"
+                if (que.type == "1") {
+                    td += que.option[question.question_answer] + "</td>"
+                } else {
+                    td += question.question_answer + "</td>"
+                }
+                td += "</tr>"
+            })
+            $.confirm({
+                boxWidth: '1200px',
+                useBootstrap: false,
+                title: 'Survey Answers',
+                content: '' +
+                    ' <table id="myTableStudent" class="display">' +
+                    '      <thead>' +
+                    '        <tr>' +
+                    '         <th>Question</th>' +
+                    '         <th>Answer</th>' +
+                    '        </tr>' +
+                    '      </thead>' +
+                    '      <tbody>' + td + '</tbody>' +
+                    ' </table>'
+            })
+
+        }
+    })
+}
+
 /**
  *  a function to initial a Datatable by passing
  *      formId:     the pre-required empty <table id="formId" > and with initialed <th>(s)
@@ -614,12 +666,14 @@ function checkUserStatus(id) {
  *
  *      flag:       indicate if a set of button is required
  *
+ *   checkboxFlag :   indicate if a checkbox is needed in front of each row is required
+ *
  *      target:     if button required then target is where the but located in the table.
  *
  *      btns:       an array of object that represent the button name and function to be called on click the button
  *
  **/
-function renderDataTable(formId, url, columns, flag, target, btns) {
+function renderDataTable(formId, url, columns, flag,checkboxFlag, target, btns) {
     setTimeout(3000);
     $.ajax({
             url: url,
@@ -628,18 +682,29 @@ function renderDataTable(formId, url, columns, flag, target, btns) {
             success: function (data) {
                 var columnDefs = []
                 if (flag) {
-                    columnDefs = [
+                    columnDefs.push(
                         {
-                            "targets": target,
                             "render": function (data, type, meta, row) {
                                 var btn = ""
                                 btns.forEach(button => {
-                                    btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='"+ button['btnName']+"'> "
+                                    btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
                                 })
                                 return btn
-                            }
+                            },
+                            "targets": target
                         }
-                    ]
+                        )
+                }
+                if(checkboxFlag){
+                      columnDefs.push(
+                        {
+                            "render": function (data, type, meta, row) {
+                                var btn = "<div align='center'><input type=\"checkbox\" name=\"ckb-jobid\" value=" + (meta.id) + "></div>"
+                               return btn;
+                            },
+                            "targets": 0
+                        }
+                        )
                 }
                 if ($.fn.dataTable.isDataTable(formId)) {
                     console.log("dataTable1")
@@ -649,6 +714,10 @@ function renderDataTable(formId, url, columns, flag, target, btns) {
                 } else {
                     $(formId).dataTable({
                         "bAutoWidth": true,
+                        select: {
+                            style: 'os',
+                            selector: 'td:first-child'
+                        },
                         "dataSrc": "",
                         "order": [[0, "desc"]],  // HERE !! ERROR TRIGGER!
                         "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
