@@ -45,11 +45,10 @@
                                        class="form-control">
                             </div>
                         </div>
-                         {% if user %}
+                         {% if not user %}
                             <div class="form-group mb-4">
                                 <label class="mb-2">*Password</label>
                                 <input type="password" name="password"
-                                        hidden
                                        class="form-control" id="password">
                             </div>
                         {% endif %}
@@ -67,10 +66,11 @@
                                        class="form-control">
                             </div>
                         </div>
+
                         <div class="form-group mb-4">
                             <label class="mb-2">*Email</label>
                             <input type="email" name="email" class="form-control"
-                                    {% if user %} value="{{ user['email'] }}" {% endif %}
+                                    {% if user %} disabled value="{{ user['email'] }}" {% endif %}
                                    id="email">
                         </div>
                         <div class="sideContainer">
@@ -98,13 +98,13 @@
                         <div class="form-group mb-4">
                             <label class="mb-2">*Project Preference</label>
                             <textarea type="text" name="project_preference" class="form-control"
-                                      id="project_preference" {% if user %} value="{{ user['project_preference'] }}"{% endif %}></textarea>
+                                      id="project_preference" >{% if user %}{{ user['project_preference'] }}{% endif %}</textarea>
                         </div>
 
                         <div class="form-group mb-4">
                             <label class="mb-2">*Project Preference</label>
                             <textarea type="text" name="personal_statement" class="form-control"
-                                      id="personal_statement" {% if user %} value="{{ user['personal_statement'] }}"{% endif %}></textarea>
+                                      id="personal_statement" >{% if user %}{{ user['personal_statements'] }}{% endif %}</textarea>
                         </div>
                         <div class="form-group mb-4 left">
                             <label class="mb-2" for="cv">*CV</label>
