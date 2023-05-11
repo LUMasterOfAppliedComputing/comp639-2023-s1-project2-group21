@@ -18,6 +18,19 @@ def getAll():
     return result;
 
 
+def getByStudentId(studentId):
+    sqlCommand = """SELECT
+                        * 
+                    FROM
+                        question_answer qa
+                        LEFT JOIN question qe ON qa.question_id = qe.id 
+                    WHERE
+                        student_id = %s """%(studentId)
+
+    result = db.DBOperator(sqlCommand)
+    return result;
+
+
 def update(student_id, question_id, question_answer):
     sqlCommand = """UPDATE question_answer SET  question_answer = '%s' WHERE student_id = '%s' and question_id = '%s' """ \
                  % (student_id, question_id, question_answer)

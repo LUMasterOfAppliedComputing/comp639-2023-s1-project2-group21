@@ -77,6 +77,10 @@ def Update():
     return render_template("mentor/mentorprofile.html", profile=profile)
 
 
+@mentorRoute.route('/mentor/getProjectAllJson')
+def getProjectAllJson():
+    mentors = MentorQueries.getProjectAll()
+    return make_response(jsonify(mentors), 200)
 
 
 
