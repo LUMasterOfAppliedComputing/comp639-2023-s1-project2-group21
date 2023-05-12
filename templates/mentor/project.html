@@ -9,92 +9,102 @@
 <body>
 	<!-- portfolio -->
 
-	<section class="w3-gallery">
-		<div class="porfolio-inf py-5">
-			<div class="container pt-lg-5 pb-lg-4">
-				<table class="table">
-					<thead>
-						<tr>
-							<th scope="col">#</th>
-							<th scope="col">Project Title</th>
-							<th scope="col">Description</th>
-							<th scope="col">number of students</th>
-							<th scope="col">project type</th>
-							<th scope="col">strat date</th>
-							<th scope="col">ending date</th>
-							<th scope="col">remain number of students</th>
-							<th scope="col">company name</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for project in projects %}
-						<tr>
-							<th scope="row">{{project['id']}}</th>
-							<td>{{project['project_title']}}</td>
-							<td>{{project['description']}}</td>
-							<td>{{project['number_of_student']}}</td>
-							<td>{{project['project_type']}}</td>
-							<td>{{project['start_date']}}</td>
-							<td>{{project['end_date']}}</td>
-							<td>{{project['remain_number_of_student']}}</td>
-							<td>{{project['company_id']}}</td>
-							<td><button type="button" class="btn btn-primary">prefered students</button></td>
-						</tr>
-						{% endfor %}
-
-					</tbody>
-				</table>
-			</div>
-		</div>
-
-
-
-
-
-
-	</section>
+{#	<section class="w3-gallery">#}
+{#		<div class="porfolio-inf py-5">#}
+{#			<div class="container pt-lg-5 pb-lg-4">#}
+{#				<table class="table">#}
+{#					<thead>#}
+{#						<tr>#}
+{#							<th scope="col">#</th>#}
+{#							<th scope="col">Project Title</th>#}
+{#							<th scope="col">Description</th>#}
+{#							<th scope="col">number of students</th>#}
+{#							<th scope="col">project type</th>#}
+{#							<th scope="col">strat date</th>#}
+{#							<th scope="col">ending date</th>#}
+{#							<th scope="col">remain number of students</th>#}
+{#							<th scope="col">company name</th>#}
+{#						</tr>#}
+{#					</thead>#}
+{#					<tbody>#}
+{#						{% for project in projects %}#}
+{#						<tr>#}
+{#							<th scope="row">{{project['id']}}</th>#}
+{#							<td>{{project['project_title']}}</td>#}
+{#							<td>{{project['description']}}</td>#}
+{#							<td>{{project['number_of_student']}}</td>#}
+{#							<td>{{project['project_type']}}</td>#}
+{#							<td>{{project['start_date']}}</td>#}
+{#							<td>{{project['end_date']}}</td>#}
+{#							<td>{{project['remain_number_of_student']}}</td>#}
+{#							<td>{{project['company_id']}}</td>#}
+{#							<td><button type="button" class="btn btn-primary">prefered students</button></td>#}
+{#						</tr>#}
+{#						{% endfor %}#}
+{##}
+{#					</tbody>#}
+{#				</table>#}
+{#			</div>#}
+{#		</div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#	</section>#}
 
 	<div style="padding-top:50px;min-height: 700px">
         <div class="container">
             <table id="myTableOne" class="display">
                 <thead>
                 <tr>
+					<th scope="col"></th>
 					<th scope="col">Project Title</th>
 					<th scope="col">Description</th>
 					<th scope="col">number of students</th>
 					<th scope="col">project type</th>
-					<th scope="col">strat date</th>
-					<th scope="col">ending date</th>
+					<th scope="col">start date</th>
+					<th scope="col">end date</th>
 					<th scope="col">remain number of students</th>
 					<th scope="col">company name</th>
-					<th scope="col">Prefered student</th>
+					<th scope="col">Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
-            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>
+{#            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>#}
 
         </div>
     </div>
     <script>
-		    var btn = [
-            {
+                {% if session['role'] ==1 %}
+            var btn = [{
                 "btnName": "Prefered Students",
                 "func": "alert"
             }
             ];
+                {% elif session['role'] ==2%}
+           var btn =  [{
+                "btnName": "Add to Wishlist",
+                "func": "alert"
+            }
+            ];{% endif %}
+
+
         $(function () {
             renderDataTable('#myTableOne', '/mentor/getProjectAllJson',[
+                            {"data": null},
                             {"data": "project_title"},
                             {"data": "description"},
                             {"data": "number_of_student"},
-                            {"data": "project_type"},
+                            {"data": "type_name"},
 							{"data": "start_date"},
 							{"data": "end_date"},
 							{"data": "remain_number_of_student"},
 							{"data": "company_name"},
-                        ], true, 8, btn);
+                        ], true,true, 9, btn);
         })
 
 	

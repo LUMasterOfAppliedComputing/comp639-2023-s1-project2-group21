@@ -9,3 +9,5 @@ projectRoute = Blueprint('projectRoute', __name__)
 def get_users():
     projects = ProjectQueries.getAll()
     return render_template("project.html", projects=projects)
+
+

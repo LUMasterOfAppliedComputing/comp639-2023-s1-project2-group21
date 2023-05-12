@@ -299,6 +299,57 @@ function addMentor(fromdata) {
 
 }
 
+function validateQueForm() {
+
+    var form = $("#queForm");
+    form.validate({
+        rules: {
+            que_1: {
+                required: true,
+
+            },
+            que_2: {
+                required: true,
+
+            },
+            que_3: {
+                required: true,
+
+            },
+            que_4: {
+                required: true,
+
+            },
+            que_5: {
+                required: true,
+
+            },
+            que_5: {
+                required: true,
+
+            },
+            que_6: {
+                required: true,
+
+            },
+            que_7: "required",
+            que_8: "required",
+            que_9: "required",
+            que_10: "required"
+        }
+        ,
+        errorPlacement: function (error, element) {
+            return true;
+        }
+    });
+    let valid = form.valid();
+    debugger
+    if (!valid) {
+        $.MessageBox("please fill out all required information in correct format");
+    }
+    return valid
+}
+
 
 function sendEmailPassword(email) {
     $.ajax({
@@ -434,7 +485,6 @@ function processPayment(data, userId) {
 
 function updatePassword(role) {
     var formData = serializeData("form#forgotPass");
-//
 
     $.validator.addMethod("passwordEqual", function (value, element) {
         let forpassword = $('#forpassword').val();
@@ -508,13 +558,120 @@ function checksendEmail() {
     });
 }
 
+function extraMultipul(selectedOptions, formData) {
+    const result = selectedOptions.reduce((acc, {name, value}) => {
+        acc[name] = acc[name] || [];
+        acc[name].push(value);
+        return acc;
+    }, {});
+
+    console.log(result);
+    for (var objA in formData) {
+        for (var objB in result) {
+            if (objB === objA) {
+                formData[objA] = result[objB]
+            }
+        }
+    }
+}
+
+function submitQA() {
+    validResult = validateQueForm()
+    console.log(validResult)
+    var formData = serializeData("form#queForm");
+    console.log(formData)
+
+    var selectedOptions = $("#queForm input[name='que_7']:checked").serializeArray();
+    var selectedOptionsQ8 = $("#queForm input[name='que_8']:checked").serializeArray();
+
+    extraMultipul(selectedOptions, formData);
+    extraMultipul(selectedOptionsQ8, formData);
+
+
+    let data1 = JSON.stringify(formData);
+  let data2 = JSON.parse(data1);
+    console.log(data1);
+    $.ajax({
+        url: "/studentQuestions/addQuestionAnswer",
+        type: "POST",
+        dateType:'json',
+        data: data2
+    }).then(data => {
+        console.log(data)
+    })
+
+}
+
+function hideQuestions(preOrNext) {
+    var elements = $('#queForm .sideContainer');
+    console.log(elements.length)
+    var displayIndex = -1
+    var hideIndex = -1
+    if (preOrNext == 'next') {
+        for (let i = 0; i < elements.length; i++) {
+            if (elements[i].className.indexOf('hide') > 0 && displayIndex > 0) {
+
+                if (i < hideIndex + 2) {
+                    $(elements[i]).removeClass("hide")
+                }
+                if (hideIndex > elements.length - 4) {
+                    $('#btnNext').addClass('hide')
+                    $('#submitQABtn').removeClass('hide')
+                }
+            } else if (elements[i].className.indexOf('hide') < 0) {
+                if (i >= elements.length - 2) {
+                    $('#submitQABtn').removeClass('hide')
+                    continue;
+                } else {
+                    $('#btnPrev').removeClass('hide')
+
+                }
+                if (hideIndex < displayIndex + 2) {
+                    hideIndex = displayIndex + 2
+                    displayIndex = i;
+                }
+
+                $(elements[i]).addClass("hide")
+            }
+        }
+
+    } else {
+        for (let i = elements.length - 1; i >= 0; i--) {
+            if (elements[i].className.indexOf('hide') > 0 && displayIndex > 0) {
+
+                if (i > hideIndex - 2) {
+                    $(elements[i]).removeClass("hide")
+                }
+                if (hideIndex <= 1) {
+                    $('#submitQABtn').addClass('hide')
+                    $('#btnPrev').addClass('hide')
+                    continue;
+                }
+                $('#btnNext').removeClass('hide')
+
+            } else if (elements[i].className.indexOf('hide') < 0) {
+
+                if (hideIndex > displayIndex - 2) {
+                    displayIndex = i;
+                    hideIndex = displayIndex - 2
+                }
+                $('#submitQABtn').addClass('hide')
+
+                $(elements[i]).addClass("hide")
+            }
+        }
+    }
+
+}
+
+
 function preferStudents() {
     var idArr = []
-  $('input:checkbox').each(function() {
-    if ($(this).prop('checked') ==true) {
-        idArr.push($(this).val());
-    }
-});
+    $('input:checkbox').each(function () {
+        if ($(this).prop('checked') == true) {
+            idArr.push($(this).val());
+        }
+    });
     //todo add to mentor prefer student table.
     alert(idArr)
 }
@@ -673,7 +830,7 @@ function checkStudentProfile(studentId) {
  *      btns:       an array of object that represent the button name and function to be called on click the button
  *
  **/
-function renderDataTable(formId, url, columns, flag,checkboxFlag, target, btns) {
+function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns) {
     setTimeout(3000);
     $.ajax({
             url: url,
@@ -693,18 +850,18 @@ function renderDataTable(formId, url, columns, flag,checkboxFlag, target, btns) 
                             },
                             "targets": target
                         }
-                        )
+                    )
                 }
-                if(checkboxFlag){
-                      columnDefs.push(
+                if (checkboxFlag) {
+                    columnDefs.push(
                         {
                             "render": function (data, type, meta, row) {
                                 var btn = "<div align='center'><input type=\"checkbox\" name=\"ckb-jobid\" value=" + (meta.id) + "></div>"
-                               return btn;
+                                return btn;
                             },
                             "targets": 0
                         }
-                        )
+                    )
                 }
                 if ($.fn.dataTable.isDataTable(formId)) {
                     console.log("dataTable1")
