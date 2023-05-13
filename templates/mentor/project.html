@@ -55,7 +55,7 @@
 {#	</section>#}
 
 	<div style="padding-top:50px;min-height: 700px">
-        <div class="container">
+        <div class="container widthFull">
             <table id="myTableOne" class="display">
                 <thead>
                 <tr>
@@ -74,14 +74,14 @@
                 <tbody>
                 </tbody>
             </table>
-{#            <button class="btn btn-primary" onclick="addNewMentor()">Add new Mentor</button>#}
-
+            {% if  session['role'] ==2 %}<button class="btn btn-primary" onclick="addNewMentor()">Add preferred</button>
+            {% endif %}
         </div>
     </div>
     <script>
                 {% if session['role'] ==1 %}
             var btn = [{
-                "btnName": "Prefered Students",
+                "btnName": "Preferred Students",
                 "func": "alert"
             }
             ];

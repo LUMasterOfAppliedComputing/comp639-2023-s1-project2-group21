@@ -19,6 +19,9 @@
 .widthRegi{
     width: 30% !important;
 }
+.widthFull{
+    min-width: 95% !important;
+}
 .error {
   border: 2px solid red !important;
 }
