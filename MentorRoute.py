@@ -82,7 +82,8 @@ def Update():
 
 @mentorRoute.route('/companyprofile')
 def companyprofile():
-    company = CompanyQueries.getAll()
+    userid = session['user_id']
+    company = CompanyQueries.getcompany(userid)
     print(company)
     return render_template("mentor/companyprofile.html", company=company)
 
