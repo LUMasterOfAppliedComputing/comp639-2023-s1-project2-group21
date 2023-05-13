@@ -57,11 +57,14 @@ def getMentorinfo(userid):
     return selectResult
 
 def getProjectAll():
-    sqlCommand = """
-                    SELECT
-                        *,c.company_name as company_name
+    sqlCommand = """SELECT p.id,p.project_title,p.description,
+                    p.number_of_student,pt.type_name,  DATE_FORMAT(p.start_date, '%M %d %Y') as start_date,
+                    DATE_FORMAT(p.end_date, '%M %d %Y') as end_date,p.remain_number_of_student,co.company_name 
                     FROM
-                        project p inner join company c on p.company_id = c.id
+                        project p
+                        INNER JOIN mentor ON p.mentor_id = mentor.mentor_id
+                        LEFT JOIN company co ON co.id = mentor.company_id
+                        LEFT JOIN project_type pt on pt.type_id =p.project_type
                 """
      
     selectResult = db.DBOperator(sqlCommand)

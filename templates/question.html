@@ -1,26 +1,55 @@
-
-
-{% block title %}About Us{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
 
-<!--go back button-->
-<div style="text-align: left; margin: 20px;">
-    <a href="{{ url_for('home') }}">Back</a>
-</div>
+    <body>
+    <section class="w3l-apply-6">
+        <div class="apply-info py-5">
+            <div class="containerSlim py-lg-5">
+                <div class="apply-grids-info widthRegi">
+                    <form id="queForm">
+                        {% for (qu) in questions %}
+                            {% set hideIndex = 2 %}
+                            <div class="sideContainer {% if loop.index > hideIndex %} hide{% endif %}">
+                                <div class="form-group mb-4">
+                                    {% set quesionJson = qu.question %}
+                                    <div class="form-group">
+                                        <label>{{ loop.index  }}.{{ quesionJson.title }}</label>
+                                        {% if quesionJson.type=="0" %}
+                                        <input type="text" id="{{ qu.id }}"
+                                               name="que_{{ qu.id }}" class="form-control question">
+                                        {% elif quesionJson.type =="1" %}
+                                        <select name="que_{{ qu.id }}">
+                                            {% for foo in quesionJson.option %}
+                                                <option value="{{ loop.index0 }}">{{ foo }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% elif quesionJson.type =="2" %}
+                                        {% for foo in quesionJson.option %}
+                                            <span style="white-space: nowrap; color: white">
+                                            <input type="checkbox" id="{{ qu.id }}"
+                                                   name="que_{{ qu.id }}" value="{{ loop.index0 }}" >{{ foo }}</span>
 
-<div class="container">
-    <div>
-       {% for question in questions %}
-         {{ question }}
-       {% endfor %}
-    </div>
-</div>
+                                        {% endfor %}
+                                        {% elif quesionJson.type=="3" %}
+                                            <textarea  id="{{ qu.id }}"
+                                                       name="que_{{ qu.id }}" class="form-control" class="question" style="height: 200px"></textarea>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <span onclick="hideQuestions('prev')" id="btnPrev" class="btn btn-primary hide">Previous </span>
+                        <span onclick="hideQuestions('next')" id="btnNext" class="btn btn-primary">Next </span>
+                        <span onclick="submitQA()" id="submitQABtn" class="btn btn-primary hide">Submit </span>
 
 
-<div style="text-align: center;">
-    <a href="/register" style="color: black;"><button>Join Us</button></a>
-</div>
+                    </form>
 
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+    </body>
 
 {% endblock %}
