@@ -589,12 +589,12 @@ function submitQA() {
 
 
     let data1 = JSON.stringify(formData);
-  let data2 = JSON.parse(data1);
+    let data2 = JSON.parse(data1);
     console.log(data1);
     $.ajax({
         url: "/studentQuestions/addQuestionAnswer",
         type: "POST",
-        dateType:'json',
+        dateType: 'json',
         data: data2
     }).then(data => {
         console.log(data)
@@ -956,6 +956,105 @@ function addOrUpdateUser(type) {
             sendRequest('/addOrUpdateMember', formData, "POST", "form#trainerRegiForm");
         }
     }
+}
+
+function moveUp(button) {
+
+    var row = $(button).closest('tr');
+    var previousRow = row.prev('tr');
+
+    if (previousRow.length !== 0) {
+        previousRow.before(row);
+    }
+
+
+}
+
+function moveDown(button) {
+
+    var row = $(button).closest('tr');
+    var after = row.next('tr');
+
+    if (after.length !== 0) {
+        after.after(row);
+    }
+
+
+}
+
+function addPreferredProject() {
+    var idArr = []
+    $('input:checkbox').each(function () {
+        debugger
+        console.log($(this))
+        if ($(this).prop('checked') == true) {
+            idArr.push($(this).val());
+        }
+    });
+    if (idArr.length < 3) {
+        $.alert("At least three project need to chosen before your rank them")
+        return;
+    }
+
+    //todo add to mentor prefer student table.
+    $.ajax({
+        url: "/project/getProjectByIds?idArr=" + idArr,
+        type: "GET",
+        data: idArr,
+    }).then(data => {
+        console.log(data);
+        var options = ""
+        for (let i = 0; i < data.data.length; i++) {
+            let item = data.data[i];
+            console.log(item)
+            options += "<tr>" +
+                "<td class='hide' name='proId' value='" + item['id'] + "'>" + item['id'] + "</td>" +
+                "<td>" + item['project_title'] + "</td>" +
+                "<td>" + item['type_name'] + "</td>" +
+                "<td>" + item['company_name'] + "</td>" +
+                "<td><button onclick='moveUp(this)' >Up</button></td>" +
+                "<td><button onclick='moveDown(this)'>Down</button></td></tr>"
+        }
+
+        console.log(options)
+        $.confirm({
+            theme: 'dark',
+            boxWidth: '1000px',
+            title: 'Rank your preference',
+            content: '' +
+                ' <table id="tablePreProject" class="display">\n' +
+                '        <thead>\n' +
+                '          <tr class="odd">\n' +
+                '           <th>Project Name</th>\n' +
+                '           <th>Project Type</th>\n' +
+                '           <th>Company</th>\n' +
+                '          </tr>\n' +
+                '        </thead>\n' +
+                '        <tbody>' + options +
+                '        </tbody>' +
+                ' </table>',
+
+            buttons: {
+                Save: async function () {
+                    var rankedProjvalues = [];
+                    $('#tablePreProject [name="proId"]').each(function (eachh) {
+                        console.log(eachh)
+                        console.log(this.innerHTML)
+                        rankedProjvalues.push(parseInt(this.innerHTML));
+                    });
+                    console.log(rankedProjvalues)
+                    ajaxCall("/studentProject/add", "get", {
+                        "pidList": rankedProjvalues
+                    })
+
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
 }
 
 function serializeData(form, include, exclude) {
