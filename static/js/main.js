@@ -905,3 +905,86 @@ function resetPassword2(fromdata) {
     })
 
 }
+
+async function addNewProject() {
+    $.ajax({
+        url: "/company/getAllJson",
+        type: "GET",
+
+    }).then(data => {
+        console.log(data);
+        var options = "";
+        for (let dataKey in data) {
+            options += "<option value='" + data[dataKey]['id'] + "'>" + data[dataKey]['company_name'] + "</option>"
+        }
+        console.log(options)
+        $.confirm({
+            theme: 'dark',
+            title: 'Enter mentor information',
+            content: '' +
+                '<form id="mentorForm" class="formName">' +
+                '<div class="form-group">' +
+                '<input type="hidden" name="role" value="1" />' +
+                '<label>Project Title</label>' +
+                '<input type="text" placeholder="Project" name="project_title" class="fname form-control" required />' +
+                '<label>Description</label>' +
+                '<input type="text" placeholder="Description" name="description" class="fname form-control" required />' +
+                '<label>Number of students</label>' +
+                '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" required />' +
+                '<label>Project start date</label>' +
+                '<input type="text" placeholder="" name="start_date" class="fname form-control" required />' +
+                '<label>Project end date</label>' +
+                '<input type="text" placeholder="" name="end_date" class="fname form-control" required />' +
+                '<label>remain of student</label>' +
+                '<input type="text" placeholder="10" name="remain_of_student" class="fname form-control" required />' +
+                '<label> Company type</label>' +
+                '<select id="companytype" name="companytype" class="menCompany form-control">' + options + '</select>' +
+                '<label> Company</label>' +
+                '<select id="menCompany" name="menCompany" class="menCompany form-control">' + options + '</select>' +
+                '</div>' +
+                '</form>',
+
+            buttons: {
+                Save: async function () {
+                    var email = this.$content.find('.email').val();
+                    var fname = this.$content.find('.fname').val();
+                    var password = this.$content.find('.password').val();
+                    var lastname = this.$content.find('.lastname').val();
+                    var menCompany = this.$content.find('.menCompany').val();
+                    if (!email) {
+                        $.alert('provide a valid email');
+                        return false;
+                    }
+                    var formData = serializeData("form#mentorForm")
+                    const checkResult = await ajaxCall("/users/checkEmail", "get", {"email": formData.email})
+
+
+                    if (checkResult.code == 'ok') {
+                        $.alert('email is already registered, please change another email address');
+                        return false;
+                    } else {
+                        addMentor(formData)
+                        var btn = [
+                            {
+                                "btnName": "edit",
+                                "func": "alert"
+                            }, {
+                                "btnName": "delete",
+                                "func": "alert"
+                            }];
+                        renderDataTable("#myTable", "/mentor/getAllJson", [
+                            {"data": "first_name"},
+                            {"data": "phone"},
+                            {"data": "email"},
+                            {"data": "company_name"},
+                        ], true, 3, btn)
+                    }
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+}
