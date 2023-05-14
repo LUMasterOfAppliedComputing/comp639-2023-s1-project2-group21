@@ -2,7 +2,7 @@ import functools
 
 from flask import Blueprint, render_template, make_response, jsonify, request, session
 
-from queries import StudentQueries
+from queries import StudentQueries, ProjectQueries,StudentWishlistQueries
 
 studentRoute = Blueprint('StudentRoute', __name__)
 
@@ -47,4 +47,12 @@ def checkStudentProfileAndSurvey(func):
 
     return wrapper
 
-
+@studentRoute.route('/student/project')
+def studentproject():
+    id=session['user_id']
+    viewwishlist=request.form.get('viewwishlist')
+    if viewwishlist != None:
+        projects = StudentWishlistQueries.showwishlist(id)
+    else:
+        projects = ProjectQueries.getAll()
+    return render_template("student/project.html", projects=projects)
