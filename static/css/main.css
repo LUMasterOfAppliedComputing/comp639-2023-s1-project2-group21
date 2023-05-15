@@ -3,15 +3,24 @@
 /*    bottom: 0;*/
 /*    width:100%;*/
 /*    }*/
-
+.question{
+    min-width: 500px;
+    max-width: 500px;
+}
 .signInLeft{
     padding-left: 0px !important;
+}
+.hide{
+    display: none !important;
 }
 .backgroundColor{
     background: #2b4ae7;
 }
 .widthRegi{
     width: 30% !important;
+}
+.widthFull{
+    min-width: 95% !important;
 }
 .error {
   border: 2px solid red !important;

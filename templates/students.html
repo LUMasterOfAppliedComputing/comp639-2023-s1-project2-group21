@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <div style="padding-top:50px;min-height: 700px">
-        <div class="container">
+        <div class="container widthFull">
             <table id="myTableStudent" class="display">
                 <thead>
                 <tr>
@@ -11,8 +11,6 @@
                     <th>Student No</th>
                     <th>Phone</th>
                     <th>Email</th>
-                    <th>Project Preference</th>
-                    <th>Personal Statements</th>
                     <th>CV</th>
                     <th>Actions</th>
                 </tr>
@@ -40,10 +38,8 @@
                 {"data": "student_id_no"},
                 {"data": "phone"},
                 {"data": "email"},
-                {"data": "project_preference"},
-                {"data": "personal_statements"},
                 {"data": "cv"}
-            ], true, true, 9, btn);
+            ], true, true, 7, btn);
         })
 
     </script>
