@@ -17,8 +17,35 @@ def getAll():
     result = db.DBOperator(sqlCommand)
     return result;
 
-def getProjectAll(ids):
+def getProjectAll(ids,compId,mentorId):
     sqlCommand = """SELECT p.id,p.project_title,p.description,
+                    p.number_of_student,pt.type_name,  DATE_FORMAT(p.start_date, '%M %d %Y') as start_date,
+                    DATE_FORMAT(p.end_date, '%M %d %Y') as end_date,p.remain_number_of_student,co.company_name,
+                    mentor.company_id """
+    if mentorId:
+        sqlCommand += """, CASE
+                            WHEN p.mentor_id = %s 
+                            THEN
+                            '1' 
+                            ELSE 
+                            '0' 
+                        END AS 'if_current_mentor'  """%mentorId
+    sqlCommand+= """ FROM
+                        project p
+                        INNER JOIN mentor ON p.mentor_id = mentor.mentor_id
+                        LEFT JOIN company co ON co.id = mentor.company_id
+                        LEFT JOIN project_type pt on pt.type_id =p.project_type """
+    if ids:
+        sqlCommand += """ where p.id in (%s)""" % ids
+    if compId:
+        sqlCommand += """ where co.id  = '%s' """ % compId
+
+    selectResult = db.DBOperator(sqlCommand)
+    return selectResult
+
+
+def getProjectByCoampny(ids):
+    sqlCommand = f"""SELECT p.id,p.project_title,p.description,
                     p.number_of_student,pt.type_name,  DATE_FORMAT(p.start_date, '%M %d %Y') as start_date,
                     DATE_FORMAT(p.end_date, '%M %d %Y') as end_date,p.remain_number_of_student,co.company_name 
                     FROM
@@ -26,9 +53,7 @@ def getProjectAll(ids):
                         INNER JOIN mentor ON p.mentor_id = mentor.mentor_id
                         LEFT JOIN company co ON co.id = mentor.company_id
                         LEFT JOIN project_type pt on pt.type_id =p.project_type
-                """
-    if ids:
-        sqlCommand += """ where p.id in (%s)""" % ids
+                    where co.id= {ids}"""
 
     selectResult = db.DBOperator(sqlCommand)
     return selectResult

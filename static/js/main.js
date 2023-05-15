@@ -770,6 +770,16 @@ function checkUserStatus(id) {
     })
 }
 
+function checkCompanyProject(companyId) {
+    $.ajax({
+        url: "/project/getProjectsByCompanyId",
+        type: "get",
+        dataType: "JSON",
+        data: {"comId": companyId}
+    }).then(data => {
+       alert(data.data)
+    })
+}
 function checkStudentProfile(studentId) {
     $.ajax({
         url: "/studentQuestions/getByStudentId",
@@ -843,8 +853,16 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                         {
                             "render": function (data, type, meta, row) {
                                 var btn = ""
+                                console.log(data)
+                                console.log(meta)
+                                console.log(row)
                                 btns.forEach(button => {
-                                    btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
+                                    console.log(button.btnName)
+                                    if(button.btnName =='Edit' && meta.if_current_mentor != '1'){
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                    }else {
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
+                                    }
                                 })
                                 return btn
                             },
