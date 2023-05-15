@@ -15,12 +15,21 @@ def insert(id, student_id_no, alternative_name, preferred_name, phone, cv, proje
 
 def getAll():
     sqlCommand = """SELECT
-                        *
+                        user_id as id,
+                        first_name,
+                        last_name,
+                        student_id_no,
+                        phone,
+                        email,
+                        GROUP_CONCAT(tk.skill_name) as skill,
+                        cv 
                     FROM
                         student stu
-                        LEFT JOIN user u ON u.user_id = stu.id
+                        LEFT JOIN USER u ON u.user_id = stu.id 
+                        LEFT JOIN student_skills sk on stu.id = sk.student_id
+                        LEFT JOIN techs_and_skills tk on tk.id = skill_id
                     WHERE
-                        u.role = 2 """
+                        u.role = 2  GROUP BY user_id"""
 
     id = db.DBOperator(sqlCommand)
     return id;

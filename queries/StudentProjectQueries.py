@@ -49,3 +49,27 @@ def getAllByStudentIdAndProjectId(student_id,project_id):
     result = db.DBOperator(sqlCommand)
     return result;
 
+
+def preferredProject(id):
+    sqlCommand = f"""SELECT
+                        p.id,
+                        p.project_title,
+                        CONCAT(u.first_name ,' ',u.last_name ) as 'mentor',
+                        p.description,
+                        p.number_of_student,
+                        pt.type_name,
+                        DATE_FORMAT( p.start_date, '%m %d %Y' ) AS start_date,
+                        DATE_FORMAT( p.end_date, '%m %d %Y' ) AS end_date,
+                        p.remain_number_of_student,
+                        co.company_name  
+                    FROM 
+                        student_project sp 
+                        LEFT JOIN project p ON sp.project_id = p.id 
+                        INNER JOIN mentor ON p.mentor_id = mentor.mentor_id 
+                        LEFT JOIN company co ON co.id = mentor.company_id 
+                        LEFT JOIN project_type pt ON pt.type_id = p.project_type 
+                        left JOIN user u on mentor.mentor_id = u.user_id 
+                    WHERE sp.student_id = {id}"""
+    print(sqlCommand)
+    result = db.DBOperator(sqlCommand)
+    return result
