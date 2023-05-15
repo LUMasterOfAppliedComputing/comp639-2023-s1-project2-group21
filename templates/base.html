@@ -112,14 +112,14 @@
                         </div>
                     {% endif %}
                     {% if session['role'] == 2 %}
-                    <!--student role-->
-              
+                        <!--student role-->
+
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
                                     <a class="nav-link" href="/register">My profile</a>
                                 </li>
-                                  <li class="nav-item active">
+                                <li class="nav-item active">
                                     <a class="nav-link" href="/questionRoute/getAll">Placement Survey</a>
                                 </li>
                                 <li class="nav-item">
@@ -128,18 +128,21 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="/student/project">Projects</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/studentProject/getPreferredProject">Preferred Projects</a>
+                                </li>
                             </ul>
                         </div>
                     {% endif %}
                     {% if session['role'] == 0 %}
-                    <!--staff role-->
+                        <!--staff role-->
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
                                     <a class="nav-link" href="/student/getAll">Students</a>
                                 </li>
-                                 <li class="nav-item active">
+                                <li class="nav-item active">
                                     <a class="nav-link" href="/mentor/getAll">Mentors</a>
                                 </li>
                                 <li class="nav-item">
@@ -149,6 +152,7 @@
                                     <a class="nav-link" href="/mentor/project">View Projects</a>
                                 </li>
 
+
                                 <li class="nav-item">
                                     <a class="nav-link" href="/contact">Matching Process</a>
                                 </li>
@@ -156,7 +160,7 @@
                         </div>
                     {% endif %}
                     {% if session['role'] == 1 %}
-                       <!--mentor role-->
+                        <!--mentor role-->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
@@ -168,7 +172,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="/mentor/project">Projects</a>
                                 </li>
-                               <li class="nav-item">
+                                <li class="nav-item">
                                     <a class="nav-link" href="/student/getAll">Students</a>
                                 </li>
                                 <li class="nav-item">

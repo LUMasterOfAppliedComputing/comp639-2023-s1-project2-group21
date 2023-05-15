@@ -20,3 +20,11 @@ def getProjectByIds():
     data ={"message":'ok','code':'ok','data':projects}
     return make_response(jsonify(data), 200)
 
+@projectRoute.route('/project/getProjectsByCompanyId')
+def getProjectsByCompany():
+    comId = request.args.get("comId")
+    print(comId)
+    projects = ProjectQueries.getProjectByCoampny(comId)
+    data ={"message":'ok','code':'ok','data':projects}
+    return make_response(jsonify(data), 200)
+
