@@ -54,5 +54,5 @@ def studentproject():
     if viewwishlist != None:
         projects = StudentWishlistQueries.showwishlist(id)
     else:
-        projects = ProjectQueries.getProjectAll(None)
+        projects = ProjectQueries.getProjectAll(None,None,None)
     return render_template("student/project.html", projects=projects)

@@ -857,7 +857,12 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                 console.log(meta)
                                 console.log(row)
                                 btns.forEach(button => {
-                                    btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
+                                    console.log(button.btnName)
+                                    if(button.btnName =='Edit' && meta.if_current_mentor != '1'){
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                    }else {
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
+                                    }
                                 })
                                 return btn
                             },
