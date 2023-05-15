@@ -80,18 +80,27 @@
         </div>
     </div>
     <script>
-        {% if session['role'] ==1 %}
-            var btn = [{
+        var btn =[]
+           {% if session['role'] ==0 %}
+             btn = [{
                 "btnName": "Preferred Students",
                 "func": "alert"
             }
-            ];
-        {% elif session['role'] ==2%}
-            var btn = [{
-                "btnName": "Add to Wishlist",
+            ]
+        {% endif %}
+        {% if session['role'] ==1 %}
+             btn = [{
+                "btnName": "Preferred Students",
+                "func": "alert"
+            },
+                {
+                "btnName": "Edit",
                 "func": "alert"
             }
-            ];{% endif %}
+            ]
+
+            ;
+        {% endif %}
 
 
         $(function () {

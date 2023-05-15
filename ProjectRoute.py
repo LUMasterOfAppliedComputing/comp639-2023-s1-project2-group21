@@ -16,7 +16,7 @@ def get_users():
 def getProjectByIds():
     idarr = request.args.get("idArr")
     print(idarr)
-    projects = ProjectQueries.getProjectAll(idarr)
+    projects = ProjectQueries.getProjectAll(idarr,None,None)
     data ={"message":'ok','code':'ok','data':projects}
     return make_response(jsonify(data), 200)
 
