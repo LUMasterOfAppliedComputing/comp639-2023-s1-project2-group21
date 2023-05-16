@@ -299,6 +299,57 @@ function addMentor(fromdata) {
 
 }
 
+function validateQueForm() {
+
+    var form = $("#queForm");
+    form.validate({
+        rules: {
+            que_1: {
+                required: true,
+
+            },
+            que_2: {
+                required: true,
+
+            },
+            que_3: {
+                required: true,
+
+            },
+            que_4: {
+                required: true,
+
+            },
+            que_5: {
+                required: true,
+
+            },
+            que_5: {
+                required: true,
+
+            },
+            que_6: {
+                required: true,
+
+            },
+            que_7: "required",
+            que_8: "required",
+            que_9: "required",
+            que_10: "required"
+        }
+        ,
+        errorPlacement: function (error, element) {
+            return true;
+        }
+    });
+    let valid = form.valid();
+    debugger
+    if (!valid) {
+        $.MessageBox("please fill out all required information in correct format");
+    }
+    return valid
+}
+
 
 function sendEmailPassword(email) {
     $.ajax({
@@ -434,7 +485,6 @@ function processPayment(data, userId) {
 
 function updatePassword(role) {
     var formData = serializeData("form#forgotPass");
-//
 
     $.validator.addMethod("passwordEqual", function (value, element) {
         let forpassword = $('#forpassword').val();
@@ -508,8 +558,122 @@ function checksendEmail() {
     });
 }
 
-function testFunc(){
-    alert("123")
+function extraMultipul(selectedOptions, formData) {
+    const result = selectedOptions.reduce((acc, {name, value}) => {
+        acc[name] = acc[name] || [];
+        acc[name].push(value);
+        return acc;
+    }, {});
+
+    console.log(result);
+    for (var objA in formData) {
+        for (var objB in result) {
+            if (objB === objA) {
+                formData[objA] = result[objB]
+            }
+        }
+    }
+}
+
+function submitQA() {
+    validResult = validateQueForm()
+    console.log(validResult)
+    var formData = serializeData("form#queForm");
+    console.log(formData)
+
+    var selectedOptions = $("#queForm input[name='que_7']:checked").serializeArray();
+    var selectedOptionsQ8 = $("#queForm input[name='que_8']:checked").serializeArray();
+
+    extraMultipul(selectedOptions, formData);
+    extraMultipul(selectedOptionsQ8, formData);
+
+
+    let data1 = JSON.stringify(formData);
+    let data2 = JSON.parse(data1);
+    console.log(data1);
+    $.ajax({
+        url: "/studentQuestions/addQuestionAnswer",
+        type: "POST",
+        dateType: 'json',
+        data: data2
+    }).then(data => {
+        console.log(data)
+    })
+
+}
+
+function hideQuestions(preOrNext) {
+    var elements = $('#queForm .sideContainer');
+    console.log(elements.length)
+    var displayIndex = -1
+    var hideIndex = -1
+    if (preOrNext == 'next') {
+        for (let i = 0; i < elements.length; i++) {
+            if (elements[i].className.indexOf('hide') > 0 && displayIndex > 0) {
+
+                if (i < hideIndex + 2) {
+                    $(elements[i]).removeClass("hide")
+                }
+                if (hideIndex > elements.length - 4) {
+                    $('#btnNext').addClass('hide')
+                    $('#submitQABtn').removeClass('hide')
+                }
+            } else if (elements[i].className.indexOf('hide') < 0) {
+                if (i >= elements.length - 2) {
+                    $('#submitQABtn').removeClass('hide')
+                    continue;
+                } else {
+                    $('#btnPrev').removeClass('hide')
+
+                }
+                if (hideIndex < displayIndex + 2) {
+                    hideIndex = displayIndex + 2
+                    displayIndex = i;
+                }
+
+                $(elements[i]).addClass("hide")
+            }
+        }
+
+    } else {
+        for (let i = elements.length - 1; i >= 0; i--) {
+            if (elements[i].className.indexOf('hide') > 0 && displayIndex > 0) {
+
+                if (i > hideIndex - 2) {
+                    $(elements[i]).removeClass("hide")
+                }
+                if (hideIndex <= 1) {
+                    $('#submitQABtn').addClass('hide')
+                    $('#btnPrev').addClass('hide')
+                    continue;
+                }
+                $('#btnNext').removeClass('hide')
+
+            } else if (elements[i].className.indexOf('hide') < 0) {
+
+                if (hideIndex > displayIndex - 2) {
+                    displayIndex = i;
+                    hideIndex = displayIndex - 2
+                }
+                $('#submitQABtn').addClass('hide')
+
+                $(elements[i]).addClass("hide")
+            }
+        }
+    }
+
+}
+
+
+function preferStudents() {
+    var idArr = []
+    $('input:checkbox').each(function () {
+        if ($(this).prop('checked') == true) {
+            idArr.push($(this).val());
+        }
+    });
+    //todo add to mentor prefer student table.
+    alert(idArr)
 }
 
 async function addNewMentor() {
@@ -592,6 +756,7 @@ async function addNewMentor() {
     })
 }
 
+
 function checkUserStatus(id) {
     $.ajax({
         url: "/student/getStudentById",
@@ -600,10 +765,64 @@ function checkUserStatus(id) {
         data: {"id": id}
     }).then(data => {
         if (data.data == 2) {
-            $.alert("Looks like you haven't completed our survey, before you use our system you must complete all the them")
+            $.alert("Looks like you haven't completed our survey, before you use our system you must complete all of them")
         }
     })
 }
+
+function checkCompanyProject(companyId) {
+    $.ajax({
+        url: "/project/getProjectsByCompanyId",
+        type: "get",
+        dataType: "JSON",
+        data: {"comId": companyId}
+    }).then(data => {
+       alert(data.data)
+    })
+}
+function checkStudentProfile(studentId) {
+    $.ajax({
+        url: "/studentQuestions/getByStudentId",
+        type: "get",
+        dataType: "JSON",
+        data: {"studentId": studentId}
+    }).then(data => {
+        if (data.code = 'ok') {
+            let questionData = data.data;
+            console.log(questionData)
+            var td = ''
+            questionData.forEach(question => {
+                td += '<tr><td>'
+                console.log(question.question)
+                var que = JSON.parse(question.question)
+                td += que.title + "</td><td>"
+                if (que.type == "1") {
+                    td += que.option[question.question_answer] + "</td>"
+                } else {
+                    td += question.question_answer + "</td>"
+                }
+                td += "</tr>"
+            })
+            $.confirm({
+                boxWidth: '1200px',
+                useBootstrap: false,
+                title: 'Survey Answers',
+                content: '' +
+                    ' <table id="myTableStudent" class="display">' +
+                    '      <thead>' +
+                    '        <tr>' +
+                    '         <th>Question</th>' +
+                    '         <th>Answer</th>' +
+                    '        </tr>' +
+                    '      </thead>' +
+                    '      <tbody>' + td + '</tbody>' +
+                    ' </table>'
+            })
+
+        }
+    })
+}
+
 /**
  *  a function to initial a Datatable by passing
  *      formId:     the pre-required empty <table id="formId" > and with initialed <th>(s)
@@ -614,12 +833,14 @@ function checkUserStatus(id) {
  *
  *      flag:       indicate if a set of button is required
  *
+ *   checkboxFlag :   indicate if a checkbox is needed in front of each row is required
+ *
  *      target:     if button required then target is where the but located in the table.
  *
  *      btns:       an array of object that represent the button name and function to be called on click the button
  *
  **/
-function renderDataTable(formId, url, columns, flag, target, btns) {
+function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns) {
     setTimeout(3000);
     $.ajax({
             url: url,
@@ -628,18 +849,37 @@ function renderDataTable(formId, url, columns, flag, target, btns) {
             success: function (data) {
                 var columnDefs = []
                 if (flag) {
-                    columnDefs = [
+                    columnDefs.push(
                         {
-                            "targets": target,
                             "render": function (data, type, meta, row) {
                                 var btn = ""
+                                console.log(data)
+                                console.log(meta)
+                                console.log(row)
                                 btns.forEach(button => {
-                                    btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='"+ button['btnName']+"'> "
+                                    console.log(button.btnName)
+                                    if(button.btnName =='Edit' && meta.if_current_mentor != '1'){
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                    }else {
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
+                                    }
                                 })
                                 return btn
-                            }
+                            },
+                            "targets": target
                         }
-                    ]
+                    )
+                }
+                if (checkboxFlag) {
+                    columnDefs.push(
+                        {
+                            "render": function (data, type, meta, row) {
+                                var btn = "<div align='center'><input type=\"checkbox\" name=\"ckb-jobid\" value=" + (meta.id) + "></div>"
+                                return btn;
+                            },
+                            "targets": 0
+                        }
+                    )
                 }
                 if ($.fn.dataTable.isDataTable(formId)) {
                     console.log("dataTable1")
@@ -649,6 +889,10 @@ function renderDataTable(formId, url, columns, flag, target, btns) {
                 } else {
                     $(formId).dataTable({
                         "bAutoWidth": true,
+                        select: {
+                            style: 'os',
+                            selector: 'td:first-child'
+                        },
                         "dataSrc": "",
                         "order": [[0, "desc"]],  // HERE !! ERROR TRIGGER!
                         "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
@@ -730,6 +974,105 @@ function addOrUpdateUser(type) {
             sendRequest('/addOrUpdateMember', formData, "POST", "form#trainerRegiForm");
         }
     }
+}
+
+function moveUp(button) {
+
+    var row = $(button).closest('tr');
+    var previousRow = row.prev('tr');
+
+    if (previousRow.length !== 0) {
+        previousRow.before(row);
+    }
+
+
+}
+
+function moveDown(button) {
+
+    var row = $(button).closest('tr');
+    var after = row.next('tr');
+
+    if (after.length !== 0) {
+        after.after(row);
+    }
+
+
+}
+
+function addPreferredProject() {
+    var idArr = []
+    $('input:checkbox').each(function () {
+        debugger
+        console.log($(this))
+        if ($(this).prop('checked') == true) {
+            idArr.push($(this).val());
+        }
+    });
+    if (idArr.length < 3) {
+        $.alert("At least three project need to chosen before your rank them")
+        return;
+    }
+
+    //todo add to mentor prefer student table.
+    $.ajax({
+        url: "/project/getProjectByIds?idArr=" + idArr,
+        type: "GET",
+        data: idArr,
+    }).then(data => {
+        console.log(data);
+        var options = ""
+        for (let i = 0; i < data.data.length; i++) {
+            let item = data.data[i];
+            console.log(item)
+            options += "<tr>" +
+                "<td class='hide' name='proId' value='" + item['id'] + "'>" + item['id'] + "</td>" +
+                "<td>" + item['project_title'] + "</td>" +
+                "<td>" + item['type_name'] + "</td>" +
+                "<td>" + item['company_name'] + "</td>" +
+                "<td><button onclick='moveUp(this)' >Up</button></td>" +
+                "<td><button onclick='moveDown(this)'>Down</button></td></tr>"
+        }
+
+        console.log(options)
+        $.confirm({
+            theme: 'dark',
+            boxWidth: '1000px',
+            title: 'Rank your preference',
+            content: '' +
+                ' <table id="tablePreProject" class="display">\n' +
+                '        <thead>\n' +
+                '          <tr class="odd">\n' +
+                '           <th>Project Name</th>\n' +
+                '           <th>Project Type</th>\n' +
+                '           <th>Company</th>\n' +
+                '          </tr>\n' +
+                '        </thead>\n' +
+                '        <tbody>' + options +
+                '        </tbody>' +
+                ' </table>',
+
+            buttons: {
+                Save: async function () {
+                    var rankedProjvalues = [];
+                    $('#tablePreProject [name="proId"]').each(function (eachh) {
+                        console.log(eachh)
+                        console.log(this.innerHTML)
+                        rankedProjvalues.push(parseInt(this.innerHTML));
+                    });
+                    console.log(rankedProjvalues)
+                    ajaxCall("/studentProject/add", "get", {
+                        "pidList": rankedProjvalues
+                    })
+
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
 }
 
 function serializeData(form, include, exclude) {

@@ -22,9 +22,54 @@ def update(project_id, student_id, rank):
     return result;
 
 
-def delete(id):
-    sqlCommand = """DELETE FROM student_project WHERE project_id = '%s' and student_id = '%s'""" % id
-     
+def delete(sid,pid):
+    projectIds = ','.join(pid)
+    sqlCommand = """DELETE FROM student_project sp where sp.student_id= '%s' and sp.project_id in (%s)""" % (sid,projectIds)
+
     result = db.DBOperator_update(sqlCommand)
     return result;
 
+
+def batchInsert(id, formDatas):
+    sqlCommand = """INSERT INTO student_project (student_id, project_id, `rank`) VALUES"""
+    for idx, val in enumerate(formDatas):
+        sqlCommand += """  ('%s', '%s', '%s') ,""" % (id, val,idx)
+    sqlCommand = sqlCommand[:-1]
+
+    print(sqlCommand)
+    result = db.DBOperatorInsertedId(sqlCommand)
+    return result
+
+
+
+def getAllByStudentIdAndProjectId(student_id,project_id):
+    projectIds =','.join(project_id)
+    sqlCommand = """SELECT project_id FROM student_project sp where sp.student_id= '%s' and sp.project_id in (%s) """%(student_id,projectIds)
+
+    result = db.DBOperator(sqlCommand)
+    return result;
+
+
+def preferredProject(id):
+    sqlCommand = f"""SELECT
+                        p.id,
+                        p.project_title,
+                        CONCAT(u.first_name ,' ',u.last_name ) as 'mentor',
+                        p.description,
+                        p.number_of_student,
+                        pt.type_name,
+                        DATE_FORMAT( p.start_date, '%m %d %Y' ) AS start_date,
+                        DATE_FORMAT( p.end_date, '%m %d %Y' ) AS end_date,
+                        p.remain_number_of_student,
+                        co.company_name  
+                    FROM 
+                        student_project sp 
+                        LEFT JOIN project p ON sp.project_id = p.id 
+                        INNER JOIN mentor ON p.mentor_id = mentor.mentor_id 
+                        LEFT JOIN company co ON co.id = mentor.company_id 
+                        LEFT JOIN project_type pt ON pt.type_id = p.project_type 
+                        left JOIN user u on mentor.mentor_id = u.user_id 
+                    WHERE sp.student_id = {id}"""
+    print(sqlCommand)
+    result = db.DBOperator(sqlCommand)
+    return result

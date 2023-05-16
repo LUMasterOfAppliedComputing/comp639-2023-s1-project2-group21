@@ -46,7 +46,12 @@ def addOrUpdate():
 
 @mentorRoute.route('/mentor/project')
 def mentorproject():
-    projects = ProjectQueries.getAll()
+    role = session['role']
+    if role == 1:
+        mentor=MentorQueries.getMentorinfo(session['user_id'])
+        projects = ProjectQueries.getProjectAll(None,mentor[0]['company_id'],session['user_id'])
+    else:
+        projects = ProjectQueries.getProjectAll(None,None,None)
     return render_template("mentor/project.html", projects=projects)
 
 @mentorRoute.route('/mentor/profile')
@@ -77,6 +82,15 @@ def Update():
     return render_template("mentor/mentorprofile.html", profile=profile)
 
 
+@mentorRoute.route('/mentor/getProjectAllJson')
+def getProjectAllJson():
+    role = session['role']
+    if role == 1:
+        mentor = MentorQueries.getMentorinfo(session['user_id'])
+        projects = ProjectQueries.getProjectAll(None, mentor[0]['company_id'],session['user_id'])
+    else:
+        projects = ProjectQueries.getProjectAll(None, None,None)
+    return make_response(jsonify(projects), 200)
 
 
 

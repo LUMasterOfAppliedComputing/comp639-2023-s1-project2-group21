@@ -112,42 +112,46 @@
                         </div>
                     {% endif %}
                     {% if session['role'] == 2 %}
-                    <!--student role-->
-        
+                        <!--student role-->
+
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
                                     <a class="nav-link" href="/register">My profile</a>
                                 </li>
-                                  <li class="nav-item active">
+                                <li class="nav-item active">
                                     <a class="nav-link" href="/questionRoute/getAll">Placement Survey</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="/company/getAll">Companies</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/project">Projects</a>
+                                    <a class="nav-link" href="/student/project">Projects</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/studentProject/getPreferredProject">Preferred Projects</a>
                                 </li>
                             </ul>
                         </div>
                     {% endif %}
                     {% if session['role'] == 0 %}
-                    <!--staff role-->
+                        <!--staff role-->
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
                                     <a class="nav-link" href="/student/getAll">Students</a>
                                 </li>
-                                 <li class="nav-item active">
+                                <li class="nav-item active">
                                     <a class="nav-link" href="/mentor/getAll">Mentors</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="/company/getAll">Companies</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/project">Projects</a>
+                                    <a class="nav-link" href="/mentor/project">View Projects</a>
                                 </li>
+
 
                                 <li class="nav-item">
                                     <a class="nav-link" href="/contact">Matching Process</a>
@@ -156,41 +160,31 @@
                         </div>
                     {% endif %}
                     {% if session['role'] == 1 %}
-                       <!--mentor role-->
-   
+                        <!--mentor role-->
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mx-lg-auto ml-auto">
                                 <li class="nav-item active">
-                                    <a class="nav-link" href="/">View Profile </a>
+                                    <a class="nav-link" href="/mentor/profile">View Profile </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/companyprofile">companyprofile</a>
-                                    <a class="nav-link" href="/student/getAll">View Students</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/about">Student information</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/project">Preferred Student Selection</a>
-                                    <a class="nav-link" href="/mentor/profile">My Profile </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/mentor/company">View Company</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/mentor/student">View Students</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/">View Placement</a>
-                                    <a class="nav-link" href="/student/getAll">View Students</a>
+                                    <a class="nav-link" href="/companyprofile">Company Profile</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="/mentor/project">Projects</a>
                                 </li>
-
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/contact">Contact</a>
+                                    <a class="nav-link" href="/student/getAll">Students</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/project">Preferred Student Selection</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/mentor/company">All Companies</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/">View Placement</a>
+                                </li>
+
                             </ul>
                         </div>
                     {% endif %}

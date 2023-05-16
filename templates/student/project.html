@@ -1,0 +1,125 @@
+<!-- Name: Eric Li -->
+<!-- Use Bootstrap nav class to give the nav bar a modern view -->
+<!-- Added a project page for role mentor -->
+
+{% extends "mentor/mentorbase.html" %}
+{% block content %}
+
+
+    <body>
+    <!-- portfolio -->
+
+
+    <button id="myButton" onclick="sendDataToBackend()">View My Wish List</button>
+
+    <script>
+        function sendDataToBackend() {
+            var viewwishlist = "some_data"; // 用于传递给后端的数据
+
+            // 创建一个 FormData 对象，用于将数据发送到后端
+            var formData = new FormData();
+            formData.append("viewlist", viewwishlist);
+
+            // 创建一个 XMLHttpRequest 对象
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/student/project"); // 后端 Python 函数的路径
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    console.log("成功调用后端 Python 函数");
+                    console.log(xhr.responseText); // 可选，处理来自后端的响应数据
+                } else {
+                    console.log("调用后端 Python 函数时出错");
+                    console.log(xhr.status); // 打印错误状态码
+                }
+            };
+            xhr.onerror = function () {
+                console.log("请求发生错误");
+            };
+            xhr.send(formData);
+        }
+    </script>
+
+    <section class="w3-gallery">
+        <div class="porfolio-inf py-5">
+            <div class="container pt-lg-5 pb-lg-4">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">#</th>
+                        <th scope="col">Project Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">number of students</th>
+                        <th scope="col">project type</th>
+                        <th scope="col">strat date</th>
+                        <th scope="col">ending date</th>
+                        <th scope="col">remain number of students</th>
+                        <th scope="col">company name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for project in projects %}
+                        <tr>
+                            <td><input type="checkbox" name="ckb-projId" value="{{ project['id'] }}"></td>
+                            <th scope="row">project {{ project['id'] }}</th>
+                            <td>{{ project['project_title'] }}</td>
+                            <td>{{ project['description'] }}</td>
+                            <td>{{ project['number_of_student'] }}</td>
+                            <td>{{ project['type_name'] }}</td>
+                            <td>{{ project['start_date'] }}</td>
+                            <td>{{ project['end_date'] }}</td>
+                            <td>{{ project['remain_number_of_student'] }}</td>
+                            <td>{{ project['company_id'] }}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" onclick="toggleWishlist(['id'])"> Add To
+                                    Wish List
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+                <button class="btn btn-primary" onclick="addPreferredProject()">Add preferred</button>
+            </div>
+        </div>
+    </section>
+
+
+    <script>
+        var wishlist = [0, 1]; // 示例的心愿单状态数组
+
+        function toggleWishlist(rowIndex) {
+            if (wishlist[rowIndex] === 0) {
+                wishlist[rowIndex] = 1;
+                alert("Added to Wishlist");
+                document.getElementById("myTable").rows[rowIndex].cells[1].innerHTML = '<button onclick="toggleWishlist(' + rowIndex + ')">移除心愿单</button>';
+            } else {
+                wishlist[rowIndex] = 0;
+                alert("Removed from Wishlist");
+                document.getElementById("myTable").rows[rowIndex].cells[1].innerHTML = '<button onclick="toggleWishlist(' + rowIndex + ')">加入心愿单</button>';
+            }
+        }
+    </script>
+
+
+    <!-- //footer -->
+    </body>
+
+
+
+    <script src="assets/js/jquery-3.3.1.min.js"></script>
+    <!-- disable body scroll which navbar is in active -->
+    <script>
+        $(function () {
+            $('.navbar-toggler').click(function () {
+                $('body').toggleClass('noscroll');
+            })
+        });
+    </script>
+    <!-- disable body scroll which navbar is in active -->
+    <!-- //jQuery-Photo-filter-lightbox-portfolio-plugin -->
+    <script src="assets/js/bootstrap.min.js"></script>
+
+{% endblock %}
+

@@ -1,85 +1,29 @@
-
-{% extends "mentor/mentorbase.html" %}
+{% extends "base.html" %}
 {% block content %}
-<style>
-form {
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 1px;
-    font-weight: bold;
-  }
-  
-  input[type="text"] {
-    display: block;
-    width: 100%;
-    padding: 5px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 5px;
-  }
-  
-  input[type="submit"] {
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 10px 10px;
-    transition: background-color 0.2s;
-  }
-  
-  input[type="submit"]:hover {
-    background-color: #0069d9;
-  }
- 
-  .button-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
 
-  .button {
-    background-color: #dc3545;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 10px 10px;
-    transition: background-color 0.2s;
-    margin-right: 10px;
-  }
-  
-  .button:hover {
-    background-color: #c82333;
-  }
-
-</style>
-<div style="height: 80px;"></div>
-<form action="/updatecompanyprofile" method="POST">
-    <input type="hidden" name="companyid" value="{{company[0]['id']}}">
-    <label for="companyname">Company name:</label><br>
-    <input type="text" id="cname" name="company_name" value="{{company[0]['company_name']}}"><br>
-    <label for="region">Region:</label><br>
-    <input type="text" id="region" name="region" value="{{company[0]['region']}}"><br>
-    <label for="city">City:</label><br>
-    <input type="text" id="city" name="city" value="{{company[0]['city']}}"><br>
-    <label for="street">Street:</label><br>
-    <input type="text" id="street" name="street" value="{{company[0]['street']}}"><br>
-    <label for="website">Website:</label><br>
-    <input type="text" id="webname" name="website" value="{{company[0]['website']}}"><br><br>
-    <input type="submit" value="Update">
-</form>
-
-<li >
-    <button class="button" onclick="window.history.back()">Go back</button>
-  </li>
-
+    <!-- //portfolio -->
+    <section class="w3l-apply-6">
+        <!-- /apply-6-->
+        <div class="apply-info py-5">
+            <div class="containerSlim py-lg-5">
+                <div class="apply-grids-info">
+                    <form action="/updatecompanyprofile" method="POST">
+                        <input type="hidden" name="companyid" value="{{ company[0]['id'] }}">
+                        <label for="companyname">Company name:</label><br>
+                        <input type="text" id="cname" name="company_name" value="{{ company[0]['company_name'] }}"><br>
+                        <label for="region">Region:</label><br>
+                        <input type="text" id="region" name="region" value="{{ company[0]['region'] }}"><br>
+                        <label for="city">City:</label><br>
+                        <input type="text" id="city" name="city" value="{{ company[0]['city'] }}"><br>
+                        <label for="street">Street:</label><br>
+                        <input type="text" id="street" name="street" value="{{ company[0]['street'] }}"><br>
+                        <label for="website">Website:</label><br>
+                        <input type="text" id="webname" name="website" value="{{ company[0]['website'] }}"><br><br>
+                        <input type="submit" value="Update">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 
 {% endblock %}
