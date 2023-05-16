@@ -24,7 +24,7 @@
     </div>
 
     <script>
-        var flag = {% if session['role'] ==1 %} true {% else %} false{% endif %}
+        var ulr = {% if pid %} '/student/getAllJson?pid='+{{ pid }} {% else %}'/student/getAllJson'{% endif %}
         var btn = [
             {
                 "btnName": "View Profile",
@@ -32,7 +32,7 @@
             }
         ];
         $(function () {
-            renderDataTable('#myTableStudent', '/student/getAllJson', [
+            renderDataTable('#myTableStudent',ulr, [
                 {"data": null},
                 {"data": "first_name"},
                 {"data": "last_name"},

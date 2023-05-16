@@ -13,26 +13,39 @@
                                 <div class="form-group mb-4">
                                     {% set quesionJson = qu.question %}
                                     <div class="form-group">
-                                        <label>{{ loop.index  }}.{{ quesionJson.title }}</label>
+                                        <label>{{ loop.index }}.{{ quesionJson.title }}</label>
                                         {% if quesionJson.type=="0" %}
-                                        <input type="text" id="{{ qu.id }}"
-                                               name="que_{{ qu.id }}" class="form-control question">
+                                            <input type="text" id="{{ qu.id }}"
+                                                   name="que_{{ qu.id }}" class="form-control question"
+                                                   value="{% if qu.question_answer %}{{ qu.question_answer }}{% endif %}">
                                         {% elif quesionJson.type =="1" %}
-                                        <select name="que_{{ qu.id }}">
-                                            {% for foo in quesionJson.option %}
-                                                <option value="{{ loop.index0 }}">{{ foo }}</option>
-                                            {% endfor %}
-                                        </select>
+                                            <select name="que_{{ qu.id }}">
+                                                {% for foo in quesionJson.option %}
+                                                    {% if qu.question_answer %}
+                                                        <option value="{{ loop.index0 }}"
+                                                                {% if loop.index0 == qu.question_answer| int   %}
+                                                                selected {% endif %}> {{ qu.question_answer }} {{ foo }}</option>
+                                                    {% else %}
+                                                        <option value="{{ loop.index0 }}">{{ foo }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         {% elif quesionJson.type =="2" %}
-                                        {% for foo in quesionJson.option %}
-                                            <span style="white-space: nowrap; color: white">
+                                            {% for foo in quesionJson.option %}
+                                                <span style="white-space: nowrap; color: white">
                                             <input type="checkbox" id="{{ qu.id }}"
-                                                   name="que_{{ qu.id }}" value="{{ loop.index0 }}" >{{ foo }}</span>
+                                                    {% set my_array = qu.question_answer.split(',') %}
+                                                    {% set int_list = my_array | map('int') %}
 
-                                        {% endfor %}
+                                                    {% if loop.index0 in int_list %} checked {% endif %}
+                                                   name="que_{{ qu.id }}"
+                                                   value="{{ loop.index0 }}">{{ foo }}</span>
+
+                                            {% endfor %}
                                         {% elif quesionJson.type=="3" %}
-                                            <textarea  id="{{ qu.id }}"
-                                                       name="que_{{ qu.id }}" class="form-control" class="question" style="height: 200px"></textarea>
+                                            <textarea id="{{ qu.id }}"
+                                                      name="que_{{ qu.id }}" class="form-control" class="question"
+                                                      style="height: 200px">{% if qu.question_answer %}{{ qu.question_answer }}{% endif %}</textarea>
                                         {% endif %}
                                     </div>
                                 </div>
