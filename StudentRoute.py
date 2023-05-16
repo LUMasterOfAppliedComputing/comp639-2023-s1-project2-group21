@@ -2,21 +2,32 @@ import functools
 
 from flask import Blueprint, render_template, make_response, jsonify, request, session
 
-from queries import StudentQueries
+from queries import StudentQueries, ProjectQueries,StudentWishlistQueries
 
 studentRoute = Blueprint('StudentRoute', __name__)
 
 
 @studentRoute.route('/student/getAll')
 def get_users():
-    students = StudentQueries.getAll()
-    return render_template("students.html", students=students)
+    pid = request.args.get("pid")
+    return render_template("students.html",pid=pid)
 
 
 @studentRoute.route('/student/getAllJson')
 def get_students():
-    students = StudentQueries.getAll()
+    pid = request.args.get("pid")
+    if pid:
+        students = StudentQueries.getAllRanked(pid)
+    else:
+        students = StudentQueries.getAll()
     return make_response(jsonify(students), 200)
+
+@studentRoute.route('/student/getAllRanked')
+def get_students_ranked():
+    pid = request.args.get("pid")
+    students = StudentQueries.getAllRanked(pid)
+    return make_response(jsonify(students), 200)
+
 
 @studentRoute.route('/student/getStudentById')
 def getStudentById():
@@ -47,4 +58,12 @@ def checkStudentProfileAndSurvey(func):
 
     return wrapper
 
-
+@studentRoute.route('/student/project')
+def studentproject():
+    id=session['user_id']
+    viewwishlist=request.form.get('viewwishlist')
+    if viewwishlist != None:
+        projects = StudentWishlistQueries.showwishlist(id)
+    else:
+        projects = ProjectQueries.getProjectAll(None,None,None)
+    return render_template("student/project.html", projects=projects)

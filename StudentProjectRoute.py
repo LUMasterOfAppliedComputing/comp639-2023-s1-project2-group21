@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, make_response, jsonify
 
 from queries import StudentProjectQueries
 
@@ -20,8 +20,16 @@ def addPreferProject():
         StudentProjectQueries.delete(session['user_id'],values)
 
     StudentProjectQueries.batchInsert(session['user_id'], pidList)
+    data = {"message": "ok", "code": "ok"}
+    return make_response(jsonify(data), 200)
 
 
+
+@studentProjectRoute.route('/studentProject/getPreferredProject')
+def getPreferredProject():
+    projects = StudentProjectQueries.preferredProject(session['user_id'])
+    data = {"message": "ok", "code": "ok", "data": projects}
+    return make_response(jsonify(data), 200)
 
 
 def remove_elements(a, b):

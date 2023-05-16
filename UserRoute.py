@@ -195,6 +195,8 @@ def logOut():
     session['name'] = None
     session['role'] = None
     session['email'] = None
+    session.clear()
+
     return render_template('student/studentbase.html')
 
 @userRoute.route('/users/checkPassword')
