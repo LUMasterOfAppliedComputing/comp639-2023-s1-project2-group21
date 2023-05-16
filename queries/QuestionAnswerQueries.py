@@ -39,9 +39,9 @@ def update(student_id, question_id, question_answer):
     return result;
 
 
-def delete(student_id, question_id):
-    sqlCommand = """DELETE FROM question_answer WHERE student_id = '%s' and question_id = '%s'  """ % (
-        student_id, question_id)
+def delete(student_id):
+    sqlCommand = """DELETE FROM question_answer WHERE student_id = '%s'""" % (
+        student_id)
 
     result = db.DBOperator_update(sqlCommand)
     return result;
@@ -55,5 +55,5 @@ def batchInsert(id, formDatas):
     sqlCommand = sqlCommand[:-1]
 
     print(sqlCommand)
-    result = db.DBOperator(sqlCommand)
+    result = db.DBOperatorInsertedId(sqlCommand)
     return result

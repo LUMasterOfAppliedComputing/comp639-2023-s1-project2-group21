@@ -84,14 +84,14 @@
            {% if session['role'] ==0 %}
              btn = [{
                 "btnName": "Preferred Students",
-                "func": "alert"
+                "func": "checkPreferredStudent"
             }
             ]
         {% endif %}
         {% if session['role'] ==1 %}
              btn = [{
                 "btnName": "Preferred Students",
-                "func": "alert"
+                "func": "checkPreferredStudent"
             },
                 {
                 "btnName": "Edit",

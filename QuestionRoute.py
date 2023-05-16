@@ -1,6 +1,6 @@
 import json
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session
 
 from queries import QuestionQueries
 
@@ -9,7 +9,8 @@ questionRoute = Blueprint('questionRoute', __name__)
 
 @questionRoute.route('/questionRoute/getAll')
 def get_users():
-    questions = QuestionQueries.getAll()
+    studentId = session['user_id']
+    questions = QuestionQueries.getAll(studentId)
     for que in questions:
         str = que['question'].replace('\r', '').replace('\n', '')
         strjson = json.loads(str)

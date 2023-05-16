@@ -4,6 +4,94 @@ jQuery.validator.setDefaults({
 });
 
 
+/**
+ *  a function to initial a Datatable by passing
+ *      formId:     the pre-required empty <table id="formId" > and with initialed <th>(s)
+ *
+ *      URL:        the back-end route as datasource to load the data of a datatable
+ *
+ *      columns:    the columns where each column should be put
+ *
+ *      flag:       indicate if a set of button is required
+ *
+ *   checkboxFlag :   indicate if a checkbox is needed in front of each row is required
+ *
+ *      target:     if button required then target is where the but located in the table.
+ *
+ *      btns:       an array of object that represent the button name and function to be called on click the button
+ *
+ **/
+function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns) {
+    setTimeout(1000);
+    debugger
+    $.ajax({
+            url: url,
+            type: "get",
+            dataType: "JSON",
+            success: function (data) {
+                var columnDefs = []
+                if (flag) {
+                    columnDefs.push(
+                        {
+                            "render": function (data, type, meta, row) {
+                                var btn = ""
+                                console.log(data)
+                                console.log(meta)
+                                console.log(row)
+                                debugger
+                                btns.forEach(button => {
+                                    console.log(button.btnName)
+                                    if (button.btnName == 'Edit' && meta.if_current_mentor != '1') {
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                    } else {
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
+                                    }
+                                })
+                                return btn
+                            },
+                            "targets": target
+                        }
+                    )
+                }
+                if (checkboxFlag) {
+                    columnDefs.push(
+                        {
+                            "render": function (data, type, meta, row) {
+                                var btn = "<div align='center'><input type=\"checkbox\" name=\"ckb-jobid\" value=" + (meta.id) + "></div>"
+                                return btn;
+                            },
+                            "targets": 0
+                        }
+                    )
+                }
+                if ($.fn.dataTable.isDataTable(formId)) {
+                    console.log("dataTable1")
+                    let dataTable1 = $(formId).dataTable();
+                    dataTable1.fnClearTable()
+                    dataTable1.fnAddData(data, true)
+                } else {
+                    $(formId).dataTable({
+                        "bAutoWidth": true,
+                        select: {
+                            style: 'os',
+                            selector: 'td:first-child'
+                        },
+                        "dataSrc": "",
+                        "order": [[0, "desc"]],  // HERE !! ERROR TRIGGER!
+                        "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
+                        "data": data,
+                        "columns": columns,
+                        "columnDefs": columnDefs
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+
+            }
+        }
+    );
+}
+
 $(function () {
     $("#noti").on("click", function (func) {
         allMembers = []
@@ -293,7 +381,20 @@ function addMentor(fromdata) {
     }).then(data => {
         if (data.code == 'ok') {
             $.alert("Mentor has been added successfully")
-
+            var btn = [
+                {
+                    "btnName": "edit",
+                    "func": "alert"
+                }, {
+                    "btnName": "delete",
+                    "func": "alert"
+                }];
+            renderDataTable("#myTableOne", "/mentor/getAllJson", [
+                {"data": "first_name"},
+                {"data": "phone"},
+                {"data": "email"},
+                {"data": "company_name"},
+            ], true, 3, btn)
         }
     })
 
@@ -597,7 +698,9 @@ function submitQA() {
         dateType: 'json',
         data: data2
     }).then(data => {
-        console.log(data)
+        if(data.code='ok'){
+            $.alert("your survey has been updated successfully")
+        }
     })
 
 }
@@ -731,20 +834,6 @@ async function addNewMentor() {
                         return false;
                     } else {
                         addMentor(formData)
-                        var btn = [
-                            {
-                                "btnName": "edit",
-                                "func": "alert"
-                            }, {
-                                "btnName": "delete",
-                                "func": "alert"
-                            }];
-                        renderDataTable("#myTable", "/mentor/getAllJson", [
-                            {"data": "first_name"},
-                            {"data": "phone"},
-                            {"data": "email"},
-                            {"data": "company_name"},
-                        ], true, 3, btn)
                     }
 
                 },
@@ -777,9 +866,10 @@ function checkCompanyProject(companyId) {
         dataType: "JSON",
         data: {"comId": companyId}
     }).then(data => {
-       alert(data.data)
+        alert(data.data)
     })
 }
+
 function checkStudentProfile(studentId) {
     $.ajax({
         url: "/studentQuestions/getByStudentId",
@@ -821,92 +911,6 @@ function checkStudentProfile(studentId) {
 
         }
     })
-}
-
-/**
- *  a function to initial a Datatable by passing
- *      formId:     the pre-required empty <table id="formId" > and with initialed <th>(s)
- *
- *      URL:        the back-end route as datasource to load the data of a datatable
- *
- *      columns:    the columns where each column should be put
- *
- *      flag:       indicate if a set of button is required
- *
- *   checkboxFlag :   indicate if a checkbox is needed in front of each row is required
- *
- *      target:     if button required then target is where the but located in the table.
- *
- *      btns:       an array of object that represent the button name and function to be called on click the button
- *
- **/
-function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns) {
-    setTimeout(3000);
-    $.ajax({
-            url: url,
-            type: "get",
-            dataType: "JSON",
-            success: function (data) {
-                var columnDefs = []
-                if (flag) {
-                    columnDefs.push(
-                        {
-                            "render": function (data, type, meta, row) {
-                                var btn = ""
-                                console.log(data)
-                                console.log(meta)
-                                console.log(row)
-                                btns.forEach(button => {
-                                    console.log(button.btnName)
-                                    if(button.btnName =='Edit' && meta.if_current_mentor != '1'){
-                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
-                                    }else {
-                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
-                                    }
-                                })
-                                return btn
-                            },
-                            "targets": target
-                        }
-                    )
-                }
-                if (checkboxFlag) {
-                    columnDefs.push(
-                        {
-                            "render": function (data, type, meta, row) {
-                                var btn = "<div align='center'><input type=\"checkbox\" name=\"ckb-jobid\" value=" + (meta.id) + "></div>"
-                                return btn;
-                            },
-                            "targets": 0
-                        }
-                    )
-                }
-                if ($.fn.dataTable.isDataTable(formId)) {
-                    console.log("dataTable1")
-                    let dataTable1 = $(formId).dataTable();
-                    dataTable1.fnClearTable()
-                    dataTable1.fnAddData(data, true)
-                } else {
-                    $(formId).dataTable({
-                        "bAutoWidth": true,
-                        select: {
-                            style: 'os',
-                            selector: 'td:first-child'
-                        },
-                        "dataSrc": "",
-                        "order": [[0, "desc"]],  // HERE !! ERROR TRIGGER!
-                        "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
-                        "data": data,
-                        "columns": columns,
-                        "columnDefs": columnDefs
-                    });
-                }
-            },
-            error: function (xhr, status, error) {
-
-            }
-        }
-    );
 }
 
 
@@ -1000,6 +1004,10 @@ function moveDown(button) {
 
 }
 
+function checkPreferredStudent(pid) {
+    location.href = '/student/getAll?pid=' + pid
+}
+
 function addPreferredProject() {
     var idArr = []
     $('input:checkbox').each(function () {
@@ -1037,15 +1045,16 @@ function addPreferredProject() {
         console.log(options)
         $.confirm({
             theme: 'dark',
-            boxWidth: '1000px',
+            boxWidth: '900px',
+            useBootstrap: false,
             title: 'Rank your preference',
             content: '' +
                 ' <table id="tablePreProject" class="display">\n' +
                 '        <thead>\n' +
                 '          <tr class="odd">\n' +
-                '           <th>Project Name</th>\n' +
-                '           <th>Project Type</th>\n' +
-                '           <th>Company</th>\n' +
+                '           <th width="33%">Project Name</th>\n' +
+                '           <th  width="33%">Project Type</th>\n' +
+                '           <th  width="33%">Company</th>\n' +
                 '          </tr>\n' +
                 '        </thead>\n' +
                 '        <tbody>' + options +
@@ -1061,9 +1070,15 @@ function addPreferredProject() {
                         rankedProjvalues.push(parseInt(this.innerHTML));
                     });
                     console.log(rankedProjvalues)
-                    ajaxCall("/studentProject/add", "get", {
+                    const result = ajaxCall("/studentProject/add", "get", {
                         "pidList": rankedProjvalues
                     })
+                    if (result.code == 'error') {
+                        $.alert('Something wrong, please try again later');
+                        return false;
+                    } else {
+                        $.alert('Your project preferences has been updated successfully');
+                    }
 
 
                 },
@@ -1127,10 +1142,6 @@ async function resetPassword(id) {
                     var password = this.$content.find('.password').val();
                     var conpassword = this.$content.find('.conpassword').val();
                     console.log(password, oldpassword, conpassword)
-                    // if (!email) {
-                    //     $.alert('provide a valid email');
-                    //     return false;
-                    // }
                     if (password != conpassword) {
                         $.alert('Please input the same password');
                         return false;

@@ -2,7 +2,7 @@ import json
 
 from flask import Blueprint, render_template, request, make_response, jsonify, session
 
-from queries import QuestionAnswerQueries
+from queries import QuestionAnswerQueries, StudentQueries
 
 studentQuestionsRoute = Blueprint('studentQuestionsRoute', __name__)
 
@@ -23,24 +23,28 @@ def getByStudentId():
 
 @studentQuestionsRoute.route('/studentQuestions/addQuestionAnswer',methods=['post'])
 def addQuestionAnswer():
-    id = 166
+    uId = session['user_id']
     que_7 = request.form.getlist('que_7[]')
     otherQues = request.form
     que_8 = request.form.getlist('que_8[]')
     newDic = merge_dict_with_list(otherQues,que_7,"que_7[]")
     newDic = merge_dict_with_list(newDic,que_8,"que_8[]")
 
-    questionAnswers = QuestionAnswerQueries.batchInsert(id,newDic)
+
+    QuestionAnswerQueries.delete(uId)
+    questionAnswers = QuestionAnswerQueries.batchInsert(uId,newDic)
+    StudentQueries.updatePlacementStatus(uId,0)
+
     data = {"message": "ok", "code": "ok", "data": questionAnswers}
     return make_response(jsonify(data), 200)
 
 def merge_dict_with_list(dictionary, key_list,name):
-    new_dict = dictionary.copy()  # 创建一个旧字典的副本，以保留旧字典的内容
-    key_list = [int(x) for x in key_list]
+    new_dict = dictionary.copy()
+    key_list = [x for x in key_list]
 
     for key in new_dict:
         if key ==name:
             new_dict.pop(key)
-            new_dict[name[:-2]] = key_list
+            new_dict[name[:-2]] = ','.join(key_list)
 
     return new_dict

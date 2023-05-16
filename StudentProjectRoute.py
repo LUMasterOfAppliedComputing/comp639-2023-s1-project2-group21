@@ -20,6 +20,8 @@ def addPreferProject():
         StudentProjectQueries.delete(session['user_id'],values)
 
     StudentProjectQueries.batchInsert(session['user_id'], pidList)
+    data = {"message": "ok", "code": "ok"}
+    return make_response(jsonify(data), 200)
 
 
 
