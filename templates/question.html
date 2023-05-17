@@ -34,10 +34,12 @@
                                             {% for foo in quesionJson.option %}
                                                 <span style="white-space: nowrap; color: white">
                                             <input type="checkbox" id="{{ qu.id }}"
+                                                    {% if qu.question_answer %}
                                                     {% set my_array = qu.question_answer.split(',') %}
                                                     {% set int_list = my_array | map('int') %}
 
                                                     {% if loop.index0 in int_list %} checked {% endif %}
+                                                    {% endif %}
                                                    name="que_{{ qu.id }}"
                                                    value="{{ loop.index0 }}">{{ foo }}</span>
 
