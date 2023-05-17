@@ -12,9 +12,9 @@ jQuery.validator.setDefaults({
  *
  *      columns:    the columns where each column should be put
  *
- *      flag:       indicate if a set of button is required
+ *      flag:       indicate if a set of button is needed or not
  *
- *   checkboxFlag :   indicate if a checkbox is needed in front of each row is required
+ *   checkboxFlag :   indicate if a checkbox is needed in front of each row is needed or not
  *
  *      target:     if button required then target is where the but located in the table.
  *
@@ -71,7 +71,7 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                     dataTable1.fnAddData(data, true)
                 } else {
                     $(formId).dataTable({
-                        "bAutoWidth": true,
+                        "autoWidth": false,
                         select: {
                             style: 'os',
                             selector: 'td:first-child'
@@ -859,17 +859,6 @@ function checkUserStatus(id) {
     })
 }
 
-function checkCompanyProject(companyId) {
-    $.ajax({
-        url: "/project/getProjectsByCompanyId",
-        type: "get",
-        dataType: "JSON",
-        data: {"comId": companyId}
-    }).then(data => {
-        alert(data.data)
-    })
-}
-
 function checkStudentProfile(studentId) {
     $.ajax({
         url: "/studentQuestions/getByStudentId",
@@ -1008,10 +997,64 @@ function checkPreferredStudent(pid) {
     location.href = '/student/getAll?pid=' + pid
 }
 
+function goPreferredProject(){
+    location.href='/studentProject/preferProject'
+
+}
+
+function viewCompanyProject(comId) {
+
+    $.ajax({
+        url: "/project/getProjectsByCompanyId",
+        type: "GET",
+        data:  {"comId": comId},
+    }).then(data => {
+        var options = ""
+        if(data.data.length ==0 ){
+            $.alert("This company haven't got any project !")
+            return
+        }
+        for (let i = 0; i < data.data.length; i++) {
+            let item = data.data[i];
+            options += "<tr>" +
+                "<td class='hide' name='proId' value='" + item['id'] + "'>" + item['id'] + "</td>" +
+                "<td>" + item['project_title'] + "</td>" +
+                "<td>" + item['type_name'] + "</td>" +
+                "<td>" + item['company_name'] + "</td>"
+        }
+
+        console.log(options)
+        $.confirm({
+            theme: 'dark',
+            boxWidth: '900px',
+            useBootstrap: false,
+            title: 'Projects',
+            content: '' +
+                ' <table id="tablePreProject" class="display">\n' +
+                '        <thead>\n' +
+                '          <tr class="odd">\n' +
+                '           <th width="33%">Project Name</th>\n' +
+                '           <th  width="33%">Project Type</th>\n' +
+                '           <th  width="33%">Company</th>\n' +
+                '          </tr>\n' +
+                '        </thead>\n' +
+                '        <tbody>' + options +
+                '        </tbody>' +
+                ' </table>',
+
+            buttons: {
+
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+}
+
 function addPreferredProject() {
     var idArr = []
     $('input:checkbox').each(function () {
-        debugger
         console.log($(this))
         if ($(this).prop('checked') == true) {
             idArr.push($(this).val());
