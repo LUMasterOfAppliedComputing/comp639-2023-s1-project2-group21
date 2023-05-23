@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, request, session
+from flask import Flask, request, session, make_response, jsonify
 from flask import render_template
 
 from CompanyRoute import companyRoute
@@ -16,7 +16,7 @@ from StudentRoute import studentRoute
 from StudentSkillRoute import studentSkillRoute
 from TechSkillRoute import techSkillRoute
 from UserRoute import userRoute
-from queries import StudentQueries
+from queries import StudentQueries, StudentSkillQueries
 
 app = Flask(__name__)
 
@@ -35,7 +35,6 @@ app.register_blueprint(projectRoute)
 app.register_blueprint(studentProjectRoute)
 app.register_blueprint(studentSkillRoute)
 
-
 @app.route("/")  # home page
 def home():
     return render_template("index.html")
@@ -52,11 +51,30 @@ def register():
 
         else:
             data = {"message": "User doesn't exist", "code": "ERROR"}
+        if session['role'] == 2:
+            studentSkills = StudentSkillQueries.getAllByStudentId(user_id_)
+            return render_template("register.html", user=user[0], studentSkills=studentSkills)
 
-        return render_template("register.html", user=user[0])
+        else:
+            return render_template("register.html", user=user[0])
     else:
         return render_template("register.html")
 
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    file = request.files['file']
+    filename = file.filename
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # 在该路径下创建uploads目录
+    app.config['UPLOAD_FOLDER'] = os.path.join(script_dir, 'uploads')
+
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.mkdir(app.config['UPLOAD_FOLDER'])
+
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    data = {'message': 'file uploaded', 'code': 'ok'}
+    return make_response(jsonify(data), 200)
 
 @app.route("/about")
 def about():

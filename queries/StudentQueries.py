@@ -22,7 +22,19 @@ def getAll():
                         phone,
                         email,
                         GROUP_CONCAT(tk.skill_name) as skill,
-                        cv 
+                        cv ,
+                       CASE
+                            WHEN placement_status = 0 THEN
+                            'seeking oppurtunities'
+                            WHEN placement_status = 1 THEN
+                            'offer accepted' 
+                            WHEN placement_status = 2 THEN
+                            'not available'
+                             WHEN placement_status = 3 THEN
+                            'profile not completed'
+                            ELSE 
+                            'null' 
+                        END as placement_status
                     FROM
                         student stu
                         LEFT JOIN USER u ON u.user_id = stu.id 
