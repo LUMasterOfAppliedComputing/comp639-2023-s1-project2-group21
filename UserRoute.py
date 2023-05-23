@@ -3,7 +3,7 @@ import functools
 from flask import Blueprint, render_template, request, session, make_response, jsonify
 
 from enums.PlacementStatus import SubscripStatus
-from queries import UsersQueries, ExternalStudentQueries, MentorQueries, StudentQueries
+from queries import UsersQueries, ExternalStudentQueries, MentorQueries, StudentQueries, StudentSkillQueries
 from utils import MD5Helper, SMTPHelper
 
 userRoute = Blueprint('userRoute', __name__)
@@ -109,7 +109,7 @@ def addOrUpdateUser():
                         preferName = request.form.get("preferName")
                         # id,student_id_no, alternative_name, preferred_name, phone, cv, project_preference, personal_statements, placement_status,dob
                         StudentQueries.insert(id, studentNo, alternativeName, preferName, phone, "", "", "",
-                                              SubscripStatus.not_available.value, gender,
+                                              SubscripStatus.not_completed_profile.value, gender,
                                               dob)
             data = {'message': 'Profile has been added successfully', 'code': 'ok'}
 
@@ -118,12 +118,15 @@ def addOrUpdateUser():
             session['name'] = firstname + " " + lastname
             alternative_name = request.form.get("alternativeName")
             preferred_name = request.form.get("preferName")
+            skills = request.form.getlist("stu_skills[]")
             dob = request.form.get("dob")
             cv = request.form.get("file") if request.form.get("file") is not None else ''
             project_preference = request.form.get("project_preference") if request.form.get("project_preference") is not None else ''
             personal_statements = request.form.get("personal_statement") if request.form.get("personal_statement") is not None else ''
             rowCountStu = StudentQueries.update(userId,alternative_name, preferred_name, phone, cv, project_preference, personal_statements,dob)
             print(rowCountStu)
+            StudentSkillQueries.deleteAll(userId)
+            StudentSkillQueries.batchInsert(userId,skills)
         data = {'message': 'Profile has been updated successfully', 'code': 'ok'}
     except:
         data = {'message': 'Something wrong, please try again later', 'code': 'ERROR'}

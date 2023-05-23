@@ -24,7 +24,7 @@
                                                     {% if qu.question_answer %}
                                                         <option value="{{ loop.index0 }}"
                                                                 {% if loop.index0 == qu.question_answer| int   %}
-                                                                selected {% endif %}> {{ qu.question_answer }} {{ foo }}</option>
+                                                                selected {% endif %}>  {{ foo }}</option>
                                                     {% else %}
                                                         <option value="{{ loop.index0 }}">{{ foo }}</option>
                                                     {% endif %}

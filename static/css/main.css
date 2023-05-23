@@ -3,51 +3,77 @@
 /*    bottom: 0;*/
 /*    width:100%;*/
 /*    }*/
-.question{
+.question {
     min-width: 500px;
     max-width: 500px;
 }
-.signInLeft{
+
+.signInLeft {
     padding-left: 0px !important;
 }
-.hide{
+
+.hide {
     display: none !important;
 }
-.backgroundColor{
+
+.backgroundColor {
     background: #2b4ae7;
 }
-.widthRegi{
+
+.widthRegi {
     width: 30% !important;
 }
-.widthFull{
+
+.widthFull {
     min-width: 95% !important;
 }
+
 .error {
-  border: 2px solid red !important;
+    border: 2px solid red !important;
 }
-.containerSlim{
-   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+
+.containerSlim {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
-.subContainer{
+
+.subContainer {
     padding-top: 50px;
 }
-.containerWider{
+
+.containerWider {
     max-width: 80%;
     align-content: center;
 }
+
 .sideContainer {
-  display: flex; /* 使用 flex 布局 */
+
 }
 
 .left {
-  flex: 1; /* 设置左边的 div 占据剩余宽度的比例 */
-    max-width: 50%!important;
+    float: left;
+    max-width: 45% !important;
+}
+.form-control{
+    width: 90% !important;
+}
+.right {
+    float: right;
+    max-width: 45% !important;
+}
+.chkBoxMargin{
+    margin: 5px !important;
 }
 
-.right {
-  flex: 1; /* 设置右边的 div 占据剩余宽度的比例 */
-     max-width: 50%!important;
+.itemLeft {
+    flex: 1; /* 设置左边的 div 占据剩余宽度的比例 */
+    max-width: 29% !important;
+    margin-right: 50px;
+}
+
+.itemRight {
+    flex: 1; /* 设置右边的 div 占据剩余宽度的比例 */
+    max-width: 29% !important;
 }

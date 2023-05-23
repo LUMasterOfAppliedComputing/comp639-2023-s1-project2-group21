@@ -438,6 +438,7 @@ function validateQueForm() {
             que_9: "required",
             que_10: "required"
         }
+
         ,
         errorPlacement: function (error, element) {
             return true;
@@ -482,46 +483,6 @@ function sendEmailPassword(email) {
     })
 }
 
-
-function validateTrainerForm() {
-
-    var form = $("#trainerRegiForm");
-    form.validate({
-        rules: {
-            firstname: {
-                required: true,
-                lettersonly: true
-            },
-            familyname: {
-                required: true,
-                lettersonly: true
-            },
-            email: {
-                required: true,
-                email: true
-            },
-            gender: "required",
-            qualifications: "required",
-            phone: {
-                required: true,
-                digits: true,
-                minlength: 10,
-                maxlength: 11
-            },
-            summary: "required",
-
-        },
-        errorPlacement: function (error, element) {
-            return true;
-        }
-    });
-    let valid = form.valid();
-    if (!valid) {
-        $.MessageBox("please fill out all required information in correct format")
-    }
-    return valid
-}
-
 function validateForm() {
 
     var form = $("#regiForm");
@@ -532,10 +493,6 @@ function validateForm() {
                 lettersonly: true
             },
             lastname: {
-                required: true,
-                lettersonly: true
-            },
-            alternativeName: {
                 required: true,
                 lettersonly: true
             },
@@ -563,6 +520,15 @@ function validateForm() {
                 email: true
             }
 
+        }, messages: {
+            firstname: "please enter a valid first name",
+            lastname: "please enter a valid last name",
+
+            password: {
+                required: "password is required",
+                minlength: "password length should be greater than 6 "
+            },
+            email: "please enter a valid email",
         },
         errorPlacement: function (error, element) {
             return true;
@@ -698,7 +664,7 @@ function submitQA() {
         dateType: 'json',
         data: data2
     }).then(data => {
-        if(data.code='ok'){
+        if (data.code = 'ok') {
             $.alert("your survey has been updated successfully")
         }
     })
@@ -853,7 +819,7 @@ function checkUserStatus(id) {
         dataType: "JSON",
         data: {"id": id}
     }).then(data => {
-        if (data.data == 2) {
+        if (data.data == 3) {
             $.alert("Looks like you haven't completed our survey, before you use our system you must complete all of them")
         }
     })
@@ -928,12 +894,38 @@ async function myFunction() {
         console.error(error);
     }
 }
+function uploadFile() {
+  var input = document.getElementById('userCV');
+  var file = input.files[0];
+  var formData = new FormData();
+
+  formData.append('file', file);
+
+  fetch('/upload', {
+    method: 'POST',
+    body: formData
+  }).then(response => {
+    if (response.ok) {
+      alert('File uploaded!');
+    } else {
+      alert('Upload failed!');
+    }
+  });
+}
 
 function addOrUpdateUser(type) {
     //add or update a student
     if (type == 2) {
         if (validateForm()) {
             var formData = serializeData("form#regiForm");
+            var skills = $("#regiForm input[name='stu_skills']:checked");
+            let skillsVale = Array.from(skills).map(input => input.value);
+            if(skillsVale.length<1){
+                $.alert("You have to choose at least one skill !")
+                return false;
+            }
+            formData['stu_skills'] = skillsVale;
+            console.log(skillsVale)
             console.log(formData)
             // check if a student no is exist
             $.ajax({
@@ -997,8 +989,8 @@ function checkPreferredStudent(pid) {
     location.href = '/student/getAll?pid=' + pid
 }
 
-function goPreferredProject(){
-    location.href='/studentProject/preferProject'
+function goPreferredProject() {
+    location.href = '/studentProject/preferProject'
 
 }
 
@@ -1007,10 +999,10 @@ function viewCompanyProject(comId) {
     $.ajax({
         url: "/project/getProjectsByCompanyId",
         type: "GET",
-        data:  {"comId": comId},
+        data: {"comId": comId},
     }).then(data => {
         var options = ""
-        if(data.data.length ==0 ){
+        if (data.data.length == 0) {
             $.alert("This company haven't got any project !")
             return
         }
