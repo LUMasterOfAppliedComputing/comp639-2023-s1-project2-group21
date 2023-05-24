@@ -894,23 +894,32 @@ async function myFunction() {
         console.error(error);
     }
 }
+
 function uploadFile() {
-  var input = document.getElementById('userCV');
-  var file = input.files[0];
-  var formData = new FormData();
-
-  formData.append('file', file);
-
-  fetch('/upload', {
-    method: 'POST',
-    body: formData
-  }).then(response => {
-    if (response.ok) {
-      alert('File uploaded!');
-    } else {
-      alert('Upload failed!');
+    var input = document.getElementById('userCV');
+    var file = input.files[0];
+    var formData = new FormData();
+    if (file == undefined) {
+        return
     }
-  });
+    formData.append('file', file);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    }).then(response => response.json())
+        .then(data => {
+            if (data.code == 'ok') {
+                var span = document.getElementById('text');
+
+                var a = document.createElement('a');
+                a.href = "/download/" + data.filename;
+                a.textContent = 'Click here to download the file';
+                span.innerHTML = a.outerHTML;
+            } else {
+
+            }
+        });
 }
 
 function addOrUpdateUser(type) {
@@ -920,10 +929,15 @@ function addOrUpdateUser(type) {
             var formData = serializeData("form#regiForm");
             var skills = $("#regiForm input[name='stu_skills']:checked");
             let skillsVale = Array.from(skills).map(input => input.value);
-            if(skillsVale.length<1){
+            if (skillsVale.length < 1) {
                 $.alert("You have to choose at least one skill !")
                 return false;
             }
+            let $text = $("#text a");
+            if ($text != undefined) {
+                formData['fileLocation'] = $text[0].pathname.replaceAll("/download/","")
+            }
+
             formData['stu_skills'] = skillsVale;
             console.log(skillsVale)
             console.log(formData)
