@@ -1016,7 +1016,7 @@ function addPreferredProject() {
 
     //todo add to mentor prefer student table.
     $.ajax({
-        url: "/project/getProjectByIds?idArr=" + idArr,
+        url: "/project/?idArr=" + idArr,
         type: "GET",
         data: idArr,
     }).then(data => {
@@ -1180,43 +1180,79 @@ function resetPassword2(fromdata) {
 
 }
 
-async function addNewProject() {
-    debugger
-    $.ajax({
-        url: "/project/getAlltypeJson",
-        type: "GET",
+async function addNewProjectOrupdate(pid) {
+    
 
+    $.ajax({
+        url: "/project/getAllprofileAndtypeJson",
+        type: "GET",
+        data: {"pid":pid},
+        
     }).then(data => {
         console.log(data);
         var options = "";
-        for (let dataKey in data) {
-            options += "<option value='" + data[dataKey]['type_id'] + "'>" + data[dataKey]['type_name'] + "</option>"
+
+        for (let i = 0; i < data.types.length; i++) {
+            let item = data.types[i];
+            options += "<option value='" + item['type_id'] + "'>" + item['type_name'] + "</option>"
         }
         console.log(options)
+        
+        var str=''
+        if(pid == null){
+            debugger
+            str = '' +
+            '<form id="projectForm" class="formName">' +
+            '<div class="form-group">' +
+            '<label>Project Title</label>' +
+            '<input type="text" placeholder="Project" name="project_title" class="fname form-control" required />' +
+            '<label>Description</label>' +
+            '<input type="text" placeholder="Description" name="description" class="fname form-control" required />' +
+            '<label>Number of students</label>' +
+            '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" required />' +
+            '<label>Project start date</label>' +
+            '<input type="text" placeholder="" name="start_date" class="fname form-control" required />' +
+            '<label>Project end date</label>' +
+            '<input type="text" placeholder="" name="end_date" class="fname form-control" required />' +
+            '<label> Company type</label>' +
+            '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
+            '</div>' +
+            '</form>'
+        }else{
+            debugger
+            let projectitem = data.projects[0];
+            str = '' +
+            '<form id="projectForm" class="formName">' +
+            '<div class="form-group">' +
+            '<input type="hidden" name="pid" value="'+ pid +'" />' +
+            '<label>Project Title</label>' +
+            '<input type="text" placeholder="Project" name="project_title" class="fname form-control" value = '+ projectitem['project_title'] +' required />' +
+            '<label>Description</label>' +
+            '<input type="text" placeholder="Description" name="description" class="fname form-control" value = '+ projectitem['description'] +' required />' +
+            '<label>Number of students</label>' +
+            '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" value = '+ projectitem['number_of_student'] +' required />' +
+            '<label>Remain Number of students</label>' +
+            '<input type="text" placeholder="10" name="remain_number_of_student" class="fname form-control" value = '+ projectitem['remain_number_of_student'] +' required />' +
+            '<label>Project start date</label>' +
+            '<input type="text" placeholder="" name="start_date" class="fname form-control" value = '+ projectitem['start_date'] +' required />' +
+            '<label>Project end date</label>' +
+            '<input type="text" placeholder="" name="end_date" class="fname form-control" value = '+ projectitem['end_date'] +' required />' +
+            '<label> Company type</label>' +
+            '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
+            '</div>' +
+            '</form>'
+
+        }
+        
         $.confirm({
             theme: 'dark',
             title: 'Enter Project information',
-            content: '' +
-                '<form id="projectForm" class="formName">' +
-                '<div class="form-group">' +
-                '<input type="hidden" name="mentorid" value="1" />' +
-                '<label>Project Title</label>' +
-                '<input type="text" placeholder="Project" name="project_title" class="fname form-control" required />' +
-                '<label>Description</label>' +
-                '<input type="text" placeholder="Description" name="description" class="fname form-control" required />' +
-                '<label>Number of students</label>' +
-                '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" required />' +
-                '<label>Project start date</label>' +
-                '<input type="text" placeholder="" name="start_date" class="fname form-control" required />' +
-                '<label>Project end date</label>' +
-                '<input type="text" placeholder="" name="end_date" class="fname form-control" required />' +
-                '<label> Company type</label>' +
-                '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
-                '</div>' +
-                '</form>',
+        
+            content: str ,
 
-            buttons: {
+            buttons:{
                 Save: async function () {
+                    var pid = this.$content.find('.pid').val();
                     var project_title = this.$content.find('.project_title').val();
                     var description = this.$content.find('.description').val();
                     var Number_of_student = this.$content.find('.Number_of_student').val();
@@ -1235,7 +1271,7 @@ async function addNewProject() {
                     //     $.alert('email is already registered, please change another email address');
                     //     return false;
                     // } else {
-                        addProject(formData)
+                        addOrUpdateProject(formData)
                
                     // }
 
@@ -1248,7 +1284,7 @@ async function addNewProject() {
     })
 }
 
-function addProject(fromdata) {
+function addOrUpdateProject(fromdata) {
 
     $.ajax({
         url: "/Project/addOrUpdate",
@@ -1258,28 +1294,105 @@ function addProject(fromdata) {
 
     }).then(data => {
         if (data.code == 'ok') {
-            $.alert("Project has been added successfully")
+
+            alert("Project has been added or updated successfully")
             
-            var btn = [{
-                "btnName": "Preferred Students",
-                "func": "alert"
-            }
-            ];
-             
-                renderDataTable('#myTableOne', '/mentor/getProjectAllJson', [
-                    {"data": null},
-                    {"data": "project_title"},
-                    {"data": "description"},
-                    {"data": "number_of_student"},
-                    {"data": "type_name"},
-                    {"data": "start_date"},
-                    {"data": "end_date"},
-                    {"data": "remain_number_of_student"},
-                    {"data": "company_name"},
-                ], true, true, 9, btn);
+            
+            $('#myTableOne').delay(2000).slideDown("3000",function(){
+                var btn = [{
+                    "btnName": "Preferred Students",
+                    "func": "alert"
+                }
+                ];
+                 
+                    renderDataTable('#myTableOne', '/mentor/getProjectAllJson', [
+                        {"data": null},
+                        {"data": "project_title"},
+                        {"data": "description"},
+                        {"data": "number_of_student"},
+                        {"data": "type_name"},
+                        {"data": "start_date"},
+                        {"data": "end_date"},
+                        {"data": "remain_number_of_student"},
+                        {"data": "company_name"},
+                    ], true, true, 9, btn);
+
+               
+              });
+          
+
+
+        }else{
+            alert("add or update action failed ")
         }
     })
 
    
+
+}
+
+function updateSkill(pid) {
+    
+    $.ajax({
+        url: "/project/getAllskillJson",
+        type: "GET",
+        data: {"pid":pid},
+        
+    }).then(data => {
+        debugger
+        console.log(data);
+        var options = "";
+
+        
+        
+        var str=''
+
+            debugger
+
+            str = '' +
+            '<form id="projectForm" class="formName">' +
+            '<div class="form-group">' +
+            '<input type="hidden" name="pid" value="'+ pid +'" />'
+
+            
+           for (let i = 0; i < data.skills.length; i++) {
+                 let item = data.skills[i];
+                  str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" name=' + item['id'] + ' value= '+ item['id'] +' >' +  '  <label>'+ item['skill_name'] +'</label> </div>'
+           }
+
+            str += '</div>' + '</form>'
+            
+        debugger
+        
+        $.confirm({
+            theme: 'dark',
+            title: 'Select required skills',
+        
+            content: str ,
+
+            buttons:{
+                Save: async function () {
+                    // var pid = this.$content.find('.pid').val();
+                    // var project_title = this.$content.find('.project_title').val();
+                    // var description = this.$content.find('.description').val();
+                    // var Number_of_student = this.$content.find('.Number_of_student').val();
+                    // var start_date = this.$content.find('.start_date').val();
+                    // var end_date = this.$content.find('.end_date').val();
+                    // var projecttype = this.$content.find('.projecttype').val();
+
+                     var formData = serializeData("form#projectForm")
+
+                        addOrUpdateProject(formData)
+               
+ 
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+    
 
 }
