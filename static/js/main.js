@@ -12,9 +12,9 @@ jQuery.validator.setDefaults({
  *
  *      columns:    the columns where each column should be put
  *
- *      flag:       indicate if a set of button is required
+ *      flag:       indicate if a set of button is needed or not
  *
- *   checkboxFlag :   indicate if a checkbox is needed in front of each row is required
+ *   checkboxFlag :   indicate if a checkbox is needed in front of each row is needed or not
  *
  *      target:     if button required then target is where the but located in the table.
  *
@@ -71,7 +71,7 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                     dataTable1.fnAddData(data, true)
                 } else {
                     $(formId).dataTable({
-                        "bAutoWidth": true,
+                        "autoWidth": false,
                         select: {
                             style: 'os',
                             selector: 'td:first-child'
@@ -438,6 +438,7 @@ function validateQueForm() {
             que_9: "required",
             que_10: "required"
         }
+
         ,
         errorPlacement: function (error, element) {
             return true;
@@ -482,46 +483,6 @@ function sendEmailPassword(email) {
     })
 }
 
-
-function validateTrainerForm() {
-
-    var form = $("#trainerRegiForm");
-    form.validate({
-        rules: {
-            firstname: {
-                required: true,
-                lettersonly: true
-            },
-            familyname: {
-                required: true,
-                lettersonly: true
-            },
-            email: {
-                required: true,
-                email: true
-            },
-            gender: "required",
-            qualifications: "required",
-            phone: {
-                required: true,
-                digits: true,
-                minlength: 10,
-                maxlength: 11
-            },
-            summary: "required",
-
-        },
-        errorPlacement: function (error, element) {
-            return true;
-        }
-    });
-    let valid = form.valid();
-    if (!valid) {
-        $.MessageBox("please fill out all required information in correct format")
-    }
-    return valid
-}
-
 function validateForm() {
 
     var form = $("#regiForm");
@@ -532,10 +493,6 @@ function validateForm() {
                 lettersonly: true
             },
             lastname: {
-                required: true,
-                lettersonly: true
-            },
-            alternativeName: {
                 required: true,
                 lettersonly: true
             },
@@ -563,6 +520,15 @@ function validateForm() {
                 email: true
             }
 
+        }, messages: {
+            firstname: "please enter a valid first name",
+            lastname: "please enter a valid last name",
+
+            password: {
+                required: "password is required",
+                minlength: "password length should be greater than 6 "
+            },
+            email: "please enter a valid email",
         },
         errorPlacement: function (error, element) {
             return true;
@@ -698,7 +664,7 @@ function submitQA() {
         dateType: 'json',
         data: data2
     }).then(data => {
-        if(data.code='ok'){
+        if (data.code = 'ok') {
             $.alert("your survey has been updated successfully")
         }
     })
@@ -853,20 +819,9 @@ function checkUserStatus(id) {
         dataType: "JSON",
         data: {"id": id}
     }).then(data => {
-        if (data.data == 2) {
+        if (data.data == 3) {
             $.alert("Looks like you haven't completed our survey, before you use our system you must complete all of them")
         }
-    })
-}
-
-function checkCompanyProject(companyId) {
-    $.ajax({
-        url: "/project/getProjectsByCompanyId",
-        type: "get",
-        dataType: "JSON",
-        data: {"comId": companyId}
-    }).then(data => {
-        alert(data.data)
     })
 }
 
@@ -939,12 +894,38 @@ async function myFunction() {
         console.error(error);
     }
 }
+function uploadFile() {
+  var input = document.getElementById('userCV');
+  var file = input.files[0];
+  var formData = new FormData();
+
+  formData.append('file', file);
+
+  fetch('/upload', {
+    method: 'POST',
+    body: formData
+  }).then(response => {
+    if (response.ok) {
+      alert('File uploaded!');
+    } else {
+      alert('Upload failed!');
+    }
+  });
+}
 
 function addOrUpdateUser(type) {
     //add or update a student
     if (type == 2) {
         if (validateForm()) {
             var formData = serializeData("form#regiForm");
+            var skills = $("#regiForm input[name='stu_skills']:checked");
+            let skillsVale = Array.from(skills).map(input => input.value);
+            if(skillsVale.length<1){
+                $.alert("You have to choose at least one skill !")
+                return false;
+            }
+            formData['stu_skills'] = skillsVale;
+            console.log(skillsVale)
             console.log(formData)
             // check if a student no is exist
             $.ajax({
@@ -1008,10 +989,64 @@ function checkPreferredStudent(pid) {
     location.href = '/student/getAll?pid=' + pid
 }
 
+function goPreferredProject() {
+    location.href = '/studentProject/preferProject'
+
+}
+
+function viewCompanyProject(comId) {
+
+    $.ajax({
+        url: "/project/getProjectsByCompanyId",
+        type: "GET",
+        data: {"comId": comId},
+    }).then(data => {
+        var options = ""
+        if (data.data.length == 0) {
+            $.alert("This company haven't got any project !")
+            return
+        }
+        for (let i = 0; i < data.data.length; i++) {
+            let item = data.data[i];
+            options += "<tr>" +
+                "<td class='hide' name='proId' value='" + item['id'] + "'>" + item['id'] + "</td>" +
+                "<td>" + item['project_title'] + "</td>" +
+                "<td>" + item['type_name'] + "</td>" +
+                "<td>" + item['company_name'] + "</td>"
+        }
+
+        console.log(options)
+        $.confirm({
+            theme: 'dark',
+            boxWidth: '900px',
+            useBootstrap: false,
+            title: 'Projects',
+            content: '' +
+                ' <table id="tablePreProject" class="display">\n' +
+                '        <thead>\n' +
+                '          <tr class="odd">\n' +
+                '           <th width="33%">Project Name</th>\n' +
+                '           <th  width="33%">Project Type</th>\n' +
+                '           <th  width="33%">Company</th>\n' +
+                '          </tr>\n' +
+                '        </thead>\n' +
+                '        <tbody>' + options +
+                '        </tbody>' +
+                ' </table>',
+
+            buttons: {
+
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+}
+
 function addPreferredProject() {
     var idArr = []
     $('input:checkbox').each(function () {
-        debugger
         console.log($(this))
         if ($(this).prop('checked') == true) {
             idArr.push($(this).val());

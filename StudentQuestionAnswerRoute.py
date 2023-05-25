@@ -40,11 +40,12 @@ def addQuestionAnswer():
 
 def merge_dict_with_list(dictionary, key_list,name):
     new_dict = dictionary.copy()
+    newdict = new_dict.copy()
     key_list = [x for x in key_list]
 
     for key in new_dict:
         if key ==name:
-            new_dict.pop(key)
-            new_dict[name[:-2]] = ','.join(key_list)
+            newdict.pop(key)
+    newdict[name[:-2]] = ','.join(key_list)
 
-    return new_dict
+    return newdict

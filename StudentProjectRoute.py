@@ -23,13 +23,15 @@ def addPreferProject():
     data = {"message": "ok", "code": "ok"}
     return make_response(jsonify(data), 200)
 
+@studentProjectRoute.route('/studentProject/preferProject')
+def preferProject():
+    return render_template("studentProject.html")
 
 
 @studentProjectRoute.route('/studentProject/getPreferredProject')
 def getPreferredProject():
     projects = StudentProjectQueries.preferredProject(session['user_id'])
-    data = {"message": "ok", "code": "ok", "data": projects}
-    return make_response(jsonify(data), 200)
+    return make_response(jsonify(projects), 200)
 
 
 def remove_elements(a, b):
