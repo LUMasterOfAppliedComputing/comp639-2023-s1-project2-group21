@@ -120,17 +120,15 @@
                                 </div>
                             </div>
                         {% endif %}
-
+                         {% if user %}
                         <div class="input-group mb">
                             <div class="form-group left">
                                 <label class="mb-2" for="cv">*CV</label>
                                 <input type="file" id="userCV" name="userCV" onchange="uploadFile()">
-                                <span id="text" name="fileLocation"> {% if user %}
-                                    <a href="{{ user['cv'] }}"> {{ user['cv'] }} </a>{% endif %}</span>
-
-
+                                <span id="text" name="fileLocation"> {% if user and user['cv'] %}
+                                    <a href="/download/{{ user['cv'] }}"> {{ user['cv'] }} </a>{% endif %}</span>
                         </div>
-
+                        {% endif %}
                           <div class="input-group mb">
                             <div class="form-group left">
                                 {% if user %}

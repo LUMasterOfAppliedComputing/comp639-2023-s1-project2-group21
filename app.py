@@ -17,8 +17,14 @@ from StudentSkillRoute import studentSkillRoute
 from TechSkillRoute import techSkillRoute
 from UserRoute import userRoute
 from queries import StudentQueries, StudentSkillQueries
+from utils import MD5Helper
+import uuid
+from flask import send_from_directory
 
 app = Flask(__name__)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# 在该路径下创建uploads目录
+app.config['UPLOAD_FOLDER'] = os.path.join(script_dir, 'uploads')
 
 app.config['SECRET_KEY'] = os.urandom(24)
 app.register_blueprint(companyRoute)
@@ -34,6 +40,7 @@ app.register_blueprint(projectSkillRoute)
 app.register_blueprint(projectRoute)
 app.register_blueprint(studentProjectRoute)
 app.register_blueprint(studentSkillRoute)
+
 
 @app.route("/")  # home page
 def home():
@@ -60,21 +67,29 @@ def register():
     else:
         return render_template("register.html")
 
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     file = request.files['file']
     filename = file.filename
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    # 在该路径下创建uploads目录
-    app.config['UPLOAD_FOLDER'] = os.path.join(script_dir, 'uploads')
+
 
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.mkdir(app.config['UPLOAD_FOLDER'])
+    fileId = uuid.uuid4()
+    name, extension = os.path.splitext(filename)
+    filename = str(fileId) + extension
+    path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(path)
 
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    data = {'message': 'file uploaded', 'code': 'ok'}
+    data = {'message': 'file uploaded', 'code': 'ok', "filename":filename}
     return make_response(jsonify(data), 200)
+
+
+@app.route('/download/<path:filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 @app.route("/about")
 def about():

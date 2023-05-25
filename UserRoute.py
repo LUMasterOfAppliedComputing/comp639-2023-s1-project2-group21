@@ -120,9 +120,9 @@ def addOrUpdateUser():
             preferred_name = request.form.get("preferName")
             skills = request.form.getlist("stu_skills[]")
             dob = request.form.get("dob")
-            cv = request.form.get("file") if request.form.get("file") is not None else ''
             project_preference = request.form.get("project_preference") if request.form.get("project_preference") is not None else ''
             personal_statements = request.form.get("personal_statement") if request.form.get("personal_statement") is not None else ''
+            cv = request.form.get("fileLocation") if request.form.get("fileLocation") is not None else ''
             rowCountStu = StudentQueries.update(userId,alternative_name, preferred_name, phone, cv, project_preference, personal_statements,dob)
             print(rowCountStu)
             StudentSkillQueries.deleteAll(userId)
