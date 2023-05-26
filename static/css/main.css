@@ -54,7 +54,6 @@
 
 .left {
     float: left;
-    max-width: 45% !important;
 }
 .form-control{
     width: 90% !important;

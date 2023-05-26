@@ -3601,6 +3601,14 @@ span.fa.fa-play {
   .w3-gallery button.btn.filter-button {
     margin-right: 10px; } }
 
+.noTopPadding{
+  padding-top: 0px !important;
+}
+.marginSides{
+      background-color: white;
+      margin-left: 500px;  /* 左边距 */
+      margin-right: 500px; /* 右边距 */
+}
 .w3l-apply-6 .apply-info {
   background: url(../images/bg5.jpg) no-repeat center;
   background-size: cover;
@@ -3646,7 +3654,6 @@ span.fa.fa-play {
 
 .w3l-apply-6 .apply-info label {
   font-size: 14px;
-  color: #fff;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px; }
