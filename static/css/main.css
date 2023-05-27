@@ -11,6 +11,9 @@
 .signInLeft {
     padding-left: 0px !important;
 }
+.paddingtop6rem{
+    padding-top: 6rem!important;
+}
 
 .hide {
     display: none !important;
@@ -23,6 +26,15 @@
 .widthRegi {
     width: 30% !important;
 }
+.widthQuestion {
+    width: 90% !important;
+    padding-left: 50px;
+    padding-top: 200px;
+}
+.w3l-apply-6 .apply-info label{
+    letter-spacing: normal;
+    text-transform: none !important;
+}
 
 .widthFull {
     min-width: 95% !important;
@@ -33,10 +45,12 @@
 }
 
 .containerSlim {
-    display: flex;
+
     justify-content: center;
     align-items: center;
     height: 100vh;
+    flex-wrap: wrap;
+    flex-direction: row;
 }
 
 .subContainer {
@@ -54,7 +68,6 @@
 
 .left {
     float: left;
-    max-width: 45% !important;
 }
 .form-control{
     width: 90% !important;

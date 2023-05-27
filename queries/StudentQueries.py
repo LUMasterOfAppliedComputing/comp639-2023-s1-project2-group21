@@ -41,7 +41,8 @@ def getAll():
                         LEFT JOIN student_skills sk on stu.id = sk.student_id
                         LEFT JOIN techs_and_skills tk on tk.id = skill_id
                     WHERE
-                        u.role = 2  GROUP BY user_id"""
+                        u.role = 2   and placement_status != 3
+                        GROUP BY user_id"""
 
     id = db.DBOperator(sqlCommand)
     return id;
@@ -106,7 +107,19 @@ def getAllRanked(pid):
                         phone,
                         email,
                         GROUP_CONCAT( tk.skill_name ) AS skill,
-                        cv
+                        cv,
+                       CASE
+                            WHEN placement_status = 0 THEN
+                            'seeking oppurtunities'
+                            WHEN placement_status = 1 THEN
+                            'offer accepted' 
+                            WHEN placement_status = 2 THEN
+                            'not available'
+                             WHEN placement_status = 3 THEN
+                            'profile not completed'
+                            ELSE 
+                            'null' 
+                        END as placement_status
                     FROM
                         student stu
                         LEFT JOIN USER u ON u.user_id = stu.id
@@ -114,7 +127,7 @@ def getAllRanked(pid):
                         LEFT JOIN techs_and_skills tk ON tk.id = skill_id
                         LEFT JOIN student_project sp on sp.student_id = user_id and sp.project_id ='%s'
                     WHERE
-                        u.role = 2 
+                        u.role = 2  and placement_status != 3
                     GROUP BY
                         user_id
                     ORDER BY (CASE WHEN sp.rank IS NULL THEN 99 ELSE sp.rank END), sp.rank ASC """ % (pid)
