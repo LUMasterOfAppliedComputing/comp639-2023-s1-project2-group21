@@ -37,6 +37,7 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                 var btn = ""
                                 console.log(data)
                                 console.log(meta)
+                                console.log(type)
                                 console.log(row)
                                 debugger
                                 btns.forEach(button => {
@@ -624,6 +625,14 @@ function checksendEmail() {
         }
     });
 }
+function changeIntention(ele){
+    if(ele.value == 2 || ele.value ==3){
+        $.alert("You can't use our system, please contact with the staff in charge.")
+       $("#btnNext").addClass("hide");
+    }else {
+        $("#btnNext").removeClass("hide");
+    }
+}
 
 function extraMultipul(selectedOptions, formData) {
     const result = selectedOptions.reduce((acc, {name, value}) => {
@@ -837,10 +846,10 @@ function checkStudentProfile(studentId) {
             console.log(questionData)
             var td = ''
             questionData.forEach(question => {
-                td += '<tr><td>'
+                td += '<tr  style="width: 100%"><td style="width: 50%; vertical-align: top">'
                 console.log(question.question)
                 var que = JSON.parse(question.question)
-                td += que.title + "</td><td>"
+                td += que.title + "</td><td style='width: 50%; vertical-align: top'>"
                 if (que.type == "1") {
                     td += que.option[question.question_answer] + "</td>"
                 } else {

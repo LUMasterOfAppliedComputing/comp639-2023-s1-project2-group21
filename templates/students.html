@@ -41,7 +41,12 @@
                 {"data": "phone"},
                 {"data": "email"},
                 {"data": "skill"},
-                {"data": "cv"},
+                {"data": "cv",render: function(data, type, row, meta){
+                if(type === 'display'){
+                    data = '<a href="/download/' + data + '">' + data + '</a>';
+                }
+                return data;
+            }},
                 {"data": "placement_status"}
             ], true, true, 9, btn);
         })
