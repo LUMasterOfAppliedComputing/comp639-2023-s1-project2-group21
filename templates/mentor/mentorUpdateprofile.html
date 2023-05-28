@@ -11,16 +11,13 @@
     <section class="w3l-apply-6">
         <!-- /apply-6-->
         <div class="apply-info py-5">
-            <div class="containerSlim py-lg-5">
-                <div class="apply-grids-info widthRegi">
+           <div class="marginSides">
+            <div class="containerSlim paddingtop6rem">
+                <div class="apply-grids-info " style="padding: 50px">
                     <label class="mb-1">Update Mentor Profile</label><p>
                         {% for profile in profile %}
-                    <form role="form" method="post" action="/mentor/Update">
+                    <form role="form" method="post" action="/mentor/Update" class="row g-3">
                         <div class="sideContainer">
-                           
-
-     
-                          
                             <div class="form-group left">
                                 
                                 <input type="text" hidden name="mentorid" id="role" class="form-control"
@@ -56,9 +53,18 @@
 
                         </div>
 
-                        <button type="submit" class="btn btn-primary">UPDATE NOW</button>
 
-                        <button type="reset" class="btn btn-primary" href="#">Reset</button>
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col" style="text-align: -webkit-center">
+                                    <button type="submit" class="btn btn-primary">UPDATE NOW</button>
+                                </div>
+                                <div class="col" style="text-align: -webkit-center">
+                                    <button type="reset" class="btn btn-primary" href="#">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+
 
                     </form>
                     {% endfor %}

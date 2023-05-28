@@ -8,8 +8,16 @@ def insert(question):
     id = selectResult = db.DBOperator(sqlCommand)
     return id;
 
-def getAll():
-    sqlCommand = """SELECT * FROM question """
+def getAll(studentId):
+    sqlCommand = """SELECT
+                        q.id,
+                        q.question,
+                        student_id,
+                        question_answer 
+                    FROM
+                        question q
+                        LEFT JOIN question_answer qa ON q.id = qa.question_id 
+                        AND qa.student_id = %s"""%studentId
      
     result = db.DBOperator(sqlCommand)
     return result;
