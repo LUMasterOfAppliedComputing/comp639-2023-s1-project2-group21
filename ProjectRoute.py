@@ -3,7 +3,7 @@ import functools
 
 from flask import Blueprint, render_template, request, session, make_response, jsonify
 
-from queries import ProjectQueries
+from queries import ProjectQueries, ProjectSkillQueries
 
 
 projectRoute = Blueprint('projectRoute', __name__)
@@ -88,6 +88,7 @@ def getAllprofileAndtypeJson():
 
 @projectRoute.route('/project/getAllskillJson')
 def getAllskillJson():
-    skills = ProjectQueries.getAllskillJson()
+    pid = request.args.get("pid")
+    skills = ProjectSkillQueries.getAllByProjectId(pid)
     data ={"message":'ok','code':'ok','skills':skills}
     return make_response(jsonify(data), 200)

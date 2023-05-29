@@ -1340,7 +1340,7 @@ async function addNewProjectOrupdate(pid) {
                     //     $.alert('email is already registered, please change another email address');
                     //     return false;
                     // } else {
-                        addOrUpdateProject(formData)
+                        (formData)
                
                     // }
 
@@ -1419,14 +1419,24 @@ function updateSkill(pid) {
             debugger
 
             str = '' +
-            '<form id="projectForm" class="formName">' +
+            '<form id="regiForm" class="formName">' +
             '<div class="form-group">' +
             '<input type="hidden" name="pid" value="'+ pid +'" />'
 
             
            for (let i = 0; i < data.skills.length; i++) {
                  let item = data.skills[i];
-                  str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" name=' + item['id'] + ' value= '+ item['id'] +' >' +  '  <label>'+ item['skill_name'] +'</label> </div>'
+                 if (item['project_id']){
+                    str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" id = ' +
+                    item['id'] + ' name="projectskill"  checked value= ' + item['id'] +' >' +  '  <label>'+ 
+                    item['skill_name'] +'</label> </div>'
+                 }else{
+                    str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" id = ' +
+                    item['id'] + ' name="projectskill"  value= ' + item['id'] +' >' +  '  <label>'+ 
+                    item['skill_name'] +'</label> </div>'
+                 }
+
+
            }
 
             str += '</div>' + '</form>'
@@ -1441,17 +1451,17 @@ function updateSkill(pid) {
 
             buttons:{
                 Save: async function () {
-                    // var pid = this.$content.find('.pid').val();
-                    // var project_title = this.$content.find('.project_title').val();
+                    var pid = this.$content.find('.pid').val();
+                    //var projectskill = this.$content.find('.projectskill').val();
                     // var description = this.$content.find('.description').val();
                     // var Number_of_student = this.$content.find('.Number_of_student').val();
                     // var start_date = this.$content.find('.start_date').val();
                     // var end_date = this.$content.find('.end_date').val();
                     // var projecttype = this.$content.find('.projecttype').val();
 
-                     var formData = serializeData("form#projectForm")
+                    var formData = serializeData("form#projectForm")
 
-                        addOrUpdateProject(formData)
+                    addOrUpdateProjectSkill(formData)
                
  
 
@@ -1463,5 +1473,33 @@ function updateSkill(pid) {
         })
     })
     
+
+}
+
+function addOrUpdateProjectSkill(fromdata) {
+    debugger
+
+
+    var formData = serializeData("form#regiForm");
+    var skills = $("#regiForm input[name='projectskill']:checked");
+    let skillsVale = Array.from(skills).map(input => input.value);
+    if (skillsVale.length < 1) {
+        $.alert("You have to choose at least one skill !")
+        return false;
+    }
+     formData['projectskill'] = skillsVale;
+    $.ajax({
+        url: "/project/addOrUpdateProjectSkill",
+        type: "POST",
+        dataType: "JSON",
+        data: formData,
+    }).then(data => {
+        if (data.code == 'ok') {
+            $.alert("Project requied skills have been reset")
+
+        }else{
+            $.alert(data.message)
+        }
+    })
 
 }
