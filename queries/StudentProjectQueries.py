@@ -31,9 +31,9 @@ def delete(sid,pid):
 
 
 def batchInsert(id, formDatas):
-    sqlCommand = """INSERT INTO student_project (student_id, project_id, `rank`) VALUES"""
+    sqlCommand = """INSERT INTO student_project (student_id, project_id, `rank`, will) VALUES"""
     for idx, val in enumerate(formDatas):
-        sqlCommand += """  ('%s', '%s', '%s') ,""" % (id, val,idx)
+        sqlCommand += """  ('%s', '%s', '%s', '%s') ,""" % (id, val['pid'],idx,val['will'])
     sqlCommand = sqlCommand[:-1]
 
     print(sqlCommand)

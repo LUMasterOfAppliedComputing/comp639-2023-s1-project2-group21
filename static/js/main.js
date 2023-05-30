@@ -37,6 +37,7 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                 var btn = ""
                                 console.log(data)
                                 console.log(meta)
+                                console.log(type)
                                 console.log(row)
                                 debugger
                                 btns.forEach(button => {
@@ -625,6 +626,15 @@ function checksendEmail() {
     });
 }
 
+function changeIntention(ele) {
+    if (ele.value == 2 || ele.value == 3) {
+        $.alert("You can't use our system, please contact with the staff in charge.")
+        $("#btnNext").addClass("hide");
+    } else {
+        $("#btnNext").removeClass("hide");
+    }
+}
+
 function extraMultipul(selectedOptions, formData) {
     const result = selectedOptions.reduce((acc, {name, value}) => {
         acc[name] = acc[name] || [];
@@ -837,12 +847,17 @@ function checkStudentProfile(studentId) {
             console.log(questionData)
             var td = ''
             questionData.forEach(question => {
-                td += '<tr><td>'
+                td += '<tr  style="width: 100%"><td style="width: 50%; vertical-align: top">'
                 console.log(question.question)
                 var que = JSON.parse(question.question)
-                td += que.title + "</td><td>"
+                td += que.title + "</td><td style='width: 50%; vertical-align: top'>"
                 if (que.type == "1") {
                     td += que.option[question.question_answer] + "</td>"
+                } else if (que.type == "2" && question.question_answer.split(',').length > 0) {
+                    for (let i = 0; i < question.question_answer.split(',').length; i++) {
+                        td += que.option[question.question_answer.split(',')[i]] + "</br>"
+                    }
+
                 } else {
                     td += question.question_answer + "</td>"
                 }
@@ -935,7 +950,7 @@ function addOrUpdateUser(type) {
             }
             let $text = $("#text a");
             if ($text != undefined) {
-                formData['fileLocation'] = $text[0].pathname.replaceAll("/download/","")
+                formData['fileLocation'] = $text[0].pathname.replaceAll("/download/", "")
             }
 
             formData['stu_skills'] = skillsVale;
@@ -1071,7 +1086,6 @@ function addPreferredProject() {
         return;
     }
 
-    //todo add to mentor prefer student table.
     $.ajax({
         url: "/project/getProjectByIds?idArr=" + idArr,
         type: "GET",
@@ -1084,26 +1098,36 @@ function addPreferredProject() {
             console.log(item)
             options += "<tr>" +
                 "<td class='hide' name='proId' value='" + item['id'] + "'>" + item['id'] + "</td>" +
+                "<td><button onclick='moveUp(this)' >Up</button><button onclick='moveDown(this)'>Down</button></td>" +
                 "<td>" + item['project_title'] + "</td>" +
                 "<td>" + item['type_name'] + "</td>" +
                 "<td>" + item['company_name'] + "</td>" +
-                "<td><button onclick='moveUp(this)' >Up</button></td>" +
-                "<td><button onclick='moveDown(this)'>Down</button></td></tr>"
+                "<td>" +
+                "<input type='radio' id='option" + item['id'] + "' name='option" + item['id'] + "' value='2'>" +
+                "  <label for='option1" + item['id'] + "'>Yes</label>" +
+                "  <input type='radio' id='option" + item['id'] + "' name='option" + item['id'] + "' value='1'>" +
+                "  <label for='option2" + item['id'] + "'>Maybe</label>" +
+                "</td>" +
+                "" +
+                "</tr>";
+
         }
 
         console.log(options)
         $.confirm({
             theme: 'dark',
-            boxWidth: '900px',
+            boxWidth: '75%',
             useBootstrap: false,
             title: 'Rank your preference',
             content: '' +
                 ' <table id="tablePreProject" class="display">\n' +
                 '        <thead>\n' +
                 '          <tr class="odd">\n' +
-                '           <th width="33%">Project Name</th>\n' +
-                '           <th  width="33%">Project Type</th>\n' +
-                '           <th  width="33%">Company</th>\n' +
+                '           <th width="15%" style="padding-right: 150px">Rank</th>\n' +
+                '           <th width="27%">Project Name</th>\n' +
+                '           <th  width="19%">Project Type</th>\n' +
+                '           <th  width="15%">Company</th>\n' +
+                '           <th  width="25%">Willings</th>\n' +
                 '          </tr>\n' +
                 '        </thead>\n' +
                 '        <tbody>' + options +
@@ -1112,22 +1136,29 @@ function addPreferredProject() {
 
             buttons: {
                 Save: async function () {
-                    var rankedProjvalues = [];
+                    var pidList = [];
+
                     $('#tablePreProject [name="proId"]').each(function (eachh) {
                         console.log(eachh)
-                        console.log(this.innerHTML)
-                        rankedProjvalues.push(parseInt(this.innerHTML));
+                        pidList.push({
+                            "pid": parseInt(this.innerHTML),
+                            "will": $("input[name='option" + this.innerHTML + "']:checked").val()
+                        });
                     });
-                    console.log(rankedProjvalues)
-                    const result = ajaxCall("/studentProject/add", "get", {
-                        "pidList": rankedProjvalues
-                    })
-                    if (result.code == 'error') {
-                        $.alert('Something wrong, please try again later');
-                        return false;
-                    } else {
+                    debugger
+                    let myJson = JSON.stringify(pidList);
+
+                    $.ajax({
+                        url: "/studentProject/add",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {pidList: myJson}
+                    }).then(data => {
+                        if (data.code == 'ok') {
                         $.alert('Your project preferences has been updated successfully');
-                    }
+
+                        }
+                    })
 
 
                 },
