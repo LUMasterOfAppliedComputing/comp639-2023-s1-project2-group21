@@ -2,18 +2,17 @@ import db
 
 
 
-def insert(project_title, description, number_of_student, project_type, start_date, end_date, remain_number_of_student):
+def insert(project_title, description, number_of_student, project_type, start_date, end_date, remain_number_of_student,user_id):
     sqlCommand = """INSERT INTO project ( project_title, description, number_of_student, project_type,
-                     start_date, end_date, remain_number_of_student) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')""" \
-                 % (project_title, description, number_of_student, project_type, start_date, end_date,
-                    remain_number_of_student)
+                     start_date, end_date, remain_number_of_student,mentor_id) 
+                     VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')""" % (project_title, description, number_of_student, project_type, start_date, end_date,remain_number_of_student,user_id)
      
     result = db.DBOperatorInsertedId(sqlCommand)
     return result;
 
 
 def getAll():
-    sqlCommand = """SELECT * FROM project """
+    sqlCommand = """SELECT * FROM project order by id DESC """
      
     result = db.DBOperator(sqlCommand)
     return result;
@@ -41,6 +40,8 @@ def getProjectAll(ids,compId,mentorId):
     if compId:
         sqlCommand += """ where co.id  = '%s' """ % compId
 
+    sqlCommand += """ order by p.id DESC """ 
+
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
 
@@ -61,7 +62,7 @@ def getProjectByCoampny(ids):
 
 def update(id, project_title, description, number_of_student, project_type, start_date, end_date,
            remain_number_of_student):
-    sqlCommand = """UPDATE project SET id = '%s', project_title = '%s',
+    sqlCommand = """UPDATE project SET project_title = '%s',
                      description = '%s', number_of_student = '%s', project_type = '%s', 
                      start_date = '%s', end_date = '%s', remain_number_of_student = '%s' 
                      WHERE id = '%s'""" % (project_title, description,
@@ -77,3 +78,34 @@ def delete(id):
      
     result = db.DBOperator_update(sqlCommand)
     return result;
+
+def getAlltype():
+    sqlCommand = """
+                    SELECT
+                        *
+                    FROM
+                        project_type
+                   """
+     
+    selectResult = db.DBOperator(sqlCommand)
+    return selectResult
+
+def getProjectinfo(pid):
+    sqlCommand = """SELECT * FROM project where id = '%s' """ % pid
+     
+    selectResult = db.DBOperator(sqlCommand)
+    return selectResult
+
+
+
+def getAllskillJson():
+    sqlCommand = """
+                    SELECT
+                        *
+                    FROM
+                        techs_and_skills
+                   """
+     
+    selectResult = db.DBOperator(sqlCommand)
+    return selectResult
+
