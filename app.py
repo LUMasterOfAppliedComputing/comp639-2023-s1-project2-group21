@@ -16,6 +16,7 @@ from StudentRoute import studentRoute
 from StudentSkillRoute import studentSkillRoute
 from TechSkillRoute import techSkillRoute
 from UserRoute import userRoute
+from MatchRoute import matchRoute
 from queries import StudentQueries, StudentSkillQueries
 from utils import MD5Helper
 import uuid
@@ -40,6 +41,7 @@ app.register_blueprint(projectSkillRoute)
 app.register_blueprint(projectRoute)
 app.register_blueprint(studentProjectRoute)
 app.register_blueprint(studentSkillRoute)
+app.register_blueprint(matchRoute)
 
 
 @app.route("/")  # home page

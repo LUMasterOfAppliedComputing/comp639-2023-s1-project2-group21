@@ -1,98 +1,36 @@
 import db
 
 
-def insert(mentor_id, phone, summary, cid):
-    sqlCommand = """INSERT INTO mentor ( mentor_id, phone, summary,company_id)
-         VALUES ('%s', '%s', '%s', '%s')""" % (mentor_id, phone, summary, cid)
-    id = db.DBOperatorInsertedId(sqlCommand)
+def getStudentMatch():
+    sqlCommand = """SELECT
+                        sp.student_id,
+                        concat(u.first_name,' ',u.last_name),
+                        GROUP_CONCAT( DISTINCT sp.project_id ) project_id,
+                        GROUP_CONCAT( DISTINCT p.project_title ) p_title,
+                            GROUP_CONCAT(  sp.will  )as will
+                    FROM
+                        student_project sp
+                        LEFT JOIN project p ON sp.project_id = p.id
+                        LEFT JOIN user u ON u.user_id = sp.student_id
+                        left JOIN student stu ON u.user_id = stu.id
+                        where stu.placement_status = 0
+                    GROUP BY
+                        sp.student_id """
+    id = db.DBOperator(sqlCommand)
     return id
 
-
-def getAllByStudentIdAndProjectId(student_ids, mentor_id):
-    student_ids = ','.join(student_ids)
-    sqlCommand = """SELECT student_id FROM mentor_student ms where ms.mentor_id = '%s' and ms.student_id in (%s) """ % (
-    mentor_id, student_ids)
-    result = db.DBOperator(sqlCommand)
-    return result;
-
-
-def getAll():
-    sqlCommand = """
-                    SELECT
-                        *
+def getMentorMatch():
+    sqlCommand = """SELECT
+                        ms.project_id,
+                        GROUP_CONCAT(ms.student_id ) as student_id,
+                        GROUP_CONCAT( DISTINCT concat(u.first_name,' ',u.last_name)  )as student,
+                        GROUP_CONCAT(  ms.will  )as will
                     FROM
-                        mentor m
-                        LEFT JOIN company c ON m.company_id = c.id
-                        LEFT JOIN user u ON u.user_id = m.mentor_id
-                    WHERE
-                        u.role =1
-                """
+                        mentor_student ms
+                        LEFT JOIN user u ON u.user_id = ms.student_id
+                        left JOIN student stu ON u.user_id = stu.id and stu.placement_status = 0
+                    GROUP BY
+                        ms.project_id """
+    id = db.DBOperator(sqlCommand)
+    return id
 
-    selectResult = db.DBOperator(sqlCommand)
-    return selectResult
-
-
-def update(mentor_id, phone, summary):
-    sqlCommand = """UPDATE mentor SET  phone = '%s', summary = '%s' WHERE mentor_id = '%s'""" % (
-    phone, summary, mentor_id)
-
-    selectResult = db.DBOperator(sqlCommand)
-    return selectResult
-
-
-def delete(id):
-    sqlCommand = """DELETE FROM mentor WHERE mentor_id = '%s'""" % id
-
-    deleteResult = db.DBOperator_update(sqlCommand)
-    return deleteResult
-
-
-def deleteByStudentIds(mentor_id, ids):
-    sId = ",".join(ids)
-    sqlCommand = """DELETE FROM mentor_student WHERE mentor_id = '%s' and student_id in (%s)""" % (mentor_id, sId)
-    deleteResult = db.DBOperator_update(sqlCommand)
-    return deleteResult
-
-
-def updatecompany(company_name, region, city, street, website, companyid):
-    sqlCommand = """
-        UPDATE company
-        SET company_name = '%s', region = '%s',city = '%s', street = '%s',  website = '%s'
-        WHERE id = '%s'
-        """ % (company_name, region, city, street, website, companyid)
-    updateid = db.DBOperator_update(sqlCommand)
-    print(updateid)
-    return updateid
-
-
-def getMentorinfo(userid):
-    sqlCommand = """SELECT * FROM mentor m  join user u on m.mentor_id = u.user_id where u.user_id = '%s' """ % userid
-
-    selectResult = db.DBOperator(sqlCommand)
-    return selectResult
-
-
-def getProjectAll():
-    sqlCommand = """SELECT p.id,p.project_title,p.description,
-                    p.number_of_student,pt.type_name,  DATE_FORMAT(p.start_date, '%M %d %Y') as start_date,
-                    DATE_FORMAT(p.end_date, '%M %d %Y') as end_date,p.remain_number_of_student,co.company_name 
-                    FROM
-                        project p
-                        INNER JOIN mentor ON p.mentor_id = mentor.mentor_id
-                        LEFT JOIN company co ON co.id = mentor.company_id
-                        LEFT JOIN project_type pt on pt.type_id =p.project_type
-                """
-
-    selectResult = db.DBOperator(sqlCommand)
-    return selectResult
-
-
-def batchInsert(id, sidArr):
-    sqlCommand = """INSERT INTO mentor_student (mentor_id, student_id,project_id,will) VALUES"""
-    for val in sidArr:
-        sqlCommand += """  ('%s', '%s', '%s', '%s') ,""" % (id, val['sid'], val['pid'], val['will'])
-    sqlCommand = sqlCommand[:-1]
-
-    print(sqlCommand)
-    result = db.DBOperatorInsertedId(sqlCommand)
-    return result

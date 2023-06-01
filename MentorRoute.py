@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, request, session,redirect, jsonify, make_response
-
+from flask import Blueprint, render_template, request, session, redirect, jsonify, make_response, json
 
 from queries import UsersQueries, MentorQueries, ProjectQueries, CompanyQueries
 from utils import MD5Helper
@@ -16,16 +15,6 @@ def getAll():
 def getAllJson():
     mentors = MentorQueries.getAll()
     return make_response(jsonify(mentors), 200)
-#
-# @mentorRoute.route('/mentor/getAll')
-# def getAll():
-#     mentors = MentorQueries.getAll()
-#     return render_template("mentors.html", mentors=mentors)
-#
-# @mentorRoute.route('/mentor/getAllJson')
-# def getAllJson():
-#     mentors = MentorQueries.getAll()
-#     return make_response(redirect(url_for('/mentors.html'), jsonify(mentors),200))
 
 @mentorRoute.route('/mentor/delete/<id>')
 def delete(id):
@@ -115,3 +104,26 @@ def updatecompanyprofile():
         return redirect("/companyprofile")
 
     return redirect("/companyprofile",errorMsg="add mentors wrong")
+
+@mentorRoute.route('/mentor/prestudent')
+def prestudent():
+    return render_template("/mentor/preferredStu.html")
+
+
+
+@mentorRoute.route('/studentMentor/add',methods=["POST"])
+def addPreferStudent():
+    stuList = request.form.get("sidList")
+    stuList2= json.loads(stuList)
+    sidArr = [str(student['sid']) for student in stuList2]
+
+    updateSids = MentorQueries.getAllByStudentIdAndProjectId(sidArr,session['user_id'])
+    values = [str(value) for d in updateSids for value in d.values()]
+
+    if len(updateSids) >0:
+        MentorQueries.deleteByStudentIds(session['user_id'],values)
+
+    MentorQueries.batchInsert(session['user_id'], stuList2)
+
+    data = {"message": "ok", "code": "ok"}
+    return make_response(jsonify(data), 200)

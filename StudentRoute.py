@@ -39,6 +39,30 @@ def getStudentById():
         data = {"message": "user email doesn't exist", "code": "error"}
     return make_response(jsonify(data), 200)
 
+@studentRoute.route('/student/getStudentsByIds')
+def getStudentsByIds():
+    idarr = request.args.get("idArr")
+    print(idarr)
+    user = StudentQueries.getStudentsByIds(idarr)
+    projects = ProjectQueries.getProjectAll(None,None,session['user_id'])
+    own_projects = [pj for pj in projects if pj['if_current_mentor'] == '1']
+
+    if len(user) > 0: #if found a row return ok , if nothing found return error
+        data = {"message": "ok", "code": "ok","data":user,"projects":own_projects}
+    else:
+        data = {"message": "user email doesn't exist", "code": "error"}
+    return make_response(jsonify(data), 200)
+
+@studentRoute.route('/student/getMentorPreferred')
+def getMentorPreferred():
+    userId = session['user_id']
+    user = StudentQueries.getPreferredStudent(userId)
+    if len(user) > 0:
+        data = user
+    else:
+        data = {"message": "user email doesn't exist", "code": "error"}
+    return make_response(jsonify(data), 200)
+
 
 def checkStudentProfileAndSurvey(func):
 

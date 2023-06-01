@@ -23,7 +23,6 @@ jQuery.validator.setDefaults({
  **/
 function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns) {
     setTimeout(1000);
-    debugger
     $.ajax({
             url: url,
             type: "get",
@@ -753,6 +752,96 @@ function preferStudents() {
     });
     //todo add to mentor prefer student table.
     alert(idArr)
+
+    $.ajax({
+        url: "/student/getStudentsByIds?idArr=" + idArr,
+        type: "GET",
+        data: idArr,
+    }).then(data => {
+        console.log(data);
+        var options = ""
+        for (let i = 0; i < data.data.length; i++) {
+            selection=""
+            data.projects.forEach(pro=>{
+            console.log(pro)
+            selection += "<option value='" +pro['id'] + "'>" + pro['project_title'] + "</option>"
+            })
+
+            let student = data.data[i];
+            console.log(student)
+            let studentElement = student['skill'];
+            if (studentElement == null) studentElement = ""
+            options += "<tr>" +
+                "<td class='hide' name='stuId' value='" + student['id'] + "'>" + student['id'] + "</td>" +
+                "<td>" + student['first_name'] + "\t" + student["last_name"] + "</td>" +
+                "<td>" + studentElement + "</td>" +
+                "<td  style=\"padding-right: 100px\"><select id=\"menProject" + student['id'] + "\" name=\"menProject\" class=\"menCompany form-control\">'" + selection + "'</select></td>" +
+                "<td >" +
+                "  <input type='radio' id='option" + student['id'] + "' name='option" + student['id'] + "' value='2'>" +
+                "  <label for='option1" + student['id'] + "'>Yes</label>" +
+                "  <input type='radio' id='option" + student['id'] + "' name='option" + student['id'] + "' value='1'>" +
+                "  <label for='option2" + student['id'] + "'>Maybe</label>" +
+                "</td>" +
+                "" +
+                "</tr>";
+
+        }
+
+        console.log(options)
+        $.confirm({
+            theme: 'dark',
+            boxWidth: '60%',
+            useBootstrap: false,
+            title: 'Student Preference',
+            content: '' +
+                ' <table id="tablePreStudent" class="display">\n' +
+                '        <thead>\n' +
+                '          <tr class="odd">\n' +
+                '           <th width="18%">Student Name</th>\n' +
+                '           <th  width="38%">Skills</th>\n' +
+                '           <th  width="24%" style="padding-right: 100px">Project Allocation</th>\n' +
+                '           <th  width="20%">Willings</th>\n' +
+                '          </tr>\n' +
+                '        </thead>\n' +
+                '        <tbody>' + options +
+                '        </tbody>' +
+                ' </table>',
+
+            buttons: {
+                Save: async function () {
+                    var sidList = [];
+
+                    $('#tablePreStudent [name="stuId"]').each(function (eachh) {
+                        console.log(eachh)
+                        sidList.push({
+                            "sid": parseInt(this.innerHTML),
+                            "pid": $("#menProject" + this.innerHTML ).val() == null ? 0 :$("#menProject"+ this.innerHTML ).val(),
+                            "will": $("input[name='option" + this.innerHTML + "']:checked").val() == null ? 0 : $("input[name='option" + this.innerHTML + "']:checked").val()
+                        });
+                    });
+                    debugger
+                    let myJson = JSON.stringify(sidList);
+
+                    $.ajax({
+                        url: "/studentMentor/add",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {sidList: myJson}
+                    }).then(data => {
+                        if (data.code == 'ok') {
+                            $.alert('Student preferences has been updated successfully');
+
+                        }
+                    })
+
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
 }
 
 async function addNewMentor() {
@@ -1142,7 +1231,7 @@ function addPreferredProject() {
                         console.log(eachh)
                         pidList.push({
                             "pid": parseInt(this.innerHTML),
-                            "will": $("input[name='option" + this.innerHTML + "']:checked").val()
+                            "will": $("input[name='option" + this.innerHTML + "']:checked").val() == null ? 0 : $("input[name='option" + this.innerHTML + "']:checked").val()
                         });
                     });
                     debugger
@@ -1155,7 +1244,7 @@ function addPreferredProject() {
                         data: {pidList: myJson}
                     }).then(data => {
                         if (data.code == 'ok') {
-                        $.alert('Your project preferences has been updated successfully');
+                            $.alert('Your project preferences has been updated successfully');
 
                         }
                     })

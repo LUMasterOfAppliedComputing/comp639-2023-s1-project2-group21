@@ -1,12 +1,19 @@
 import db
 
 
-def insert(mentor_id, phone, summary,cid):
+def insert(mentor_id, phone, summary, cid):
     sqlCommand = """INSERT INTO mentor ( mentor_id, phone, summary,company_id)
-         VALUES ('%s', '%s', '%s', '%s')""" % ( mentor_id, phone, summary,cid)
-     
+         VALUES ('%s', '%s', '%s', '%s')""" % (mentor_id, phone, summary, cid)
     id = db.DBOperatorInsertedId(sqlCommand)
     return id
+
+
+def getAllByStudentIdAndProjectId(student_ids, mentor_id):
+    student_ids = ','.join(student_ids)
+    sqlCommand = """SELECT student_id FROM mentor_student ms where ms.mentor_id = '%s' and ms.student_id in (%s) """ % (
+    mentor_id, student_ids)
+    result = db.DBOperator(sqlCommand)
+    return result;
 
 
 def getAll():
@@ -20,41 +27,50 @@ def getAll():
                     WHERE
                         u.role =1
                 """
-     
+
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
 
 
 def update(mentor_id, phone, summary):
-    sqlCommand = """UPDATE mentor SET  phone = '%s', summary = '%s' WHERE mentor_id = '%s'""" % (phone, summary, mentor_id)
-     
+    sqlCommand = """UPDATE mentor SET  phone = '%s', summary = '%s' WHERE mentor_id = '%s'""" % (
+    phone, summary, mentor_id)
+
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
 
 
 def delete(id):
     sqlCommand = """DELETE FROM mentor WHERE mentor_id = '%s'""" % id
-     
+
     deleteResult = db.DBOperator_update(sqlCommand)
     return deleteResult
 
-def updatecompany(company_name, region,city,street,website,companyid):
-    sqlCommand ="""
+
+def deleteByStudentIds(mentor_id, ids):
+    sId = ",".join(ids)
+    sqlCommand = """DELETE FROM mentor_student WHERE mentor_id = '%s' and student_id in (%s)""" % (mentor_id, sId)
+    deleteResult = db.DBOperator_update(sqlCommand)
+    return deleteResult
+
+
+def updatecompany(company_name, region, city, street, website, companyid):
+    sqlCommand = """
         UPDATE company
         SET company_name = '%s', region = '%s',city = '%s', street = '%s',  website = '%s'
         WHERE id = '%s'
-        """%(company_name, region,city,street,website,companyid)
+        """ % (company_name, region, city, street, website, companyid)
     updateid = db.DBOperator_update(sqlCommand)
     print(updateid)
     return updateid
 
 
-
 def getMentorinfo(userid):
     sqlCommand = """SELECT * FROM mentor m  join user u on m.mentor_id = u.user_id where u.user_id = '%s' """ % userid
-     
+
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
+
 
 def getProjectAll():
     sqlCommand = """SELECT p.id,p.project_title,p.description,
@@ -66,6 +82,17 @@ def getProjectAll():
                         LEFT JOIN company co ON co.id = mentor.company_id
                         LEFT JOIN project_type pt on pt.type_id =p.project_type
                 """
-     
+
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
+
+
+def batchInsert(id, sidArr):
+    sqlCommand = """INSERT INTO mentor_student (mentor_id, student_id,project_id,will) VALUES"""
+    for val in sidArr:
+        sqlCommand += """  ('%s', '%s', '%s', '%s') ,""" % (id, val['sid'], val['pid'], val['will'])
+    sqlCommand = sqlCommand[:-1]
+
+    print(sqlCommand)
+    result = db.DBOperatorInsertedId(sqlCommand)
+    return result

@@ -1,76 +1,55 @@
-<!-- Name: CP Jiang / Student ID: 1148594 -->
-<!-- Use Bootstrap nav class to give the nav bar a modern view -->
-<!-- Added a project page for role mentor -->
-
-{% extends "mentor/mentorbase.html" %}
+{% extends "base.html" %}
 {% block content %}
-    <body>
     <div style="padding-top:50px;min-height: 700px">
         <div class="container widthFull">
-            <table id="myTableOne" class="display">
+            <table id="myTablePreStudent" class="display">
                 <thead>
                 <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Project Title</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">number of students</th>
-                    <th scope="col">project type</th>
-                    <th scope="col">start date</th>
-                    <th scope="col">end date</th>
-                    <th scope="col">remain number of students</th>
-                    <th scope="col">company name</th>
-                    <th scope="col">Action</th>
+                    <th></th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Student No</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Skills</th>
+                    <th>CV</th>
+                    <th>Will</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
-            {% if  session['role'] ==2 %}
-                <button class="btn btn-primary" onclick="addPreferredProject()">Add preferred</button>
-            {% endif %}
+            {% if session['role'] ==1 %} <button class="btn btn-primary" onclick="preferStudents()">Prefer students</button> {% else %}{% endif %}
         </div>
     </div>
+
     <script>
-        var btn = []
-        {% if session['role'] ==0 %}
-            btn = [{
-                "btnName": "Preferred Students",
-                "func": "checkPreferredStudent"
+        var ulr = '/student/getMentorPreferred'
+        var btn = [
+            {
+                "btnName": "View Profile",
+                "func": "checkStudentProfile"
             }
-            ]
-        {% endif %}
-        {% if session['role'] ==1 %}
-            btn = [{
-                "btnName": "Preferred Students",
-                "func": "checkPreferredStudent"
-            },
-                {
-                    "btnName": "Edit",
-                    "func": "alert"
-                }
-            ]
-
-            ;
-        {% endif %}
-
-
+        ];
         $(function () {
-            renderDataTable('#myTableOne', '/mentor/getProjectAllJson', [
+            renderDataTable('#myTablePreStudent',ulr, [
                 {"data": null},
-                {"data": "project_title"},
-                {"data": "description"},
-                {"data": "number_of_student"},
-                {"data": "type_name"},
-                {"data": "start_date"},
-                {"data": "end_date"},
-                {"data": "remain_number_of_student"},
-                {"data": "company_name"},
+                {"data": "first_name"},
+                {"data": "last_name"},
+                {"data": "student_id_no"},
+                {"data": "phone"},
+                {"data": "email"},
+                {"data": "skill"},
+                {"data": "cv",render: function(data, type, row, meta){
+                if(type === 'display'){
+                    data = '<a href="/download/' + data + '">' + data + '</a>';
+                }
+                return data;
+            }},
+                {"data": "will"}
             ], true, true, 9, btn);
-
         })
 
     </script>
-    <!-- //footer -->
-    </body>
-
 {% endblock %}

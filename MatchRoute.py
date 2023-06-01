@@ -1,129 +1,70 @@
-from flask import Blueprint, render_template, request, session, redirect, jsonify, make_response, json
+import json
 
-from queries import UsersQueries, MentorQueries, ProjectQueries, CompanyQueries
-from utils import MD5Helper
+import pandas as pd
+from flask import Blueprint, render_template
 
-mentorRoute = Blueprint('mentorRoute', __name__)
+import db
+from queries import MatchQueries
 
-
-@mentorRoute.route('/mentor/getAll')
-def getAll():
-    mentors = MentorQueries.getAll()
-    return render_template("mentors.html", mentors=mentors)
-
-@mentorRoute.route('/mentor/getAllJson')
-def getAllJson():
-    mentors = MentorQueries.getAll()
-    return make_response(jsonify(mentors), 200)
-
-@mentorRoute.route('/mentor/delete/<id>')
-def delete(id):
-    deleteId = UsersQueries.delete(id)
-    return render_template("users.html")
-
-@mentorRoute.route('/mentor/addOrUpdate')
-def addOrUpdate():
-    mentorId = request.form.get("mentorId")
-    phone = request.form.get("phone")
-    summary = request.form.get("summary")
-    id = MentorQueries.insert(mentorId, phone, summary)
-    if id >0:
-        return render_template("mentors.html")
-    #  MentorQueries.update(mentorId, phone, summary)
-
-    return render_template("mentors.html",errorMsg="add mentors wrong")
-
-@mentorRoute.route('/mentor/project')
-def mentorproject():
-    role = session['role']
-    if role == 1:
-        mentor=MentorQueries.getMentorinfo(session['user_id'])
-        projects = ProjectQueries.getProjectAll(None,mentor[0]['company_id'],session['user_id'])
-    else:
-        projects = ProjectQueries.getProjectAll(None,None,None)
-    return render_template("mentor/project.html", projects=projects)
-
-@mentorRoute.route('/mentor/profile')
-def mentorprofile():
-    id = session['user_id']
-    profile = MentorQueries.getMentorinfo(id)
-    return render_template("mentor/mentorprofile.html", profile=profile)
-
-@mentorRoute.route('/mentor/updateprofile')
-def mentorupdateprofile():
-    id = session['user_id']
-    profile = MentorQueries.getMentorinfo(id)
-    return render_template("mentor/mentorUpdateprofile.html", profile=profile)
-
-@mentorRoute.route('/mentor/Update',methods=["POST"])
-def Update():
-    id = request.form.get("mentorid")
-    first_name = request.form.get("firstname")
-    last_name = request.form.get("lastname")
-    # password = request.form.get("password")
-    email = request.form.get("email")
-    phone = request.form.get("phone")
-    summary = request.form.get("summary")
-    UsersQueries.updateprofile(id, first_name, last_name, email)
-    MentorQueries.update(id, phone, summary)
-
-    profile = MentorQueries.getMentorinfo(id)
-    return render_template("mentor/mentorprofile.html", profile=profile)
+matchRoute = Blueprint('matchRoute', __name__)
 
 
-@mentorRoute.route('/mentor/getProjectAllJson')
-def getProjectAllJson():
-    role = session['role']
-    if role == 1:
-        mentor = MentorQueries.getMentorinfo(session['user_id'])
-        projects = ProjectQueries.getProjectAll(None, mentor[0]['company_id'],session['user_id'])
-    else:
-        projects = ProjectQueries.getProjectAll(None, None,None)
-    return make_response(jsonify(projects), 200)
+@matchRoute.route('/match/getMatch')
+def getAllMatchs():
+    data_two_d_array = combine_lists2D()
+    return render_template("mentors.html", mentors=data_two_d_array)
 
 
+def combine_lists2D():
+    cursor = db.DBConnect()
+    cursor.execute("""SELECT
+                        id,
+                        concat(first_name," ",last_name) as name
+                        FROM student stu 
+                        LEFT JOIN user u ON u.user_id = stu.id
+                        where stu.placement_status = 0
+                        """)
+    students = cursor.fetchall()
 
-@mentorRoute.route('/companyprofile')
-def companyprofile():
-    userid = session['user_id']
-    company = CompanyQueries.getcompany(userid)
-    print(company)
-    return render_template("mentor/companyprofile.html", company=company)
+    cursor.execute("SELECT * FROM project")
+    projects = cursor.fetchall()
 
+    matrix = [[0 for _ in range(len(projects))] for _ in range(len(students))]
 
-@mentorRoute.route('/updatecompanyprofile',methods=['POST'])
-def updatecompanyprofile():
-    companyid = request.form.get("companyid")
-    company_name = request.form.get("company_name")
-    region = request.form.get("region")
-    city = request.form.get("city")
-    street = request.form.get("street")
-    website = request.form.get("website")
-    updateid = MentorQueries.updatecompany(company_name, region,city,street,website,companyid)
-    if updateid >0:
-        return redirect("/companyprofile")
+    student_id_to_index = {student[0]: i for i, student in enumerate(students)}
+    project_id_to_index = {project[0]: i for i, project in enumerate(projects)}
 
-    return redirect("/companyprofile",errorMsg="add mentors wrong")
+    cursor.execute("""SELECT
+                        sp.project_id,
+                        sp.student_id,
+                        sp.will
+                    FROM
+                        student_project sp
+                        INNER JOIN  student stu ON sp.student_id = stu.id 
+                        AND stu.placement_status = 0
+                        """)
+    student_projects = cursor.fetchall()
 
-@mentorRoute.route('/mentor/prestudent')
-def prestudent():
-    return render_template("/mentor/preferredStu.html")
+    for student_project in student_projects:
+        project_id = student_project[0]
+        student_id = student_project[1]
+        will_value = student_project[2]
+        student_index = student_id_to_index[student_id]
+        project_index = project_id_to_index[project_id]
+        matrix[student_index][project_index] = will_value
 
+    cursor.execute("SELECT * FROM mentor_student")
+    mentor_projects = cursor.fetchall()
 
+    for mentor_project in mentor_projects:
+        student_id = mentor_project[0]
+        project_id = mentor_project[3]
+        will_value = mentor_project[2]
+        student_index = student_id_to_index[student_id]
+        project_index = project_id_to_index[project_id]
+        matrix[student_index][project_index] += will_value
 
-@mentorRoute.route('/studentMentor/add',methods=["POST"])
-def addPreferStudent():
-    stuList = request.form.get("sidList")
-    stuList2= json.loads(stuList)
-    sidArr = [str(student['sid']) for student in stuList2]
-
-    updateSids = MentorQueries.getAllByStudentIdAndProjectId(sidArr,session['user_id'])
-    values = [str(value) for d in updateSids for value in d.values()]
-
-    if len(updateSids) >0:
-        MentorQueries.deleteByStudentIds(session['user_id'],values)
-
-    MentorQueries.batchInsert(session['user_id'], stuList2)
-
-    data = {"message": "ok", "code": "ok"}
-    return make_response(jsonify(data), 200)
+    df = pd.DataFrame(matrix, index=[student[1] for student in students], columns=[project[1] for project in projects])
+    print(df)
+    json_data = df.to_json(orient='split')
+    print(json_data)
