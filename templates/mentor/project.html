@@ -7,6 +7,7 @@
     <body>
     <div style="padding-top:50px;min-height: 700px">
         <div class="container widthFull">
+			<button class="btn btn-primary" onclick="addNewProjectOrupdate()">Add new Project</button>
             <table id="myTableOne" class="display">
                 <thead>
                 <tr>
@@ -25,9 +26,8 @@
                 <tbody>
                 </tbody>
             </table>
-            {% if  session['role'] ==2 %}
-                <button class="btn btn-primary" onclick="addPreferredProject()">Add preferred</button>
-            {% endif %}
+
+			
         </div>
     </div>
     <script>
@@ -45,12 +45,14 @@
                 "func": "checkPreferredStudent"
             },
                 {
-                    "btnName": "Edit",
-                    "func": "alert"
-                }
-            ]
 
-            ;
+                "btnName": "Edit",
+                "func": "addNewProjectOrupdate"
+            },
+            {
+                "btnName": "required skills ",
+                "func": "updateSkill"
+            }];
         {% endif %}
 
 
