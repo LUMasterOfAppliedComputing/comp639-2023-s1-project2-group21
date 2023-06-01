@@ -82,7 +82,7 @@ var option1;
 
 const data = [];
 for (let i = 0; i < 5; ++i) {
-  data.push(Math.round(Math.random() * 200));
+  data.push(Math.round(Math.random() * 150));
 }
 option1 = {
   xAxis: {
@@ -120,9 +120,9 @@ option1 = {
 function run() {
   for (var i = 0; i < data.length; ++i) {
     if (Math.random() > 0.9) {
-      data[i] += Math.round(Math.random() * 2000);
+      data[i] += Math.round(Math.random() * 1500);
     } else {
-      data[i] += Math.round(Math.random() * 200);
+      data[i] += Math.round(Math.random() * 150);
     }
   }
   myChart1.setOption({
@@ -145,6 +145,7 @@ option1 && myChart1.setOption(option1);
 
 // 第三个图表
 
+
 var ROOT_PATH2 = 'https://echarts.apache.org/examples';
 
 var chartDom2 = document.getElementById('main2');
@@ -152,7 +153,7 @@ var myChart2 = echarts.init(chartDom2);
 var option2;
 
 myChart2.showLoading();
-$.get(ROOT_PATH2 + '/data/asset/geo/USA.json', function (usaJson) {
+$.get('../static/js/USA.json', function (usaJson) {
   myChart2.hideLoading();
   echarts.registerMap('USA', usaJson, {
     Alaska: {
