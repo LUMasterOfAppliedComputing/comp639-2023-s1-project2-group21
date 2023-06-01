@@ -1,0 +1,109 @@
+<!-- Name: CP Jiang / Student ID: 1148594 -->
+<!-- Use Bootstrap nav class to give the nav bar a modern view -->
+<!-- Added a project page for role mentor -->
+
+{% extends "staff/staffbase.html" %}
+{% block content %}
+<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+<body>
+<div id="container" style="width:100%">
+ 
+    <div id="header" style="background-color:#FFA500;height: 100px;width:100%">
+    <h1>Dashboard </h1></div>
+     
+    <div id="menu" style="background-color:#FFD700;height: 1200px;;width:200px;float:left;">
+    <b>MENU</b><br>
+    replacement<br>
+    projects<br>
+    students</div>
+     
+    
+    
+          <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div style="margin-left: 200px;height:1200px;width:1000px;display: flex; justify-content:space-around;flex-wrap: wrap"float:left>
+        <div id="main" style="height:600px;width:500px;justify-content:space-around;"></div>
+       
+    </div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+
+ var ROOT_PATH = 'https://echarts.apache.org/examples';
+
+var chartDom = document.getElementById('main');
+var myChart = echarts.init(chartDom);
+var option;
+
+myChart.showLoading();
+$.get('../static/js/flare.json', function (data) {
+  myChart.hideLoading();
+  data.children.forEach(function (datum, index) {
+    index % 2 === 0 && (datum.collapsed = true);
+  });
+  myChart.setOption(
+    (option = {
+      tooltip: {
+        trigger: 'item',
+        triggerOn: 'mousemove'
+      },
+      series: [
+        {
+          type: 'tree',
+          data: [data],
+          top: '1%',
+          left: '7%',
+          bottom: '1%',
+          right: '20%',
+          symbolSize: 7,
+          label: {
+            position: 'left',
+            verticalAlign: 'middle',
+            align: 'right',
+            fontSize: 9
+          },
+          leaves: {
+            label: {
+              position: 'right',
+              verticalAlign: 'middle',
+              align: 'left'
+            }
+          },
+          emphasis: {
+            focus: 'descendant'
+          },
+          expandAndCollapse: true,
+          animationDuration: 550,
+          animationDurationUpdate: 750
+        }
+      ]
+    })
+  );
+});
+
+option && myChart.setOption(option);
+
+
+
+ 
+
+
+    </script>
+
+
+ 
+
+     
+    <div id="footer" style="background-color:#FFA500;clear:both;text-align:center;">
+    lincoln university </div>
+     
+    </div>
+
+
+
+
+  
+
+
+</body>
+
+
+{% endblock %}
