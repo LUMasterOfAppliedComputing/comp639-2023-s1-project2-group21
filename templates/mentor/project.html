@@ -4,58 +4,10 @@
 
 {% extends "mentor/mentorbase.html" %}
 {% block content %}
-
-
     <body>
-    <!-- portfolio -->
-
-    {#	<section class="w3-gallery">#}
-    {#		<div class="porfolio-inf py-5">#}
-    {#			<div class="container pt-lg-5 pb-lg-4">#}
-    {#				<table class="table">#}
-    {#					<thead>#}
-    {#						<tr>#}
-    {#							<th scope="col">#</th>#}
-    {#							<th scope="col">Project Title</th>#}
-    {#							<th scope="col">Description</th>#}
-    {#							<th scope="col">number of students</th>#}
-    {#							<th scope="col">project type</th>#}
-    {#							<th scope="col">strat date</th>#}
-    {#							<th scope="col">ending date</th>#}
-    {#							<th scope="col">remain number of students</th>#}
-    {#							<th scope="col">company name</th>#}
-    {#						</tr>#}
-    {#					</thead>#}
-    {#					<tbody>#}
-    {#						{% for project in projects %}#}
-    {#						<tr>#}
-    {#							<th scope="row">{{project['id']}}</th>#}
-    {#							<td>{{project['project_title']}}</td>#}
-    {#							<td>{{project['description']}}</td>#}
-    {#							<td>{{project['number_of_student']}}</td>#}
-    {#							<td>{{project['project_type']}}</td>#}
-    {#							<td>{{project['start_date']}}</td>#}
-    {#							<td>{{project['end_date']}}</td>#}
-    {#							<td>{{project['remain_number_of_student']}}</td>#}
-    {#							<td>{{project['company_id']}}</td>#}
-    {#							<td><button type="button" class="btn btn-primary">prefered students</button></td>#}
-    {#						</tr>#}
-    {#						{% endfor %}#}
-    {##}
-    {#					</tbody>#}
-    {#				</table>#}
-    {#			</div>#}
-    {#		</div>#}
-    {##}
-    {##}
-    {##}
-    {##}
-    {##}
-    {##}
-    {#	</section>#}
-
     <div style="padding-top:50px;min-height: 700px">
         <div class="container widthFull">
+			<button class="btn btn-primary" onclick="addNewProjectOrupdate()">Add new Project</button>
             <table id="myTableOne" class="display">
                 <thead>
                 <tr>
@@ -74,24 +26,34 @@
                 <tbody>
                 </tbody>
             </table>
-            {% if  session['role'] ==2 %}
-                <button class="btn btn-primary" onclick="addPreferredProject()">Add preferred</button>
-            {% endif %}
+
+			
         </div>
     </div>
     <script>
-        {% if session['role'] ==1 %}
-            var btn = [{
+        var btn = []
+        {% if session['role'] ==0 %}
+            btn = [{
                 "btnName": "Preferred Students",
-                "func": "alert"
+                "func": "checkPreferredStudent"
             }
-            ];
-        {% elif session['role'] ==2%}
-            var btn = [{
-                "btnName": "Add to Wishlist",
-                "func": "alert"
-            }
-            ];{% endif %}
+            ]
+        {% endif %}
+        {% if session['role'] ==1 %}
+            btn = [{
+                "btnName": "Preferred Students",
+                "func": "checkPreferredStudent"
+            },
+                {
+
+                "btnName": "Edit",
+                "func": "addNewProjectOrupdate"
+            },
+            {
+                "btnName": "required skills ",
+                "func": "updateSkill"
+            }];
+        {% endif %}
 
 
         $(function () {

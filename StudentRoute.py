@@ -9,14 +9,25 @@ studentRoute = Blueprint('StudentRoute', __name__)
 
 @studentRoute.route('/student/getAll')
 def get_users():
-    students = StudentQueries.getAll()
-    return render_template("students.html", students=students)
+    pid = request.args.get("pid")
+    return render_template("students.html",pid=pid)
 
 
 @studentRoute.route('/student/getAllJson')
 def get_students():
-    students = StudentQueries.getAll()
+    pid = request.args.get("pid")
+    if pid:
+        students = StudentQueries.getAllRanked(pid)
+    else:
+        students = StudentQueries.getAll()
     return make_response(jsonify(students), 200)
+
+@studentRoute.route('/student/getAllRanked')
+def get_students_ranked():
+    pid = request.args.get("pid")
+    students = StudentQueries.getAllRanked(pid)
+    return make_response(jsonify(students), 200)
+
 
 @studentRoute.route('/student/getStudentById')
 def getStudentById():
@@ -54,5 +65,5 @@ def studentproject():
     if viewwishlist != None:
         projects = StudentWishlistQueries.showwishlist(id)
     else:
-        projects = ProjectQueries.getProjectAll(None)
+        projects = ProjectQueries.getProjectAll(None,None,None)
     return render_template("student/project.html", projects=projects)

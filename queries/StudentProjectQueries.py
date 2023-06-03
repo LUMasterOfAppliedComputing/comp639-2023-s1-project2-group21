@@ -31,9 +31,9 @@ def delete(sid,pid):
 
 
 def batchInsert(id, formDatas):
-    sqlCommand = """INSERT INTO student_project (student_id, project_id, `rank`) VALUES"""
+    sqlCommand = """INSERT INTO student_project (student_id, project_id, `rank`, will) VALUES"""
     for idx, val in enumerate(formDatas):
-        sqlCommand += """  ('%s', '%s', '%s') ,""" % (id, val,idx)
+        sqlCommand += """  ('%s', '%s', '%s', '%s') ,""" % (id, val['pid'],idx,val['will'])
     sqlCommand = sqlCommand[:-1]
 
     print(sqlCommand)
@@ -52,6 +52,7 @@ def getAllByStudentIdAndProjectId(student_id,project_id):
 
 def preferredProject(id):
     sqlCommand = f"""SELECT
+                       (sp.rank+1) as 'rank',
                         p.id,
                         p.project_title,
                         CONCAT(u.first_name ,' ',u.last_name ) as 'mentor',
@@ -69,7 +70,8 @@ def preferredProject(id):
                         LEFT JOIN company co ON co.id = mentor.company_id 
                         LEFT JOIN project_type pt ON pt.type_id = p.project_type 
                         left JOIN user u on mentor.mentor_id = u.user_id 
-                    WHERE sp.student_id = {id}"""
+                    WHERE sp.student_id = {id} 
+                    order by sp.rank """
     print(sqlCommand)
     result = db.DBOperator(sqlCommand)
     return result

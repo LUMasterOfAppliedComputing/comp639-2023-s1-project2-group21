@@ -13,6 +13,7 @@
                     <th>Email</th>
                     <th>Skills</th>
                     <th>CV</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -24,7 +25,7 @@
     </div>
 
     <script>
-        var flag = {% if session['role'] ==1 %} true {% else %} false{% endif %}
+        var ulr = {% if pid %} '/student/getAllJson?pid='+{{ pid }} {% else %}'/student/getAllJson'{% endif %}
         var btn = [
             {
                 "btnName": "View Profile",
@@ -32,7 +33,7 @@
             }
         ];
         $(function () {
-            renderDataTable('#myTableStudent', '/student/getAllJson', [
+            renderDataTable('#myTableStudent',ulr, [
                 {"data": null},
                 {"data": "first_name"},
                 {"data": "last_name"},
@@ -40,8 +41,14 @@
                 {"data": "phone"},
                 {"data": "email"},
                 {"data": "skill"},
-                {"data": "cv"}
-            ], true, true, 8, btn);
+                {"data": "cv",render: function(data, type, row, meta){
+                if(type === 'display'){
+                    data = '<a href="/download/' + data + '">' + data + '</a>';
+                }
+                return data;
+            }},
+                {"data": "placement_status"}
+            ], true, true, 9, btn);
         })
 
     </script>

@@ -4,6 +4,95 @@ jQuery.validator.setDefaults({
 });
 
 
+/**
+ *  a function to initial a Datatable by passing
+ *      formId:     the pre-required empty <table id="formId" > and with initialed <th>(s)
+ *
+ *      URL:        the back-end route as datasource to load the data of a datatable
+ *
+ *      columns:    the columns where each column should be put
+ *
+ *      flag:       indicate if a set of button is needed or not
+ *
+ *   checkboxFlag :   indicate if a checkbox is needed in front of each row is needed or not
+ *
+ *      target:     if button required then target is where the but located in the table.
+ *
+ *      btns:       an array of object that represent the button name and function to be called on click the button
+ *
+ **/
+function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns) {
+    setTimeout(1000);
+    debugger
+    $.ajax({
+            url: url,
+            type: "get",
+            dataType: "JSON",
+            success: function (data) {
+                var columnDefs = []
+                if (flag) {
+                    columnDefs.push(
+                        {
+                            "render": function (data, type, meta, row) {
+                                var btn = ""
+                                console.log(data)
+                                console.log(meta)
+                                console.log(type)
+                                console.log(row)
+                                debugger
+                                btns.forEach(button => {
+                                    console.log(button.btnName)
+                                    if (button.btnName == 'Edit' && meta.if_current_mentor != '1') {
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                    } else {
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
+                                    }
+                                })
+                                return btn
+                            },
+                            "targets": target
+                        }
+                    )
+                }
+                if (checkboxFlag) {
+                    columnDefs.push(
+                        {
+                            "render": function (data, type, meta, row) {
+                                var btn = "<div align='center'><input type=\"checkbox\" name=\"ckb-jobid\" value=" + (meta.id) + "></div>"
+                                return btn;
+                            },
+                            "targets": 0
+                        }
+                    )
+                }
+                if ($.fn.dataTable.isDataTable(formId)) {
+                    console.log("dataTable1")
+                    let dataTable1 = $(formId).dataTable();
+                    dataTable1.fnClearTable()
+                    dataTable1.fnAddData(data, true)
+                } else {
+                    $(formId).dataTable({
+                        "autoWidth": false,
+                        select: {
+                            style: 'os',
+                            selector: 'td:first-child'
+                        },
+                        "dataSrc": "",
+                        "order": [[0, "desc"]],  // HERE !! ERROR TRIGGER!
+                        "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
+                        "data": data,
+                        "columns": columns,
+                        "columnDefs": columnDefs
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+
+            }
+        }
+    );
+}
+
 $(function () {
     $("#noti").on("click", function (func) {
         allMembers = []
@@ -293,7 +382,20 @@ function addMentor(fromdata) {
     }).then(data => {
         if (data.code == 'ok') {
             $.alert("Mentor has been added successfully")
-
+            var btn = [
+                {
+                    "btnName": "edit",
+                    "func": "alert"
+                }, {
+                    "btnName": "delete",
+                    "func": "alert"
+                }];
+            renderDataTable("#myTableOne", "/mentor/getAllJson", [
+                {"data": "first_name"},
+                {"data": "phone"},
+                {"data": "email"},
+                {"data": "company_name"},
+            ], true, 3, btn)
         }
     })
 
@@ -337,6 +439,7 @@ function validateQueForm() {
             que_9: "required",
             que_10: "required"
         }
+
         ,
         errorPlacement: function (error, element) {
             return true;
@@ -381,46 +484,6 @@ function sendEmailPassword(email) {
     })
 }
 
-
-function validateTrainerForm() {
-
-    var form = $("#trainerRegiForm");
-    form.validate({
-        rules: {
-            firstname: {
-                required: true,
-                lettersonly: true
-            },
-            familyname: {
-                required: true,
-                lettersonly: true
-            },
-            email: {
-                required: true,
-                email: true
-            },
-            gender: "required",
-            qualifications: "required",
-            phone: {
-                required: true,
-                digits: true,
-                minlength: 10,
-                maxlength: 11
-            },
-            summary: "required",
-
-        },
-        errorPlacement: function (error, element) {
-            return true;
-        }
-    });
-    let valid = form.valid();
-    if (!valid) {
-        $.MessageBox("please fill out all required information in correct format")
-    }
-    return valid
-}
-
 function validateForm() {
 
     var form = $("#regiForm");
@@ -431,10 +494,6 @@ function validateForm() {
                 lettersonly: true
             },
             lastname: {
-                required: true,
-                lettersonly: true
-            },
-            alternativeName: {
                 required: true,
                 lettersonly: true
             },
@@ -462,6 +521,15 @@ function validateForm() {
                 email: true
             }
 
+        }, messages: {
+            firstname: "please enter a valid first name",
+            lastname: "please enter a valid last name",
+
+            password: {
+                required: "password is required",
+                minlength: "password length should be greater than 6 "
+            },
+            email: "please enter a valid email",
         },
         errorPlacement: function (error, element) {
             return true;
@@ -558,6 +626,15 @@ function checksendEmail() {
     });
 }
 
+function changeIntention(ele) {
+    if (ele.value == 2 || ele.value == 3) {
+        $.alert("You can't use our system, please contact with the staff in charge.")
+        $("#btnNext").addClass("hide");
+    } else {
+        $("#btnNext").removeClass("hide");
+    }
+}
+
 function extraMultipul(selectedOptions, formData) {
     const result = selectedOptions.reduce((acc, {name, value}) => {
         acc[name] = acc[name] || [];
@@ -597,7 +674,9 @@ function submitQA() {
         dateType: 'json',
         data: data2
     }).then(data => {
-        console.log(data)
+        if (data.code = 'ok') {
+            $.alert("your survey has been updated successfully")
+        }
     })
 
 }
@@ -731,20 +810,6 @@ async function addNewMentor() {
                         return false;
                     } else {
                         addMentor(formData)
-                        var btn = [
-                            {
-                                "btnName": "edit",
-                                "func": "alert"
-                            }, {
-                                "btnName": "delete",
-                                "func": "alert"
-                            }];
-                        renderDataTable("#myTable", "/mentor/getAllJson", [
-                            {"data": "first_name"},
-                            {"data": "phone"},
-                            {"data": "email"},
-                            {"data": "company_name"},
-                        ], true, 3, btn)
                     }
 
                 },
@@ -764,22 +829,12 @@ function checkUserStatus(id) {
         dataType: "JSON",
         data: {"id": id}
     }).then(data => {
-        if (data.data == 2) {
+        if (data.data == 3) {
             $.alert("Looks like you haven't completed our survey, before you use our system you must complete all of them")
         }
     })
 }
 
-function checkCompanyProject(companyId) {
-    $.ajax({
-        url: "/project/getProjectsByCompanyId",
-        type: "get",
-        dataType: "JSON",
-        data: {"comId": companyId}
-    }).then(data => {
-       alert(data.data)
-    })
-}
 function checkStudentProfile(studentId) {
     $.ajax({
         url: "/studentQuestions/getByStudentId",
@@ -792,12 +847,17 @@ function checkStudentProfile(studentId) {
             console.log(questionData)
             var td = ''
             questionData.forEach(question => {
-                td += '<tr><td>'
+                td += '<tr  style="width: 100%"><td style="width: 50%; vertical-align: top">'
                 console.log(question.question)
                 var que = JSON.parse(question.question)
-                td += que.title + "</td><td>"
+                td += que.title + "</td><td style='width: 50%; vertical-align: top'>"
                 if (que.type == "1") {
                     td += que.option[question.question_answer] + "</td>"
+                } else if (que.type == "2" && question.question_answer.split(',').length > 0) {
+                    for (let i = 0; i < question.question_answer.split(',').length; i++) {
+                        td += que.option[question.question_answer.split(',')[i]] + "</br>"
+                    }
+
                 } else {
                     td += question.question_answer + "</td>"
                 }
@@ -821,87 +881,6 @@ function checkStudentProfile(studentId) {
 
         }
     })
-}
-
-/**
- *  a function to initial a Datatable by passing
- *      formId:     the pre-required empty <table id="formId" > and with initialed <th>(s)
- *
- *      URL:        the back-end route as datasource to load the data of a datatable
- *
- *      columns:    the columns where each column should be put
- *
- *      flag:       indicate if a set of button is required
- *
- *   checkboxFlag :   indicate if a checkbox is needed in front of each row is required
- *
- *      target:     if button required then target is where the but located in the table.
- *
- *      btns:       an array of object that represent the button name and function to be called on click the button
- *
- **/
-function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns) {
-    setTimeout(3000);
-    $.ajax({
-            url: url,
-            type: "get",
-            dataType: "JSON",
-            success: function (data) {
-                var columnDefs = []
-                if (flag) {
-                    columnDefs.push(
-                        {
-                            "render": function (data, type, meta, row) {
-                                var btn = ""
-                                console.log(data)
-                                console.log(meta)
-                                console.log(row)
-                                btns.forEach(button => {
-                                    btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
-                                })
-                                return btn
-                            },
-                            "targets": target
-                        }
-                    )
-                }
-                if (checkboxFlag) {
-                    columnDefs.push(
-                        {
-                            "render": function (data, type, meta, row) {
-                                var btn = "<div align='center'><input type=\"checkbox\" name=\"ckb-jobid\" value=" + (meta.id) + "></div>"
-                                return btn;
-                            },
-                            "targets": 0
-                        }
-                    )
-                }
-                if ($.fn.dataTable.isDataTable(formId)) {
-                    console.log("dataTable1")
-                    let dataTable1 = $(formId).dataTable();
-                    dataTable1.fnClearTable()
-                    dataTable1.fnAddData(data, true)
-                } else {
-                    $(formId).dataTable({
-                        "bAutoWidth": true,
-                        select: {
-                            style: 'os',
-                            selector: 'td:first-child'
-                        },
-                        "dataSrc": "",
-                        "order": [[0, "desc"]],  // HERE !! ERROR TRIGGER!
-                        "lengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]],
-                        "data": data,
-                        "columns": columns,
-                        "columnDefs": columnDefs
-                    });
-                }
-            },
-            error: function (xhr, status, error) {
-
-            }
-        }
-    );
 }
 
 
@@ -931,11 +910,51 @@ async function myFunction() {
     }
 }
 
+function uploadFile() {
+    var input = document.getElementById('userCV');
+    var file = input.files[0];
+    var formData = new FormData();
+    if (file == undefined) {
+        return
+    }
+    formData.append('file', file);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    }).then(response => response.json())
+        .then(data => {
+            if (data.code == 'ok') {
+                var span = document.getElementById('text');
+
+                var a = document.createElement('a');
+                a.href = "/download/" + data.filename;
+                a.textContent = 'Click here to download the file';
+                span.innerHTML = a.outerHTML;
+            } else {
+
+            }
+        });
+}
+
 function addOrUpdateUser(type) {
     //add or update a student
     if (type == 2) {
         if (validateForm()) {
             var formData = serializeData("form#regiForm");
+            var skills = $("#regiForm input[name='stu_skills']:checked");
+            let skillsVale = Array.from(skills).map(input => input.value);
+            if (skillsVale.length < 1) {
+                $.alert("You have to choose at least one skill !")
+                return false;
+            }
+            let $text = $("#text a");
+            if ($text != undefined) {
+                formData['fileLocation'] = $text[0].pathname.replaceAll("/download/", "")
+            }
+
+            formData['stu_skills'] = skillsVale;
+            console.log(skillsVale)
             console.log(formData)
             // check if a student no is exist
             $.ajax({
@@ -995,10 +1014,68 @@ function moveDown(button) {
 
 }
 
+function checkPreferredStudent(pid) {
+    location.href = '/student/getAll?pid=' + pid
+}
+
+function goPreferredProject() {
+    location.href = '/studentProject/preferProject'
+
+}
+
+function viewCompanyProject(comId) {
+
+    $.ajax({
+        url: "/project/getProjectsByCompanyId",
+        type: "GET",
+        data: {"comId": comId},
+    }).then(data => {
+        var options = ""
+        if (data.data.length == 0) {
+            $.alert("This company haven't got any project !")
+            return
+        }
+        for (let i = 0; i < data.data.length; i++) {
+            let item = data.data[i];
+            options += "<tr>" +
+                "<td class='hide' name='proId' value='" + item['id'] + "'>" + item['id'] + "</td>" +
+                "<td>" + item['project_title'] + "</td>" +
+                "<td>" + item['type_name'] + "</td>" +
+                "<td>" + item['company_name'] + "</td>"
+        }
+
+        console.log(options)
+        $.confirm({
+            theme: 'dark',
+            boxWidth: '900px',
+            useBootstrap: false,
+            title: 'Projects',
+            content: '' +
+                ' <table id="tablePreProject" class="display">\n' +
+                '        <thead>\n' +
+                '          <tr class="odd">\n' +
+                '           <th width="33%">Project Name</th>\n' +
+                '           <th  width="33%">Project Type</th>\n' +
+                '           <th  width="33%">Company</th>\n' +
+                '          </tr>\n' +
+                '        </thead>\n' +
+                '        <tbody>' + options +
+                '        </tbody>' +
+                ' </table>',
+
+            buttons: {
+
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+}
+
 function addPreferredProject() {
     var idArr = []
     $('input:checkbox').each(function () {
-        debugger
         console.log($(this))
         if ($(this).prop('checked') == true) {
             idArr.push($(this).val());
@@ -1009,9 +1086,8 @@ function addPreferredProject() {
         return;
     }
 
-    //todo add to mentor prefer student table.
     $.ajax({
-        url: "/project/getProjectByIds?idArr=" + idArr,
+        url: "/project/?idArr=" + idArr,
         type: "GET",
         data: idArr,
     }).then(data => {
@@ -1022,25 +1098,36 @@ function addPreferredProject() {
             console.log(item)
             options += "<tr>" +
                 "<td class='hide' name='proId' value='" + item['id'] + "'>" + item['id'] + "</td>" +
+                "<td><button onclick='moveUp(this)' >Up</button><button onclick='moveDown(this)'>Down</button></td>" +
                 "<td>" + item['project_title'] + "</td>" +
                 "<td>" + item['type_name'] + "</td>" +
                 "<td>" + item['company_name'] + "</td>" +
-                "<td><button onclick='moveUp(this)' >Up</button></td>" +
-                "<td><button onclick='moveDown(this)'>Down</button></td></tr>"
+                "<td>" +
+                "<input type='radio' id='option" + item['id'] + "' name='option" + item['id'] + "' value='2'>" +
+                "  <label for='option1" + item['id'] + "'>Yes</label>" +
+                "  <input type='radio' id='option" + item['id'] + "' name='option" + item['id'] + "' value='1'>" +
+                "  <label for='option2" + item['id'] + "'>Maybe</label>" +
+                "</td>" +
+                "" +
+                "</tr>";
+
         }
 
         console.log(options)
         $.confirm({
             theme: 'dark',
-            boxWidth: '1000px',
+            boxWidth: '75%',
+            useBootstrap: false,
             title: 'Rank your preference',
             content: '' +
                 ' <table id="tablePreProject" class="display">\n' +
                 '        <thead>\n' +
                 '          <tr class="odd">\n' +
-                '           <th>Project Name</th>\n' +
-                '           <th>Project Type</th>\n' +
-                '           <th>Company</th>\n' +
+                '           <th width="15%" style="padding-right: 150px">Rank</th>\n' +
+                '           <th width="27%">Project Name</th>\n' +
+                '           <th  width="19%">Project Type</th>\n' +
+                '           <th  width="15%">Company</th>\n' +
+                '           <th  width="25%">Willings</th>\n' +
                 '          </tr>\n' +
                 '        </thead>\n' +
                 '        <tbody>' + options +
@@ -1049,15 +1136,28 @@ function addPreferredProject() {
 
             buttons: {
                 Save: async function () {
-                    var rankedProjvalues = [];
+                    var pidList = [];
+
                     $('#tablePreProject [name="proId"]').each(function (eachh) {
                         console.log(eachh)
-                        console.log(this.innerHTML)
-                        rankedProjvalues.push(parseInt(this.innerHTML));
+                        pidList.push({
+                            "pid": parseInt(this.innerHTML),
+                            "will": $("input[name='option" + this.innerHTML + "']:checked").val()
+                        });
                     });
-                    console.log(rankedProjvalues)
-                    ajaxCall("/studentProject/add", "get", {
-                        "pidList": rankedProjvalues
+                    debugger
+                    let myJson = JSON.stringify(pidList);
+
+                    $.ajax({
+                        url: "/studentProject/add",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {pidList: myJson}
+                    }).then(data => {
+                        if (data.code == 'ok') {
+                        $.alert('Your project preferences has been updated successfully');
+
+                        }
                     })
 
 
@@ -1122,10 +1222,6 @@ async function resetPassword(id) {
                     var password = this.$content.find('.password').val();
                     var conpassword = this.$content.find('.conpassword').val();
                     console.log(password, oldpassword, conpassword)
-                    // if (!email) {
-                    //     $.alert('provide a valid email');
-                    //     return false;
-                    // }
                     if (password != conpassword) {
                         $.alert('Please input the same password');
                         return false;
@@ -1170,6 +1266,261 @@ function resetPassword2(fromdata) {
         if (data.code == 'ok') {
             $.alert("Password has been reset")
 
+        }
+    })
+
+}
+
+async function addNewProjectOrupdate(pid) {
+    
+
+    $.ajax({
+        url: "/project/getAllprofileAndtypeJson",
+        type: "GET",
+        data: {"pid":pid},
+        
+    }).then(data => {
+        console.log(data);
+        var options = "";
+
+        for (let i = 0; i < data.types.length; i++) {
+            let item = data.types[i];
+            options += "<option value='" + item['type_id'] + "'>" + item['type_name'] + "</option>"
+        }
+        console.log(options)
+        
+        var str=''
+        if(pid == null){
+            debugger
+            str = '' +
+            '<form id="projectForm" class="formName">' +
+            '<div class="form-group">' +
+            '<label>Project Title</label>' +
+            '<input type="text" placeholder="Project" name="project_title" class="fname form-control" required />' +
+            '<label>Description</label>' +
+            '<input type="text" placeholder="Description" name="description" class="fname form-control" required />' +
+            '<label>Number of students</label>' +
+            '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" required />' +
+            '<label>Project start date</label>' +
+            '<input type="text" placeholder="" name="start_date" class="fname form-control" required />' +
+            '<label>Project end date</label>' +
+            '<input type="text" placeholder="" name="end_date" class="fname form-control" required />' +
+            '<label> Company type</label>' +
+            '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
+            '</div>' +
+            '</form>'
+        }else{
+            debugger
+            let projectitem = data.projects[0];
+            str = '' +
+            '<form id="projectForm" class="formName">' +
+            '<div class="form-group">' +
+            '<input type="hidden" name="pid" value="'+ pid +'" />' +
+            '<label>Project Title</label>' +
+            '<input type="text" placeholder="Project" name="project_title" class="fname form-control" value = '+ projectitem['project_title'] +' required />' +
+            '<label>Description</label>' +
+            '<input type="text" placeholder="Description" name="description" class="fname form-control" value = '+ projectitem['description'] +' required />' +
+            '<label>Number of students</label>' +
+            '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" value = '+ projectitem['number_of_student'] +' required />' +
+            '<label>Remain Number of students</label>' +
+            '<input type="text" placeholder="10" name="remain_number_of_student" class="fname form-control" value = '+ projectitem['remain_number_of_student'] +' required />' +
+            '<label>Project start date</label>' +
+            '<input type="text" placeholder="" name="start_date" class="fname form-control" value = '+ projectitem['start_date'] +' required />' +
+            '<label>Project end date</label>' +
+            '<input type="text" placeholder="" name="end_date" class="fname form-control" value = '+ projectitem['end_date'] +' required />' +
+            '<label> Company type</label>' +
+            '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
+            '</div>' +
+            '</form>'
+
+        }
+        
+        $.confirm({
+            theme: 'dark',
+            title: 'Enter Project information',
+        
+            content: str ,
+
+            buttons:{
+                Save: async function () {
+                    var pid = this.$content.find('.pid').val();
+                    var project_title = this.$content.find('.project_title').val();
+                    var description = this.$content.find('.description').val();
+                    var Number_of_student = this.$content.find('.Number_of_student').val();
+                    var start_date = this.$content.find('.start_date').val();
+                    var end_date = this.$content.find('.end_date').val();
+                    var projecttype = this.$content.find('.projecttype').val();
+                    // if (!email) {
+                    //     $.alert('provide a valid email');
+                    //     return false;
+                    // }
+                     var formData = serializeData("form#projectForm")
+                    // const checkResult = await ajaxCall("/users/checkEmail", "get", {"email": formData.email})
+
+
+                    // if (checkResult.code == 'ok') {
+                    //     $.alert('email is already registered, please change another email address');
+                    //     return false;
+                    // } else {
+                        (formData)
+               
+                    // }
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+}
+
+function addOrUpdateProject(fromdata) {
+
+    $.ajax({
+        url: "/Project/addOrUpdate",
+        type: "POST",
+        dataType: "JSON",
+        data: fromdata,
+
+    }).then(data => {
+        if (data.code == 'ok') {
+
+            alert("Project has been added or updated successfully")
+            
+            
+            $('#myTableOne').delay(2000).slideDown("3000",function(){
+                var btn = [{
+                    "btnName": "Preferred Students",
+                    "func": "alert"
+                }
+                ];
+                 
+                    renderDataTable('#myTableOne', '/mentor/getProjectAllJson', [
+                        {"data": null},
+                        {"data": "project_title"},
+                        {"data": "description"},
+                        {"data": "number_of_student"},
+                        {"data": "type_name"},
+                        {"data": "start_date"},
+                        {"data": "end_date"},
+                        {"data": "remain_number_of_student"},
+                        {"data": "company_name"},
+                    ], true, true, 9, btn);
+
+               
+              });
+          
+
+
+        }else{
+            alert("add or update action failed ")
+        }
+    })
+
+   
+
+}
+
+function updateSkill(pid) {
+    
+    $.ajax({
+        url: "/project/getAllskillJson",
+        type: "GET",
+        data: {"pid":pid},
+        
+    }).then(data => {
+        debugger
+        console.log(data);
+        var options = "";
+
+        
+        
+        var str=''
+
+            debugger
+
+            str = '' +
+            '<form id="regiForm" class="formName">' +
+            '<div class="form-group">' +
+            '<input type="hidden" name="pid" value="'+ pid +'" />'
+
+            
+           for (let i = 0; i < data.skills.length; i++) {
+                 let item = data.skills[i];
+                 if (item['project_id']){
+                    str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" id = ' +
+                    item['id'] + ' name="projectskill"  checked value= ' + item['id'] +' >' +  '  <label>'+ 
+                    item['skill_name'] +'</label> </div>'
+                 }else{
+                    str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" id = ' +
+                    item['id'] + ' name="projectskill"  value= ' + item['id'] +' >' +  '  <label>'+ 
+                    item['skill_name'] +'</label> </div>'
+                 }
+
+
+           }
+
+            str += '</div>' + '</form>'
+            
+        debugger
+        
+        $.confirm({
+            theme: 'dark',
+            title: 'Select required skills',
+        
+            content: str ,
+
+            buttons:{
+                Save: async function () {
+                    var pid = this.$content.find('.pid').val();
+                    //var projectskill = this.$content.find('.projectskill').val();
+                    // var description = this.$content.find('.description').val();
+                    // var Number_of_student = this.$content.find('.Number_of_student').val();
+                    // var start_date = this.$content.find('.start_date').val();
+                    // var end_date = this.$content.find('.end_date').val();
+                    // var projecttype = this.$content.find('.projecttype').val();
+
+                    var formData = serializeData("form#projectForm")
+
+                    addOrUpdateProjectSkill(formData)
+               
+ 
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+    
+
+}
+
+function addOrUpdateProjectSkill(fromdata) {
+    debugger
+
+
+    var formData = serializeData("form#regiForm");
+    var skills = $("#regiForm input[name='projectskill']:checked");
+    let skillsVale = Array.from(skills).map(input => input.value);
+    if (skillsVale.length < 1) {
+        $.alert("You have to choose at least one skill !")
+        return false;
+    }
+     formData['projectskill'] = skillsVale;
+    $.ajax({
+        url: "/project/addOrUpdateProjectSkill",
+        type: "POST",
+        dataType: "JSON",
+        data: formData,
+    }).then(data => {
+        if (data.code == 'ok') {
+            $.alert("Project requied skills have been reset")
+
+        }else{
+            $.alert(data.message)
         }
     })
 

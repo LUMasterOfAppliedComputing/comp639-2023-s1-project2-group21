@@ -27,3 +27,12 @@ def delete(id):
      
     result = db.DBOperator_update(sqlCommand)
     return result
+
+
+def getcompany(userid):
+    sqlCommand0 = """SELECT company_id FROM mentor where mentor_id='%s' """%userid
+    companyid = db.DBOperator(sqlCommand0)[0]['company_id']
+    sqlCommand = """SELECT * FROM company where id='%s' """%companyid
+     
+    result = db.DBOperator(sqlCommand)
+    return result
