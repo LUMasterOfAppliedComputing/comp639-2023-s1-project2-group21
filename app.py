@@ -134,3 +134,17 @@ def forgotPassword():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route("/staffreport")
+def staffreport():
+    return render_template("staff/staffreport.html")
+
+@app.route("/staffreport1")
+def staffreport1():
+    return render_template("staff/staffreport1.html")
+
+@app.route("/staffreport2")
+def staffreport2():
+    return render_template("staff/staffreport2.html")
+
+
