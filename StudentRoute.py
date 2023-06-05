@@ -84,8 +84,11 @@ def checkStudentProfileAndSurvey(func):
 
 @studentRoute.route('/student/project')
 def studentproject():
-    id=session['user_id']
+    # id=session['user_id']
     viewwishlist=request.form.get('viewwishlist')
+    # addPreferArray = request.form.get('addPreferArray')
+    # if addPreferArray != None:
+    #    print(addPreferArray)
     if viewwishlist != None:
         projects = StudentWishlistQueries.showwishlist(id)
     else:
