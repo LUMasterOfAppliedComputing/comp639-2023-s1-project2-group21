@@ -71,6 +71,19 @@ def getMentorinfo(userid):
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
 
+def getMentorListinfo(userIds):
+    listUser = ""
+    if len(userIds):
+        listUser = [str(i) for i in userIds]
+        listUser = ",".join(listUser)
+    else:
+        listUser = userIds
+    sqlCommand = """SELECT * FROM mentor m  join user u on m.mentor_id = u.user_id
+                        LEFT JOIN company c  on c.id = m.company_id
+                        where u.user_id in (%s) """ % listUser
+    selectResult = db.DBOperator(sqlCommand)
+    return selectResult
+
 
 def getProjectAll():
     sqlCommand = """SELECT p.id,p.project_title,p.description,

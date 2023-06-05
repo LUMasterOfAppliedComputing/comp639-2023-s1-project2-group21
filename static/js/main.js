@@ -1161,6 +1161,12 @@ function viewCompanyProject(comId) {
         })
     })
 }
+function processMatching() {
+     $.ajax({
+        url: "/match/processMatch",
+        type: "GET",
+     })
+}
 
 function addPreferredProject() {
     var idArr = []
@@ -1176,7 +1182,7 @@ function addPreferredProject() {
     }
 
     $.ajax({
-        url: "/project/?idArr=" + idArr,
+        url: "/project/getProjectByIds?idArr=" + idArr,
         type: "GET",
         data: idArr,
     }).then(data => {

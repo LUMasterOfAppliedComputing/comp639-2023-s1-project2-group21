@@ -25,3 +25,36 @@ def sentPasswordEmail(to):
         smtp.login(sender_email, sender_password)
 
         smtp.send_message(msg)
+
+
+def sentStudentMatchingNotify(student,mentor):
+    msg['To'] = student
+    msg['Subject'] = "Matching notification!"
+    msg_content = "You have successfully matched with company: <br>"
+    for men in mentor:
+        msg_content += "<a href=mailto:%s> %s </a>, website: <a href=%s> %s </a> <br>" % (
+        men['email'], men['company_name'], men['website'], men['website'])
+
+    msg.attach(MIMEText(msg_content, 'html'))
+
+    with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+        smtp.starttls()  # enable encryption
+        smtp.login(sender_email, sender_password)
+        smtp.send_message(msg)
+
+
+def sentMentorMatchingNotify(student,mentor):
+
+    msg['Subject'] = "Matching notification!"
+    msg_content = "You have successfully matched with students: <br>"
+    msg['To'] = mentor
+    msg_content += "<a href=mailto:%s> %s %s </a>, CV: <a href='/download/'%s> %s </a> <br>" % (
+    student['email'], student['first_name'], student['last_name'], student['cv'],'cv')
+
+    msg.attach(MIMEText(msg_content, 'html'))
+
+    with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+        smtp.starttls()  # enable encryption
+        smtp.login(sender_email, sender_password)
+        smtp.send_message(msg)
+
