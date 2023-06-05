@@ -66,7 +66,6 @@
                                                    class="form-control" id="password">
                                         </div>
 
-
                                     </div>
                                 </div>
                                 <div class="input-group mb-3 justify-content-center">
@@ -126,11 +125,26 @@
                                         </div>
                                     </div>
 
-                                    <div class="input-group mb justify-content-center">
+                                    <div class="input-group mb-3 justify-content-center">
                                         <div>
                                             <div class="form-group left">
+                                                <label>Placement Status</label>
+                                                <input type="text" name="placement_status" id="placement_status" class="form-control" 
+                                                    {% if user %}
+                                                        {% set placement_status_text = '' %}
+                                                        {% if user['placement_status'] == 0 %}
+                                                            {% set placement_status_text = 'Seeking Opportunities' %}
+                                                        {% elif user['placement_status'] == 1 %}
+                                                            {% set placement_status_text = 'Offer Accepted' %}
+                                                        {% elif user['placement_status'] == 2 %}
+                                                            {% set placement_status_text = 'Not Available' %}
+                                                        {% endif %}
+                                                        disabled value="{{ placement_status_text }}"
+                                                    {% endif %}>   
+                                            </div>
+                                            <div class="form-group right">
                                                 <label>*Skills</label>
-                                                <div class="input-group" style="width: 600px" id="inpChkBox">
+                                                <div class="input-group"  id="inpChkBox">
                                                     {% for sk in studentSkills %}
                                                         <div class="form-check form-check-inline">
                                                             <input type="checkbox" id="{{ sk.id }}"
@@ -150,6 +164,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                 {% endif %}
 
                                 <div class="container">
