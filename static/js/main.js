@@ -43,9 +43,32 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                     console.log(button.btnName)
                                     if (button.btnName == 'Edit' && meta.if_current_mentor != '1') {
                                         btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                    } else if (button.btnName == 'Interview') {
+                                        if (meta.status_value == 0) {
+                                            btn += "<input type='button' onclick='manageInterview(" + (meta.interview_id) + ")'  value='Update'> "
+                                            btn += "<input type='button' onclick='CancelInter(" + (meta.interview_id) + ")'  value='Cancel'> "
+                                        } else if (meta.status_value == 1) {
+                                            btn += " "
+                                        } else if (meta.status_value == 2) {
+                                            btn += "<input type='button' onclick='sendOffer(" + (meta.id) + ")' value='Send Offer'> "
+                                        } else if (meta.status_value == null) {
+                                            var myobj = {
+                                                "pj": meta.project,
+                                                "stu_id": meta.id,
+                                                "pid": meta.project_id
+                                            }
+
+                                            btn += "<input type='button' data-pj='" + meta.project + "' data-stu_id='" + meta.id + "' data-pid='" + meta.project_id + "'" +
+                                                "onclick='" + button['func'] + "( this )' value='" + button['btnName'] + "'> "
+                                        } else {
+                                            btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
+                                        }
                                     } else {
+                                        debugger
                                         btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
                                     }
+
+
                                 })
                                 return btn
                             },
@@ -252,6 +275,265 @@ $(function () {
 
 })
 
+function checkInterview(thisButn) {
+    var pj = thisButn.dataset.pj
+    var stu_id = thisButn.dataset.stu_id
+    var pid = thisButn.dataset.pid
+    let pidArray = pid.split(',');
+    selection = ""
+    for (let i = 0; i < pidArray.length; i++) {
+        selection += "<option value='" + pidArray[i] + "'>" + pj.split(',')[i] + "</option>"
+    }
+    locationselection = "<option value='0'>Online</option><option value='1'>In site</option>"
+
+    $.confirm({
+        theme: 'dark',
+        title: 'Arrange Interview',
+        content: '' +
+            '<form id="mentorForm" class="formName">' +
+            '<div class="form-group justify-content-center">' +
+            '     <input type="text" class="hide" name="stu_id" id="stu_id" value = "' + thisButn.dataset.stu_id + '"><!--required to check for empty-->\n' +
+            '   <div class="inputBox">\n' +
+            '     <label for="date" style="margin-right: 45px;padding-top: 5px">Date</label>\n' +
+            '     <input type="date" name="startdate" id="startdate" min="2023-06-16" required="required"><!--required to check for empty-->\n' +
+            '   </div>\n' +
+            '   <div class="inputBox" style="display: flex;padding-top: 5px">\n' +
+            '     <label for="date" style="margin-right: 32px">Project</label>\n' +
+            "     <select id='menMatchProject'  name=\"menMatchProject\" class=\"menCompany form-control\">'" + selection + "'</select>" +
+            '   </div>\n' +
+            '   <div class="inputBox" style="display: flex;padding-top: 5px" >\n' +
+            '     <label for="date" style="margin-right: 20px">Location</label>\n' +
+            "     <select id='location'  name=\"location\" class=\"menCompany form-control\">'" + locationselection + "'</select>" +
+            '   </div>\n' +
+            '   <div class="inputBox">\n' +
+            '    <label for="starttime" style="margin-right: 63px;padding-top: 5px">At </label>\n' +
+            '    <input type="text" id="myTimeInput">\n' +
+            '   </div>\n' +
+            ' </div>' +
+            '</form>'
+
+        ,
+        onContentReady: function () {
+            $('#myTimeInput').timepicker({
+                'step': 30,
+                'minTime': '9:00am',
+                'maxTime': '5:30pm',
+                'beforeShow': function () {
+                    // 延迟以等待 timepicker 完全初始化
+                    setTimeout(function () {
+                        // jQuery UI 时间选择器使用 jQuery UI dialog 组件来展示时间选择器
+                        // dialog 的 z-index 值设置在其父元素上
+                        $('.ui-timepicker-div').parent().css('z-index', 99999999999999);
+                    }, 0);
+                }
+            });
+
+        },
+        buttons: {
+            Save: async function () {
+                var stu_id = this.$content.find('#stu_id').val();
+                var startdate = this.$content.find('#startdate').val();
+                var pid = this.$content.find('#menMatchProject').val();
+                var starttime = this.$content.find('#myTimeInput').val();
+                var location = this.$content.find('#location').val();
+
+                var jsonData = {
+                    "stu_id": stu_id,
+                    "startdate": startdate,
+                    "starttime": starttime,
+                    "pid": pid,
+                    "location": location
+                }
+                formId = "#myTableProject"
+                $.ajax({
+                    url: "/interview/addInterview",
+                    type: "post",
+                    dataType: "JSON",
+                    data: jsonData,
+                }).then(result => {
+                    if ($.fn.dataTable.isDataTable(formId)) {
+                        console.log("dataTable1")
+                        console.log(result)
+                        let dataTable1 = $(formId).dataTable();
+                        dataTable1.fnClearTable()
+                        dataTable1.fnAddData(result, true)
+                    }
+                })
+
+            },
+            cancel: function () {
+            }
+
+
+        }
+    })
+
+
+}
+
+function CancelInter(student_id) {
+    formId = "#myTableProject"
+    $.confirm({
+        boxWidth: '30%',
+        useBootstrap: false,
+        title: "Cancel Interview",
+        content: "Are you sure to cancel this interview ?",
+        buttons: {
+            OK: function () {
+                $.ajax({
+                    url: "/interview/delete",
+                    type: "get",
+                    dataType: "JSON",
+                    data: {"id": student_id},
+                }).then(result => {
+                    if ($.fn.dataTable.isDataTable(formId)) {
+                        console.log("dataTable1")
+                        console.log(result)
+                        let dataTable1 = $(formId).dataTable();
+                        dataTable1.fnClearTable()
+                        dataTable1.fnAddData(result, true)
+                    }
+                })
+
+            }
+        },
+    })
+}
+
+function editMentor(mId) {
+    $.ajax({
+        url: "/mentor/getMentorData",
+        type: "get",
+        data: {"mId": mId}
+    }).then(data => {
+        console.log(data.email)
+        $.confirm({
+            theme: 'dark',
+            title: 'Edit mentor information',
+            content: '' +
+                '<form id="mentorForm" class="formName" xmlns="http://www.w3.org/1999/html">' +
+                '<div class="form-group">' +
+                '<input type="hidden" name="mentorid" value="' + mId + '" />' +
+                '<label>Mentor email address</label>' +
+                '<input type="text" value = "' + data.email + '" placeholder="John.Doe@gmail.com" id="mentorEmail" name="email" class="email form-control" ' +
+                'required onchange="checkEmail(this.value,this.id)" />' +
+                '<label>Phone</label>' +
+                '<input type="text" name="phone" value="' + data.phone + '" class=" form-control" required />' +
+                '<label>Mentor First Name</label>' +
+                '<input type="text" placeholder="Jone" value="' + data.fname + '"  name="firstname" class="fname form-control" required />' +
+                '<label>Mentor Last Name</label>' +
+                '<input type="text" placeholder="Doe" name="lastname" value="' + data.lname + '"  class="lastname form-control" required />' +
+                '<label>Summary</label>' +
+                '<textarea placeholder="..." name="summary"   class=" form-control" required />' + data.dsummary + '</textarea>' +
+                '</div>' +
+                '</form>',
+
+            buttons: {
+                Update: async function () {
+                    var formData = serializeData("form#mentorForm")
+                    $.ajax({
+                        url: "/mentor/UpdateJson",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: formData,
+                    }).then(data => {
+                        if ($.fn.dataTable.isDataTable("#myTableOne")) {
+                            let dataTable1 = $("#myTableOne").dataTable();
+                            dataTable1.fnClearTable()
+                            dataTable1.fnAddData(data, true)
+                        }
+                    })
+
+                },
+                cancel: function () {
+                }
+
+            }
+        })
+    })
+
+}
+
+function deleteMentor(mId) {
+
+    $.confirm({
+        theme: 'dark',
+        title: 'Edit mentor information',
+        content: 'Are you sure to delete this Mentor？',
+        buttons: {
+            Confirm: async function () {
+                var formData = serializeData("form#mentorForm")
+                $.ajax({
+                    url: "/mentor/deleteJson/"+mId,
+                    type: "GET",
+                    dataType: "JSON",
+                }).then(data => {
+                    if ($.fn.dataTable.isDataTable("#myTableOne")) {
+                        let dataTable1 = $("#myTableOne").dataTable();
+                        dataTable1.fnClearTable()
+                        dataTable1.fnAddData(data, true)
+                    }
+                })
+
+            },
+            cancel: function () {
+            }
+
+        }
+    })
+}
+
+function manageInterview(intv_id) {
+
+    $.confirm({
+        theme: 'dark',
+        title: 'Manage Interview',
+        content: '' +
+            '   <div class="inputBox">\n' +
+            "  <input type='radio' id='interviewOP1' name='interviewOP' value='2'>" +
+            "  <label for='interviewOP1'>Passed</label>" +
+            "  <input type='radio' id='interviewOP2' name='interviewOP' value='1'>" +
+            "  <label for='interviewOP2'>Failed</label>" +
+            '   </div>\n'
+
+        ,
+        buttons: {
+            Save: async function () {
+                var optionval = $("input[name='interviewOP']:checked").val()
+
+                var jsonData = {
+                    "optionval": optionval,
+                    "intv_id": intv_id,
+                }
+                formId = "#myTableProject"
+                $.ajax({
+                    url: "/interview/update",
+                    type: "get",
+                    dataType: "JSON",
+                    data: jsonData,
+                }).then(result => {
+                    if ($.fn.dataTable.isDataTable(formId)) {
+                        console.log("dataTable1")
+                        console.log(result)
+                        let dataTable1 = $(formId).dataTable();
+                        dataTable1.fnClearTable()
+                        dataTable1.fnAddData(result, true)
+                    }
+                })
+
+            },
+            cancel: function () {
+            }
+
+
+        }
+    })
+}
+
+function sendOffer(student_id) {
+    $.alert("" + student_id)
+}
+
 function notiDetail(id) {
     $.ajax({
         url: "/getAllMyMsg",
@@ -383,10 +665,10 @@ function addMentor(fromdata) {
             $.alert("Mentor has been added successfully")
             var btn = [
                 {
-                    "btnName": "edit",
+                    "btnName": "editMentor",
                     "func": "alert"
                 }, {
-                    "btnName": "delete",
+                    "btnName": "deleteMentor",
                     "func": "alert"
                 }];
             renderDataTable("#myTableOne", "/mentor/getAllJson", [
@@ -761,10 +1043,10 @@ function preferStudents() {
         console.log(data);
         var options = ""
         for (let i = 0; i < data.data.length; i++) {
-            selection=""
-            data.projects.forEach(pro=>{
-            console.log(pro)
-            selection += "<option value='" +pro['id'] + "'>" + pro['project_title'] + "</option>"
+            selection = ""
+            data.projects.forEach(pro => {
+                console.log(pro)
+                selection += "<option value='" + pro['id'] + "'>" + pro['project_title'] + "</option>"
             })
 
             let student = data.data[i];
@@ -815,7 +1097,7 @@ function preferStudents() {
                         console.log(eachh)
                         sidList.push({
                             "sid": parseInt(this.innerHTML),
-                            "pid": $("#menProject" + this.innerHTML ).val() == null ? 0 :$("#menProject"+ this.innerHTML ).val(),
+                            "pid": $("#menProject" + this.innerHTML).val() == null ? 0 : $("#menProject" + this.innerHTML).val(),
                             "will": $("input[name='option" + this.innerHTML + "']:checked").val() == null ? 0 : $("input[name='option" + this.innerHTML + "']:checked").val()
                         });
                     });
@@ -1026,6 +1308,7 @@ function uploadFile() {
         });
 }
 
+
 function addOrUpdateUser(type) {
     //add or update a student
     if (type == 2) {
@@ -1161,11 +1444,16 @@ function viewCompanyProject(comId) {
         })
     })
 }
+
 function processMatching() {
-     $.ajax({
+    $.ajax({
         url: "/match/processMatch",
         type: "GET",
-     })
+    }).then(data => {
+        if (data.code == 'ok') {
+            $.alert("Matches notifications are sent successfully!")
+        }
+    })
 }
 
 function addPreferredProject() {
@@ -1367,13 +1655,13 @@ function resetPassword2(fromdata) {
 }
 
 async function addNewProjectOrupdate(pid) {
-    
+
 
     $.ajax({
         url: "/project/getAllprofileAndtypeJson",
         type: "GET",
-        data: {"pid":pid},
-        
+        data: {"pid": pid},
+
     }).then(data => {
         console.log(data);
         var options = "";
@@ -1383,60 +1671,60 @@ async function addNewProjectOrupdate(pid) {
             options += "<option value='" + item['type_id'] + "'>" + item['type_name'] + "</option>"
         }
         console.log(options)
-        
-        var str=''
-        if(pid == null){
+
+        var str = ''
+        if (pid == null) {
             debugger
             str = '' +
-            '<form id="projectForm" class="formName">' +
-            '<div class="form-group">' +
-            '<label>Project Title</label>' +
-            '<input type="text" placeholder="Project" name="project_title" class="fname form-control" required />' +
-            '<label>Description</label>' +
-            '<input type="text" placeholder="Description" name="description" class="fname form-control" required />' +
-            '<label>Number of students</label>' +
-            '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" required />' +
-            '<label>Project start date</label>' +
-            '<input type="text" placeholder="" name="start_date" class="fname form-control" required />' +
-            '<label>Project end date</label>' +
-            '<input type="text" placeholder="" name="end_date" class="fname form-control" required />' +
-            '<label> Company type</label>' +
-            '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
-            '</div>' +
-            '</form>'
-        }else{
+                '<form id="projectForm" class="formName">' +
+                '<div class="form-group">' +
+                '<label>Project Title</label>' +
+                '<input type="text" placeholder="Project" name="project_title" class="fname form-control" required />' +
+                '<label>Description</label>' +
+                '<input type="text" placeholder="Description" name="description" class="fname form-control" required />' +
+                '<label>Number of students</label>' +
+                '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" required />' +
+                '<label>Project start date</label>' +
+                '<input type="text" placeholder="" name="start_date" class="fname form-control" required />' +
+                '<label>Project end date</label>' +
+                '<input type="text" placeholder="" name="end_date" class="fname form-control" required />' +
+                '<label> Company type</label>' +
+                '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
+                '</div>' +
+                '</form>'
+        } else {
             debugger
             let projectitem = data.projects[0];
             str = '' +
-            '<form id="projectForm" class="formName">' +
-            '<div class="form-group">' +
-            '<input type="hidden" name="pid" value="'+ pid +'" />' +
-            '<label>Project Title</label>' +
-            '<input type="text" placeholder="Project" name="project_title" class="fname form-control" value = '+ projectitem['project_title'] +' required />' +
-            '<label>Description</label>' +
-            '<input type="text" placeholder="Description" name="description" class="fname form-control" value = '+ projectitem['description'] +' required />' +
-            '<label>Number of students</label>' +
-            '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" value = '+ projectitem['number_of_student'] +' required />' +
-            '<label>Remain Number of students</label>' +
-            '<input type="text" placeholder="10" name="remain_number_of_student" class="fname form-control" value = '+ projectitem['remain_number_of_student'] +' required />' +
-            '<label>Project start date</label>' +
-            '<input type="text" placeholder="" name="start_date" class="fname form-control" value = '+ projectitem['start_date'] +' required />' +
-            '<label>Project end date</label>' +
-            '<input type="text" placeholder="" name="end_date" class="fname form-control" value = '+ projectitem['end_date'] +' required />' +
-            '<label> Company type</label>' +
-            '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
-            '</div>' +
-            '</form>'
+                '<form id="projectForm" class="formName">' +
+                '<div class="form-group">' +
+                '<input type="hidden" name="pid" value="' + pid + '" />' +
+                '<label>Project Title</label>' +
+                '<input type="text" placeholder="Project" name="project_title" class="fname form-control" value = ' + projectitem['project_title'] + ' required />' +
+                '<label>Description</label>' +
+                '<input type="text" placeholder="Description" name="description" class="fname form-control" value = ' + projectitem['description'] + ' required />' +
+                '<label>Number of students</label>' +
+                '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" value = ' + projectitem['number_of_student'] + ' required />' +
+                '<label>Remain Number of students</label>' +
+                '<input type="text" placeholder="10" name="remain_number_of_student" class="fname form-control" value = ' + projectitem['remain_number_of_student'] + ' required />' +
+                '<label>Project start date</label>' +
+                '<input type="text" placeholder="" name="start_date" class="fname form-control" value = ' + projectitem['start_date'] + ' required />' +
+                '<label>Project end date</label>' +
+                '<input type="text" placeholder="" name="end_date" class="fname form-control" value = ' + projectitem['end_date'] + ' required />' +
+                '<label> Company type</label>' +
+                '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
+                '</div>' +
+                '</form>'
 
         }
-        
+
         $.confirm({
             theme: 'dark',
             title: 'Enter Project information',
-        
-            content: str ,
 
-            buttons:{
+            content: str,
+
+            buttons: {
                 Save: async function () {
                     var pid = this.$content.find('.pid').val();
                     var project_title = this.$content.find('.project_title').val();
@@ -1449,16 +1737,16 @@ async function addNewProjectOrupdate(pid) {
                     //     $.alert('provide a valid email');
                     //     return false;
                     // }
-                     var formData = serializeData("form#projectForm")
-                    // const checkResult = await ajaxCall("/users/checkEmail", "get", {"email": formData.email})
+                    var formData = serializeData("form#projectForm")
+                        // const checkResult = await ajaxCall("/users/checkEmail", "get", {"email": formData.email})
 
 
-                    // if (checkResult.code == 'ok') {
-                    //     $.alert('email is already registered, please change another email address');
-                    //     return false;
-                    // } else {
+                        // if (checkResult.code == 'ok') {
+                        //     $.alert('email is already registered, please change another email address');
+                        //     return false;
+                        // } else {
                         (formData)
-               
+
                     // }
 
                 },
@@ -1482,91 +1770,88 @@ function addOrUpdateProject(fromdata) {
         if (data.code == 'ok') {
 
             alert("Project has been added or updated successfully")
-            
-            
-            $('#myTableOne').delay(2000).slideDown("3000",function(){
+
+
+            $('#myTableOne').delay(2000).slideDown("3000", function () {
                 var btn = [{
                     "btnName": "Preferred Students",
                     "func": "alert"
                 }
                 ];
-                 
-                    renderDataTable('#myTableOne', '/mentor/getProjectAllJson', [
-                        {"data": null},
-                        {"data": "project_title"},
-                        {"data": "description"},
-                        {"data": "number_of_student"},
-                        {"data": "type_name"},
-                        {"data": "start_date"},
-                        {"data": "end_date"},
-                        {"data": "remain_number_of_student"},
-                        {"data": "company_name"},
-                    ], true, true, 9, btn);
 
-               
-              });
-          
+                renderDataTable('#myTableOne', '/mentor/getProjectAllJson', [
+                    {"data": null},
+                    {"data": "project_title"},
+                    {"data": "description"},
+                    {"data": "number_of_student"},
+                    {"data": "type_name"},
+                    {"data": "start_date"},
+                    {"data": "end_date"},
+                    {"data": "remain_number_of_student"},
+                    {"data": "company_name"},
+                ], true, true, 9, btn);
 
 
-        }else{
+            });
+
+
+        } else {
             alert("add or update action failed ")
         }
     })
 
-   
 
 }
 
 function updateSkill(pid) {
-    
+
     $.ajax({
         url: "/project/getAllskillJson",
         type: "GET",
-        data: {"pid":pid},
-        
+        data: {"pid": pid},
+
     }).then(data => {
         debugger
         console.log(data);
         var options = "";
 
-        
-        
-        var str=''
 
-            debugger
+        var str = ''
 
-            str = '' +
+        debugger
+
+        str = '' +
             '<form id="regiForm" class="formName">' +
             '<div class="form-group">' +
-            '<input type="hidden" name="pid" value="'+ pid +'" />'
-
-            
-           for (let i = 0; i < data.skills.length; i++) {
-                 let item = data.skills[i];
-                 if (item['project_id']){
-                    str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" id = ' +
-                    item['id'] + ' name="projectskill"  checked value= ' + item['id'] +' >' +  '  <label>'+ 
-                    item['skill_name'] +'</label> </div>'
-                 }else{
-                    str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" id = ' +
-                    item['id'] + ' name="projectskill"  value= ' + item['id'] +' >' +  '  <label>'+ 
-                    item['skill_name'] +'</label> </div>'
-                 }
+            '<input type="hidden" name="pid" value="' + pid + '" />'
 
 
-           }
+        for (let i = 0; i < data.skills.length; i++) {
+            let item = data.skills[i];
+            if (item['project_id']) {
+                str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" id = ' +
+                    item['id'] + ' name="projectskill"  checked value= ' + item['id'] + ' >' + '  <label>' +
+                    item['skill_name'] + '</label> </div>'
+            } else {
+                str += '<p><div class="text-bg-secondary p-3"><input type="checkbox" id = ' +
+                    item['id'] + ' name="projectskill"  value= ' + item['id'] + ' >' + '  <label>' +
+                    item['skill_name'] + '</label> </div>'
+            }
 
-            str += '</div>' + '</form>'
-            
+
+        }
+
+        str += '</div>' + '</form>'
+
         debugger
-        
+
         $.confirm({
             theme: 'dark',
             title: 'Select required skills',
-        
-            content: str ,
 
-            buttons:{
+            content: str,
+
+            buttons: {
                 Save: async function () {
                     var pid = this.$content.find('.pid').val();
                     //var projectskill = this.$content.find('.projectskill').val();
@@ -1579,8 +1864,7 @@ function updateSkill(pid) {
                     var formData = serializeData("form#projectForm")
 
                     addOrUpdateProjectSkill(formData)
-               
- 
+
 
                 },
                 cancel: function () {
@@ -1589,7 +1873,7 @@ function updateSkill(pid) {
             }
         })
     })
-    
+
 
 }
 
@@ -1604,7 +1888,7 @@ function addOrUpdateProjectSkill(fromdata) {
         $.alert("You have to choose at least one skill !")
         return false;
     }
-     formData['projectskill'] = skillsVale;
+    formData['projectskill'] = skillsVale;
     $.ajax({
         url: "/project/addOrUpdateProjectSkill",
         type: "POST",
@@ -1614,7 +1898,7 @@ function addOrUpdateProjectSkill(fromdata) {
         if (data.code == 'ok') {
             $.alert("Project requied skills have been reset")
 
-        }else{
+        } else {
             $.alert(data.message)
         }
     })

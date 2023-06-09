@@ -1,10 +1,11 @@
+import datetime
 import json
 
 import pandas as pd
-from flask import Blueprint, make_response, jsonify, session
+from flask import Blueprint, make_response, jsonify, session, render_template
 
 import db
-from queries import StudentQueries, MentorQueries
+from queries import StudentQueries, MentorQueries, MatchQueries
 from utils import SMTPHelper
 
 matchRoute = Blueprint('matchRoute', __name__)
@@ -67,7 +68,7 @@ def combine_lists2D():
         if matrix[student_index][project_index] == 4:
             if not session.__contains__('match_' + str(student_id) + "_" + str(project_id)):
                 session['match_' + str(student_id) + "_" + str(project_id)] = 0
-                aggregate_student_projects(matchStudents, student_id, project_id)
+                matchStudents=aggregate_student_projects(matchStudents, student_id, project_id)
     if len(matchStudents.keys()) > 0:
         for stu_key in matchStudents.keys():
             session['_match_' + str(stu_key)] = matchStudents[stu_key]
@@ -111,7 +112,12 @@ def processMatch():
             mentorEmail = [men['email'] for men in mentor]
             to_student(student['email'], mentor)
             to_mentor(student, mentorEmail)
-    return make_response(jsonify("dd"), 200)
+
+            MatchQueries.delete(stu_id,value)
+            #insert into match table
+            MatchQueries.insert(stu_id,value)
+        data = {"message": 'ok', 'code': 'ok'}
+    return make_response(jsonify(data), 200)
 
 
 def to_student(stuEmail, mentorInfo):
@@ -120,3 +126,24 @@ def to_student(stuEmail, mentorInfo):
 
 def to_mentor(stuEmail, mentorEmail):
     SMTPHelper.sentMentorMatchingNotify(stuEmail,mentorEmail)
+
+@matchRoute.route('/match/studentMatch')
+def studentMatch():
+    return render_template("student/matchproject.html")
+
+@matchRoute.route('/match/mentorMatch')
+def mentorMatch():
+    return render_template("mentor/matchstudent.html")
+
+
+@matchRoute.route('/match/studentMatchList')
+def studentMatchList():
+    stu_id = session['user_id']
+    matchedProjects = MatchQueries.getStudentMatchList(stu_id)
+    return make_response(jsonify(matchedProjects), 200)
+
+
+@matchRoute.route('/match/mentorMatchList')
+def mentorMatchList():
+    matchedProjects = MatchQueries.getProjectMatchList(session['user_id'])
+    return make_response(jsonify(matchedProjects), 200)

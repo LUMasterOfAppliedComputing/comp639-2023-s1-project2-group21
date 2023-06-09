@@ -19,7 +19,13 @@ def getAllByStudentIdAndProjectId(student_ids, mentor_id):
 def getAll():
     sqlCommand = """
                     SELECT
-                        *
+                        concat(u.first_name," ",u.last_name) as first_name,
+                        m.mentor_id as id,
+                        u.email as email,
+                        m.phone,
+                        m.summary,
+                        c.company_name
+                        
                     FROM
                         mentor m
                         LEFT JOIN company c ON m.company_id = c.id
@@ -66,7 +72,20 @@ def updatecompany(company_name, region, city, street, website, companyid):
 
 
 def getMentorinfo(userid):
-    sqlCommand = """SELECT * FROM mentor m  join user u on m.mentor_id = u.user_id where u.user_id = '%s' """ % userid
+    sqlCommand = """ SELECT
+                        concat(u.first_name," ",u.last_name) as first_name,
+                        u.first_name  as fname,
+                        u.last_name as lname,
+                        m.mentor_id as id,
+                        u.email as email,
+                        m.phone,
+                        m.summary,
+                        c.company_name,
+                        m.summary as dsummary            
+                        from  mentor m
+                        LEFT JOIN company c ON m.company_id = c.id
+                        LEFT JOIN user u ON u.user_id = m.mentor_id
+                        where u.user_id = %s """ % userid
 
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
@@ -78,9 +97,15 @@ def getMentorListinfo(userIds):
         listUser = ",".join(listUser)
     else:
         listUser = userIds
-    sqlCommand = """SELECT * FROM mentor m  join user u on m.mentor_id = u.user_id
-                        LEFT JOIN company c  on c.id = m.company_id
-                        where u.user_id in (%s) """ % listUser
+    sqlCommand = """SELECT
+                        * 
+                    FROM
+                        mentor m
+                        JOIN USER u ON m.mentor_id = u.user_id
+                        LEFT JOIN company c ON c.id = m.company_id 
+                        LEFT JOIN project p on p.mentor_id = u.user_id
+                    WHERE
+                        p.id IN (%s) """ % listUser
     selectResult = db.DBOperator(sqlCommand)
     return selectResult
 

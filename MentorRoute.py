@@ -21,6 +21,13 @@ def delete(id):
     deleteId = UsersQueries.delete(id)
     return render_template("users.html")
 
+@mentorRoute.route('/mentor/deleteJson/<id>')
+def deleteJson(id):
+    deleteId = UsersQueries.delete(id)
+    mentors = MentorQueries.getAll()
+    return make_response(jsonify(mentors), 200)
+
+
 @mentorRoute.route('/mentor/addOrUpdate')
 def addOrUpdate():
     mentorId = request.form.get("mentorId")
@@ -49,6 +56,12 @@ def mentorprofile():
     profile = MentorQueries.getMentorinfo(id)
     return render_template("mentor/mentorprofile.html", profile=profile)
 
+@mentorRoute.route('/mentor/getMentorData')
+def getMentorData():
+    id = request.args.get("mId")
+    profile = MentorQueries.getMentorinfo(id)
+    return make_response(jsonify(profile[0]), 200)
+
 @mentorRoute.route('/mentor/updateprofile')
 def mentorupdateprofile():
     id = session['user_id']
@@ -70,6 +83,21 @@ def Update():
     profile = MentorQueries.getMentorinfo(id)
     return render_template("mentor/mentorprofile.html", profile=profile)
 
+
+@mentorRoute.route('/mentor/UpdateJson',methods=["POST"])
+def UpdateJson():
+    id = request.form.get("mentorid")
+    first_name = request.form.get("firstname")
+    last_name = request.form.get("lastname")
+    # password = request.form.get("password")
+    email = request.form.get("email")
+    phone = request.form.get("phone")
+    summary = request.form.get("summary")
+    UsersQueries.updateprofile(id, first_name, last_name, email)
+    MentorQueries.update(id, phone, summary)
+    profile = MentorQueries.getMentorinfo(id)
+    mentors = MentorQueries.getAll()
+    return make_response(jsonify(mentors), 200)
 
 @mentorRoute.route('/mentor/getProjectAllJson')
 def getProjectAllJson():

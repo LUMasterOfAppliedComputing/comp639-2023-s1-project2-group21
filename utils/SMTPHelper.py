@@ -9,12 +9,12 @@ sender_email = 'leon846666@gmail.com'
 sender_password = 'iuchylrjfizaadpz'
 
 # create message object
-msg = MIMEMultipart()
-msg['From'] = sender_email
 
 
 
 def sentPasswordEmail(to):
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
     # establish connection with SMTP server
     msg['To'] = to
     msg['Subject'] = "Reset your password"
@@ -28,12 +28,14 @@ def sentPasswordEmail(to):
 
 
 def sentStudentMatchingNotify(student,mentor):
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
     msg['To'] = student
     msg['Subject'] = "Matching notification!"
-    msg_content = "You have successfully matched with company: <br>"
+    msg_content = "You have successfully matched with : <br>"
     for men in mentor:
-        msg_content += "<a href=mailto:%s> %s </a>, website: <a href=%s> %s </a> <br>" % (
-        men['email'], men['company_name'], men['website'], men['website'])
+        msg_content += "project: %s,from <a href=mailto:%s> %s </a>, website: <a href=%s> %s </a> <br>" % (
+        men['project_title'],men['email'], men['company_name'], men['website'], men['website'])
 
     msg.attach(MIMEText(msg_content, 'html'))
 
@@ -44,12 +46,14 @@ def sentStudentMatchingNotify(student,mentor):
 
 
 def sentMentorMatchingNotify(student,mentor):
-
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
     msg['Subject'] = "Matching notification!"
     msg_content = "You have successfully matched with students: <br>"
+    mentor = ",".join(mentor)
     msg['To'] = mentor
-    msg_content += "<a href=mailto:%s> %s %s </a>, CV: <a href='/download/'%s> %s </a> <br>" % (
-    student['email'], student['first_name'], student['last_name'], student['cv'],'cv')
+    msg_content += "<a href=mailto:%s> %s %s </a>, CV: <a href='http://localhost:5000/download/%s'> %s's CV  </a> <br>" % (
+    student['email'], student['first_name'], student['last_name'], student['cv'],student['first_name'])
 
     msg.attach(MIMEText(msg_content, 'html'))
 
