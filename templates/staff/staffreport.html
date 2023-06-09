@@ -2,6 +2,24 @@
 <!-- Use Bootstrap nav class to give the nav bar a modern view -->
 <!-- Added a project page for role mentor -->
 
+<link href="static/css/custom-styles.css" rel="stylesheet" />
+
+<style>
+  .box {
+    height: 50px;
+    width: 200px;
+    float: left;
+  }
+
+  .icon {
+    float: left;
+  }
+
+  .label {
+    float: right;
+  }
+</style>
+
 {% extends "staff/staffbase.html" %}
 {% block content %}
 <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
@@ -11,19 +29,46 @@
     <div id="header" style="background-color:#FFA500;height: 100px;width:100%">
     <h1>Dashboard </h1></div>
      
-    <div id="menu" style="background-color:#FFD700;height: 1200px;;width:200px;float:left;">
-    <b>MENU</b><br>
-    replacement<br>
-    projects<br>
-    students</div>
+    <div id="menu" style="background-color:#FFD700;height: 1200px;;width:280px;float:left;">
+    
+      <div style="margin:25px 50px 75px 30px;">
+         <div class="box" style="height: 80px;">
+             <div class="v3_14 icon" style="float:left;"></div>
+             <span class="v3_16 label" style="float:right;">Report Charts</span>
+         </div>
+         <div class="box">
+               <a class="active-menu" href="/staffreport2">
+             <div class="v3_19 icon" style="float:left;"></div>
+             <span class="v3_20 label" style="float:right;">final report</span>
+               </a>
+         </div>
+         <div class="box">
+              <a class="active-menu" href="/staffreport">
+             <div class="v3_23 icon" style="float:left;"></div>
+             <span class="v3_24 label" style="float:right;">Company Status</span>
+              </a>
+         </div>
+         <div class="box">
+             <a class="active-menu" href="/staffreport">
+             <div class="v3_26 icon" style="float:left;"></div>
+             <span class="v3_27 label" style="float:right;">Match report</span>
+             </a>
+         </div>
+         <div class="box">
+             <a class="active-menu" href="/staffreport1">
+             <div class="v3_29 icon" style="float:left;"></div>
+             <span class="v3_30 label" style="float:right;">Student Status</span>
+             </a>
+         </div>
+       </div>
+      </div>
      
     
     
           <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div style="margin-left: 200px;height:1200px;width:1000px;display: flex; justify-content:space-around;flex-wrap: wrap"float:left>
+    <div style="margin-left: 200px;height:1200px;width:1440px;display: flex; justify-content:space-around;flex-wrap: wrap"float:left>
         <div id="main" style="height:600px;width:500px;justify-content:space-around;"></div>
-        <div id="main1" style="height:600px;width:500px;justify-content:space-around;"></div>
-        <div id="main2" style="height:600px;width:500px;justify-content:space-around;"></div>
+        <!-- <div id="main1" style="height:600px;width:500px;justify-content:space-around;"></div> -->
     </div>
     <script type="text/javascript">
         // 基于准备好的dom，初始化echarts实例
@@ -54,14 +99,13 @@
         borderRadius: 8
       },
       data: [
-        { value: 40, name: 'rose 1' },
-        { value: 38, name: 'rose 2' },
-        { value: 32, name: 'rose 3' },
-        { value: 30, name: 'rose 4' },
-        { value: 28, name: 'rose 5' },
-        { value: 26, name: 'rose 6' },
-        { value: 22, name: 'rose 7' },
-        { value: 18, name: 'rose 8' }
+        { value: 6, name: 'Deloitte' },
+        { value: 6, name: 'Alliance Group' },
+        { value: 4, name: 'PWC' },
+        { value: 4, name: 'XYZ Solution' },
+        { value: 3, name: 'AgReasearch' },
+        { value: 1, name: 'ABC Technologies' }
+
       ]
     }
   ]
@@ -73,82 +117,12 @@
 
         //第二个图表
 
-        
 
-
-var chartDom1 = document.getElementById('main1');
-var myChart1 = echarts.init(chartDom1);
-var option1;
-
-const data = [];
-for (let i = 0; i < 5; ++i) {
-  data.push(Math.round(Math.random() * 150));
-}
-option1 = {
-  xAxis: {
-    max: 'dataMax'
-  },
-  yAxis: {
-    type: 'category',
-    data: ['A', 'B', 'C', 'D', 'E'],
-    inverse: true,
-    animationDuration: 300,
-    animationDurationUpdate: 300,
-    max: 2 // only the largest 3 bars will be displayed
-  },
-  series: [
-    {
-      realtimeSort: true,
-      name: 'X',
-      type: 'bar',
-      data: data,
-      label: {
-        show: true,
-        position: 'right',
-        valueAnimation: true
-      }
-    }
-  ],
-  legend: {
-    show: true
-  },
-  animationDuration: 0,
-  animationDurationUpdate: 3000,
-  animationEasing: 'linear',
-  animationEasingUpdate: 'linear'
-};
-function run() {
-  for (var i = 0; i < data.length; ++i) {
-    if (Math.random() > 0.9) {
-      data[i] += Math.round(Math.random() * 1500);
-    } else {
-      data[i] += Math.round(Math.random() * 150);
-    }
-  }
-  myChart1.setOption({
-    series: [
-      {
-        type: 'bar',
-        data
-      }
-    ]
-  });
-}
-setTimeout(function () {
-  run();
-}, 0);
-setInterval(function () {
-  run();
-}, 3000);
-
-option1 && myChart1.setOption(option1);
-
-// 第三个图表
 
 
 var ROOT_PATH2 = 'https://echarts.apache.org/examples';
 
-var chartDom2 = document.getElementById('main2');
+var chartDom2 = document.getElementById('main1');
 var myChart2 = echarts.init(chartDom2);
 var option2;
 
