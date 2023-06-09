@@ -1,6 +1,22 @@
 <!-- Name: CP Jiang / Student ID: 1148594 -->
 <!-- Use Bootstrap nav class to give the nav bar a modern view -->
 <!-- Added a project page for role mentor -->
+<style>
+  .box {
+    height: 50px;
+    width: 200px;
+    float: left;
+  }
+
+  .icon {
+    float: left;
+  }
+
+  .label {
+    float: right;
+  }
+</style>
+
 
 {% extends "staff/staffbase.html" %}
 {% block content %}
@@ -11,11 +27,41 @@
     <div id="header" style="background-color:#FFA500;height: 100px;width:100%">
     <h1>Dashboard </h1></div>
      
-    <div id="menu" style="background-color:#FFD700;height: 1200px;;width:200px;float:left;">
-    <b>MENU</b><br>
-    replacement<br>
-    projects<br>
-    students</div>
+    <div id="menu" style="background-color:#FFD700;height: 1200px;;width:280px;float:left;">
+    
+      <div style="margin:25px 50px 75px 30px;">
+         <div class="box" style="height: 80px;">
+             <div class="v3_14 icon" style="float:left;"></div>
+             <span class="v3_16 label" style="float:right;">Report Charts</span>
+         </div>
+         <div class="box">
+               <a class="active-menu" href="/staffreport2">
+             <div class="v3_19 icon" style="float:left;"></div>
+             <span class="v3_20 label" style="float:right;">final report</span>
+               </a>
+         </div>
+         <div class="box">
+              <a class="active-menu" href="/staffreport1">
+             <div class="v3_23 icon" style="float:left;"></div>
+             <span class="v3_24 label" style="float:right;">Company Status</span>
+              </a>
+         </div>
+         <div class="box">
+             <a class="active-menu" href="/staffreport1">
+             <div class="v3_26 icon" style="float:left;"></div>
+             <span class="v3_27 label" style="float:right;">Match report</span>
+             </a>
+         </div>
+         <div class="box">
+             <a class="active-menu" href="/staffreport1">
+             <div class="v3_29 icon" style="float:left;"></div>
+             <span class="v3_30 label" style="float:right;">Student Status</span>
+             </a>
+         </div>
+       </div>
+      </div>
+    
+    </div>
      
     
     
