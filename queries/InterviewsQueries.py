@@ -1,9 +1,9 @@
 import db
 
 
-def insert(project_id, student_id, interview_date, interview_type, interview_status):
-    sqlCommand = """INSERT INTO interviews (project_id, student_id, interview_date, interview_type, interview_status)
-    VALUES ('%s', '%s', '%s', '%s', '%s')""" % (project_id, student_id, interview_date, interview_type, interview_status)
+def insert(uid,project_id, student_id, interview_date,time, interview_type, interview_status):
+    sqlCommand = """INSERT INTO interviews (interviewer ,project_id, student_id, interview_date,interview_time, interview_type, interview_status)
+    VALUES ('%s','%s', '%s', '%s', '%s', '%s', '%s')""" % (uid,project_id, student_id, interview_date,time, interview_type, interview_status)
      
     result = db.DBOperatorInsertedId(sqlCommand)
     return result
@@ -16,10 +16,9 @@ def getAll():
     return result
 
 
-def update(project_id, student_id, interview_date, interview_type, interview_status):
-    sqlCommand = """UPDATE interviews SET  interview_date = '%s', interview_type = '%s', interview_status = '%s' 
-            WHERE project_id= '%s' and student_id = '%s' """ \
-                 % (interview_date, interview_type, interview_status, project_id, student_id)
+def update(id, interview_status):
+    sqlCommand = """UPDATE interviews SET interview_status = '%s' WHERE id= '%s'  """ \
+                 % (interview_status, id)
      
     result = db.DBOperator(sqlCommand)
     return result
@@ -30,8 +29,3 @@ def delete(id):
      
     result = db.DBOperator_update(sqlCommand)
     return result
-
-
-
-def update():
-    return

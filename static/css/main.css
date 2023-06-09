@@ -18,7 +18,9 @@
 .hide {
     display: none !important;
 }
-
+.ui-timepicker-standard{
+    z-index: 99999999999 !important;
+}
 .backgroundColor {
     background: #2b4ae7;
 }

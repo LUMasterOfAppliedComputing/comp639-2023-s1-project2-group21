@@ -97,6 +97,73 @@ def getStudentById(id):
     return selectResult
 
 
+
+def getStudentsByIds(ids):
+    sqlCommand = """SELECT
+                            user_id as id,
+                            first_name,
+                            last_name,
+                            student_id_no,
+                            phone,
+                            email,
+                            GROUP_CONCAT(tk.skill_name) as skill,
+                            cv ,
+                           CASE
+                                WHEN placement_status = 0 THEN
+                                'seeking oppurtunities'
+                                WHEN placement_status = 1 THEN
+                                'offer accepted' 
+                                WHEN placement_status = 2 THEN
+                                'not available'
+                                 WHEN placement_status = 3 THEN
+                                'profile not completed'
+                                ELSE 
+                                'null' 
+                            END as placement_status
+                        FROM
+                            student stu
+                            LEFT JOIN USER u ON u.user_id = stu.id 
+                            LEFT JOIN student_skills sk on stu.id = sk.student_id
+                            LEFT JOIN techs_and_skills tk on tk.id = skill_id
+                        WHERE
+                            u.role = 2   and placement_status != 3  and stu.id in (%s)
+                            GROUP BY user_id""" %ids
+
+    id = db.DBOperator(sqlCommand)
+    return id;
+
+def getPreferredStudent(mid):
+    sqlCommand = """SELECT
+                        user_id as id,
+                        first_name,
+                        last_name,
+                        student_id_no,
+                        phone,
+                        email,
+                        GROUP_CONCAT(tk.skill_name) as skill,
+                        cv ,
+                       CASE
+                            WHEN will = 0 THEN
+                            'No'
+                            WHEN will = 1 THEN
+                            'Maybe' 
+                            WHEN will = 2 THEN
+                            'Yes'
+                            ELSE 
+                            'N/A' 
+                        END as will
+                    FROM
+						mentor_student ms 
+                        LEFT JOIN student stu on ms.student_id = stu.id
+                        LEFT JOIN USER u ON u.user_id = stu.id 
+                        LEFT JOIN student_skills sk on stu.id = sk.student_id
+                        LEFT JOIN techs_and_skills tk on tk.id = skill_id
+                    WHERE
+                        u.role = 2   and placement_status != 3 	and ms.mentor_id =%s 
+                        GROUP BY user_id""" % mid
+    id = db.DBOperator(sqlCommand)
+    return id;
+
 def getAllRanked(pid):
     sqlCommand = """SELECT
                         sp.rank,
