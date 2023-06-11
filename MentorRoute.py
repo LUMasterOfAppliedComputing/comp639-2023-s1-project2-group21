@@ -115,3 +115,8 @@ def updatecompanyprofile():
         return redirect("/companyprofile")
 
     return redirect("/companyprofile",errorMsg="add mentors wrong")
+
+
+@mentorRoute.route('/contactstaff')
+def contactstaff():
+    return render_template("/mentor/contactstaff.html")
