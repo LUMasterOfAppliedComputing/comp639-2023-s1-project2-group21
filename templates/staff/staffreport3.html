@@ -19,6 +19,7 @@
     float: right;
   }
 </style>
+
 {% extends "staff/staffbase.html" %}
 {% block content %}
 <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
@@ -48,15 +49,15 @@
               </a>
          </div>
          <div class="box">
-             <a class="active-menu" href="/staffreport1">
+             <a class="active-menu" href="/staffreport">
              <div class="v3_26 icon" style="float:left;"></div>
              <span class="v3_27 label" style="float:right;">Match report</span>
              </a>
          </div>
          <div class="box">
-          <a class="active-menu" href="/staffreport3">
-            <div class="v3_29 icon" style="float:left;"></div>
-            <span class="v3_30 label" style="float:right;">Skill Statistics</span>
+             <a class="active-menu" href="/staffreport3">
+             <div class="v3_29 icon" style="float:left;"></div>
+             <span class="v3_30 label" style="float:right;">Skill Statistics</span>
              </a>
          </div>
        </div>
@@ -65,70 +66,55 @@
     
     
           <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div style="margin-left: 200px;height:1200px;width:1000px;display: flex; justify-content:space-around;flex-wrap: wrap"float:left>
+    <div style="margin-left: 200px;height:1200px;width:1440px;display: flex; justify-content:space-around;flex-wrap: wrap"float:left>
         <div id="main" style="height:600px;width:500px;justify-content:space-around;"></div>
-       
+        <!-- <div id="main1" style="height:600px;width:500px;justify-content:space-around;"></div> -->
     </div>
     <script type="text/javascript">
         // 基于准备好的dom，初始化echarts实例
-
- var ROOT_PATH = 'https://echarts.apache.org/examples';
-
-var chartDom = document.getElementById('main');
+        var chartDom = document.getElementById('main');
 var myChart = echarts.init(chartDom);
 var option;
 
-myChart.showLoading();
-$.get('../static/js/flare.json', function (data) {
-  myChart.hideLoading();
-  data.children.forEach(function (datum, index) {
-    index % 2 === 0 && (datum.collapsed = true);
-  });
-  myChart.setOption(
-    (option = {
-      tooltip: {
-        trigger: 'item',
-        triggerOn: 'mousemove'
-      },
-      series: [
+option = {
+  title: {
+    text: 'skill Statistics'
+  },
+  legend: {
+    data: ['skill required', 'acture skills']
+  },
+  radar: {
+    // shape: 'circle',
+    indicator: [
+      { name: 'Java', max: 6500 },
+      { name: 'HTML CSS', max: 16000 },
+      { name: 'Python', max: 30000 },
+      { name: 'Github agile', max: 38000 },
+      { name: 'Database', max: 52000 },
+      { name: 'User Experience', max: 25000 }
+    ]
+  },
+  series: [
+    {
+      name: 'Budget vs spending',
+      type: 'radar',
+      data: [
         {
-          type: 'tree',
-          data: [data],
-          top: '1%',
-          left: '7%',
-          bottom: '1%',
-          right: '20%',
-          symbolSize: 7,
-          label: {
-            position: 'left',
-            verticalAlign: 'middle',
-            align: 'right',
-            fontSize: 9
-          },
-          leaves: {
-            label: {
-              position: 'right',
-              verticalAlign: 'middle',
-              align: 'left'
-            }
-          },
-          emphasis: {
-            focus: 'descendant'
-          },
-          expandAndCollapse: true,
-          animationDuration: 550,
-          animationDurationUpdate: 750
+          value: [5200, 13000, 20000, 35000, 30000, 18000],
+          name: 'skill required'
+        },
+        {
+          value: [3100, 14000, 28000, 26000, 32000, 21000],
+          name: 'acture skills'
         }
       ]
-    })
-  );
-});
+    }
+  ]
+};
 
 option && myChart.setOption(option);
 
 
-
- 
 
 
     </script>
