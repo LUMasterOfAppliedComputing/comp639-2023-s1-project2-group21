@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, request, session,redirect, jsonify, make_response
-
+from flask import Blueprint, render_template, request, session, redirect, jsonify, make_response, json
 
 from queries import UsersQueries, MentorQueries, ProjectQueries, CompanyQueries
 from utils import MD5Helper
@@ -16,21 +15,18 @@ def getAll():
 def getAllJson():
     mentors = MentorQueries.getAll()
     return make_response(jsonify(mentors), 200)
-#
-# @mentorRoute.route('/mentor/getAll')
-# def getAll():
-#     mentors = MentorQueries.getAll()
-#     return render_template("mentors.html", mentors=mentors)
-#
-# @mentorRoute.route('/mentor/getAllJson')
-# def getAllJson():
-#     mentors = MentorQueries.getAll()
-#     return make_response(redirect(url_for('/mentors.html'), jsonify(mentors),200))
 
 @mentorRoute.route('/mentor/delete/<id>')
 def delete(id):
     deleteId = UsersQueries.delete(id)
     return render_template("users.html")
+
+@mentorRoute.route('/mentor/deleteJson/<id>')
+def deleteJson(id):
+    deleteId = UsersQueries.delete(id)
+    mentors = MentorQueries.getAll()
+    return make_response(jsonify(mentors), 200)
+
 
 @mentorRoute.route('/mentor/addOrUpdate')
 def addOrUpdate():
@@ -60,6 +56,12 @@ def mentorprofile():
     profile = MentorQueries.getMentorinfo(id)
     return render_template("mentor/mentorprofile.html", profile=profile)
 
+@mentorRoute.route('/mentor/getMentorData')
+def getMentorData():
+    id = request.args.get("mId")
+    profile = MentorQueries.getMentorinfo(id)
+    return make_response(jsonify(profile[0]), 200)
+
 @mentorRoute.route('/mentor/updateprofile')
 def mentorupdateprofile():
     id = session['user_id']
@@ -81,6 +83,21 @@ def Update():
     profile = MentorQueries.getMentorinfo(id)
     return render_template("mentor/mentorprofile.html", profile=profile)
 
+
+@mentorRoute.route('/mentor/UpdateJson',methods=["POST"])
+def UpdateJson():
+    id = request.form.get("mentorid")
+    first_name = request.form.get("firstname")
+    last_name = request.form.get("lastname")
+    # password = request.form.get("password")
+    email = request.form.get("email")
+    phone = request.form.get("phone")
+    summary = request.form.get("summary")
+    UsersQueries.updateprofile(id, first_name, last_name, email)
+    MentorQueries.update(id, phone, summary)
+    profile = MentorQueries.getMentorinfo(id)
+    mentors = MentorQueries.getAll()
+    return make_response(jsonify(mentors), 200)
 
 @mentorRoute.route('/mentor/getProjectAllJson')
 def getProjectAllJson():
@@ -116,6 +133,28 @@ def updatecompanyprofile():
 
     return redirect("/companyprofile",errorMsg="add mentors wrong")
 
+@mentorRoute.route('/mentor/prestudent')
+def prestudent():
+    return render_template("/mentor/preferredStu.html")
+
+
+
+@mentorRoute.route('/studentMentor/add',methods=["POST"])
+def addPreferStudent():
+    stuList = request.form.get("sidList")
+    stuList2= json.loads(stuList)
+    sidArr = [str(student['sid']) for student in stuList2]
+
+    updateSids = MentorQueries.getAllByStudentIdAndProjectId(sidArr,session['user_id'])
+    values = [str(value) for d in updateSids for value in d.values()]
+
+    if len(updateSids) >0:
+        MentorQueries.deleteByStudentIds(session['user_id'],values)
+
+    MentorQueries.batchInsert(session['user_id'], stuList2)
+
+    data = {"message": "ok", "code": "ok"}
+    return make_response(jsonify(data), 200)
 
 @mentorRoute.route('/contactstaff')
 def contactstaff():

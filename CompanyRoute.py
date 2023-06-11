@@ -2,6 +2,7 @@ from flask import Blueprint, make_response, jsonify
 from flask import render_template
 
 from StudentRoute import studentRoute, checkStudentProfileAndSurvey
+from UserRoute import login_require
 from queries import CompanyQueries
 
 companyRoute = Blueprint('companyRoute', __name__)
@@ -10,6 +11,7 @@ companyRoute.register_blueprint(studentRoute)
 
 
 @companyRoute.route('/company/getAll')
+@checkStudentProfileAndSurvey
 def getAll():
     companys = CompanyQueries.getAll()
     return render_template("company.html", companys=companys)
