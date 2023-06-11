@@ -23,11 +23,11 @@
         var flag = {% if session['role'] ==0 %} true {% else %} false{% endif %}
         var btn = [
             {
-                "btnName": "view Detail",
-                "func": "alert"
+                "btnName": "Edit ",
+                "func": "editMentor"
             }, {
-                "btnName": "delete",
-                "func": "testFunc"
+                "btnName": "Delete",
+                "func": "deleteMentor"
             }
             ];
         $(function () {
