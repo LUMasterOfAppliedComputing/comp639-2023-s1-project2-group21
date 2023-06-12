@@ -3,6 +3,58 @@
 
     <body>
 
+    <script>
+        $.ajax({
+            url: "/speed/getOneByIdAndType",
+            type: "get",
+        }).then(result => {
+            if (result.code != 'ok') {
+                $.ajax({
+                    url: "/speed/getEvent",
+                    type: "GET",
+
+                }).then(result => {
+                    console.log(result)
+                    $.confirm({
+                        theme: 'dark',
+                        title: 'Speed Interview',
+                        content: '<br>Would you like to participate the Speed network Interview on ' + result.interviewDate + ' at ' + result.location + '?' +
+                            '<br><br>By pressing "No", you will be logout from our system.',
+                        buttons: {
+                            Yes: async function () {
+                                $.ajax({
+                                    url: "/speed/add",
+                                    type: "get",
+                                    dataType: "JSON",
+                                    data:{event_id:result.event_id}
+                                }).then(result => {
+
+                                })
+
+                            },
+                            No: function () {
+                                setTimeout(2000)
+                                location.href = "/users/logOut"
+
+                            }
+
+
+                        }
+                    })
+                })
+            }else {
+              {% if errorMsg %}
+                    var errorMsgs = "{{  errorMsg  }}";
+                    $.alert(errorMsgs)
+              {% endif %}
+            }
+        })
+
+    </script>
+
+    <script>
+
+    </script>
 
     <section class="w3l-apply-6">
         <div class="apply-info py-5 noTopPadding">
@@ -24,9 +76,12 @@
                                                            value="
 
 
+
+
                                                                    {% if qu.question_answer %}{{ qu.question_answer }}{% endif %}">
                                                 {% elif quesionJson.type =="1" %}
-                                                    <select name="que_{{ qu.id }}" {% if loop.index ==1 %} onchange="changeIntention(this)" {% endif %}>
+                                                    <select name="que_{{ qu.id }}" {% if loop.index ==1 %}
+                                                            onchange="changeIntention(this)" {% endif %}>
                                                         {% for foo in quesionJson.option %}
                                                             {% if qu.question_answer %}
                                                                 <option value="{{ loop.index0 }}"
@@ -56,7 +111,8 @@
                                                     <textarea id="{{ qu.id }}"
                                                               name="que_{{ qu.id }}" class="form-control"
                                                               class="question"
-                                                              style="height: 200px">{% if qu.question_answer %}{{ qu.question_answer }}{% endif %}</textarea>
+                                                              style="height: 200px">{% if qu.question_answer %}
+                                                        {{ qu.question_answer }}{% endif %}</textarea>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -71,7 +127,7 @@
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
         </div>
         </div>
         </div>

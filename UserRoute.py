@@ -1,9 +1,11 @@
 import functools
+import json
 
-from flask import Blueprint, render_template, request, session, make_response, jsonify
+from flask import Blueprint, render_template, request, session, make_response, jsonify, url_for
 
 from enums.PlacementStatus import SubscripStatus
-from queries import UsersQueries, ExternalStudentQueries, MentorQueries, StudentQueries, StudentSkillQueries
+from queries import UsersQueries, ExternalStudentQueries, MentorQueries, StudentQueries, StudentSkillQueries, \
+    QuestionQueries
 from utils import MD5Helper, SMTPHelper
 
 userRoute = Blueprint('userRoute', __name__)
@@ -176,14 +178,26 @@ def login():
         match role:  # render different page by role
             case 0:
                 # staff
-                return render_template('staff/staffbase.html')
+                return render_template('students.html')
             case 1:
                 # Mentor
-                return render_template('mentor/mentorbase.html')
+                return render_template('students.html')
             case 2:
                 # Student
-                return render_template('student/studentbase.html')
+                user_id_ = session['user_id']
+                user = StudentQueries.getStudentById(user_id_)
+                if user[0]['placement_status'] ==3:
+                    questions = QuestionQueries.getAll(user_id_)
+                    for que in questions:
+                        str = que['question'].replace('\r', '').replace('\n', '')
+                        strjson = json.loads(str)
+                        que['question'] = strjson
 
+                    return render_template("question.html", questions=questions, errorMsg="Please complete our survey first")
+
+                else:
+                    studentSkills = StudentSkillQueries.getAllByStudentId(user_id_)
+                    return render_template("register.html", user=user[0], studentSkills=studentSkills)
 
     else:  # if not matched, pop-up return error message
         return render_template("users.html", errorMsg="Login details incorrect. Please try again")

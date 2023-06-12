@@ -5,6 +5,7 @@ import pandas as pd
 from flask import Blueprint, make_response, jsonify, session, render_template
 
 import db
+from StudentRoute import checkStudentProfileAndSurvey
 from queries import StudentQueries, MentorQueries, MatchQueries
 from utils import SMTPHelper
 
@@ -128,6 +129,7 @@ def to_mentor(stuEmail, mentorEmail):
     SMTPHelper.sentMentorMatchingNotify(stuEmail,mentorEmail)
 
 @matchRoute.route('/match/studentMatch')
+@checkStudentProfileAndSurvey
 def studentMatch():
     return render_template("student/matchproject.html")
 

@@ -81,7 +81,8 @@ def getMentorinfo(userid):
                         m.phone,
                         m.summary,
                         c.company_name,
-                        m.summary as dsummary            
+                        m.summary as dsummary,         
+                        c.id as company_id            
                         from  mentor m
                         LEFT JOIN company c ON m.company_id = c.id
                         LEFT JOIN user u ON u.user_id = m.mentor_id

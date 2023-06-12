@@ -1,9 +1,9 @@
 import functools
 
-from flask import Blueprint, render_template, make_response, jsonify, request, session
+from flask import Blueprint, render_template, make_response, jsonify, request, session, json
 
 from UserRoute import login_require
-from queries import StudentQueries, ProjectQueries,StudentWishlistQueries
+from queries import StudentQueries, ProjectQueries, StudentWishlistQueries, QuestionQueries
 
 studentRoute = Blueprint('StudentRoute', __name__)
 
@@ -73,7 +73,14 @@ def checkStudentProfileAndSurvey(func):
         user = StudentQueries.getStudentById(userId)
         if len(user) > 0:
             if user[0]['placement_status'] != 0:
-                return render_template("error.html",data='you have to complete our survey first!')
+                    questions = QuestionQueries.getAll(userId)
+                    for que in questions:
+                        str = que['question'].replace('\r', '').replace('\n', '')
+                        strjson = json.loads(str)
+                        que['question'] = strjson
+
+                    return render_template("question.html", questions=questions,
+                                           errorMsg="Please complete our survey first")
             else:
                 print('start request')
                 res = func(*args, **kwargs)

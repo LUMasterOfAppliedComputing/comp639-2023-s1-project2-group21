@@ -43,7 +43,11 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                     console.log(button.btnName)
                                     if (button.btnName == 'Edit' && meta.if_current_mentor != '1') {
                                         btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
-                                    } else if (button.btnName == 'Interview') {
+                                    }
+                                    // else if (button.btnName == 'Skills' && meta.if_current_mentor != '1') {
+                                    //     btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                    // }
+                                    else if (button.btnName == 'Interview') {
                                         if (meta.status_value == 0) {
                                             btn += "<input type='button' onclick='manageInterview(" + (meta.interview_id) + ")'  value='Update'> "
                                             btn += "<input type='button' onclick='CancelInter(" + (meta.interview_id) + ")'  value='Cancel'> "
@@ -275,6 +279,36 @@ $(function () {
 
 })
 
+function  removePreproject(pid){
+
+    $.confirm({
+        theme: 'dark',
+        title: 'Remove project',
+        content: 'Are you sure to remove this project from your preference？',
+        buttons: {
+            Confirm: async function () {
+                var formData = serializeData("form#mentorForm")
+                $.ajax({
+                    url: "/studentProject/remove",
+                    type: "GET",
+                    dataType: "JSON",
+                    data: {pid:pid}
+                }).then(data => {
+                    if ($.fn.dataTable.isDataTable("#myTableOne")) {
+                        let dataTable1 = $("#myTableOne").dataTable();
+                        dataTable1.fnClearTable()
+                        dataTable1.fnAddData(data, true)
+                    }
+                })
+
+            },
+            cancel: function () {
+            }
+
+        }
+    })
+}
+
 function checkInterview(thisButn) {
     var pj = thisButn.dataset.pj
     var stu_id = thisButn.dataset.stu_id
@@ -454,6 +488,19 @@ function editMentor(mId) {
 
 }
 
+function checkPassword(inp) {
+    let pass1 = $("#password").val();
+    let pass2 = $("#compassword").val();
+    if (pass1 != pass2 && (pass1 != "" && pass2 != "")) {
+        $(inp).addClass("error")
+    } else {
+        $("#password").removeClass("error")
+        $("#compassword").removeClass("error")
+    }
+
+
+}
+
 function deleteMentor(mId) {
 
     $.confirm({
@@ -464,7 +511,7 @@ function deleteMentor(mId) {
             Confirm: async function () {
                 var formData = serializeData("form#mentorForm")
                 $.ajax({
-                    url: "/mentor/deleteJson/"+mId,
+                    url: "/mentor/deleteJson/" + mId,
                     type: "GET",
                     dataType: "JSON",
                 }).then(data => {
@@ -587,23 +634,6 @@ function sendRequest(url, data, method, ifDirect) {
     })
 }
 
-function doUnsubscribe(data) {
-    $.confirm({
-        theme: 'dark',
-        title: 'Unsubscription',
-        content: 'Are you sure that you wanna quit from Lincoln Fitness Club?',
-        buttons: {
-            confirm: function () {
-                deleteMember(data, 0)
-                location.href = "/logout"
-            },
-            cancel: function () {
-
-            }
-
-        }
-    });
-}
 
 function deleteMember(data, ifDirect) {
     var formData = {'userId': data}
@@ -1063,6 +1093,8 @@ function preferStudents() {
                 "  <label for='option1" + student['id'] + "'>Yes</label>" +
                 "  <input type='radio' id='option" + student['id'] + "' name='option" + student['id'] + "' value='1'>" +
                 "  <label for='option2" + student['id'] + "'>Maybe</label>" +
+                "  <input type='radio' id='option" + student['id'] + "' name='option" + student['id'] + "' value='0'>" +
+                "  <label for='option3" + student['id'] + "'>No</label>" +
                 "</td>" +
                 "" +
                 "</tr>";
@@ -1206,6 +1238,95 @@ function checkUserStatus(id) {
     })
 }
 
+function addSpeedInterview() {
+    $.ajax({
+        url: "/speed/getEvent",
+        type: "GET",
+
+    }).then(result => {
+        console.log(result)
+        $.confirm({
+            theme: 'dark',
+            title: 'Speed Interview',
+            content: '' +
+                '<form id="mentorForm" class="formName">' +
+                '<div class="form-group justify-content-center">' +
+                '   <div class="inputBox">\n' +
+                '     <label for="date" style="margin-right: 64px;padding-top: 5px">Date</label>\n' +
+                '     <input type="date" name="startdate"  value="' + result.interviewDate.split(' ')[0] + '" id="startdate" min="2023-06-16" required="required"><!--required to check for empty-->\n' +
+                '   </div>\n' +
+                '   <div class="inputBox">\n' +
+                '    <label for="starttime" style="margin-right: 83px;padding-top: 5px">At </label>\n' +
+                '    <input type="text" id="myTimeInput" value="' + result.interviewDate.split(' ')[1] + '">\n' +
+                '   </div>\n' +
+                '   <div class="inputBox" style="display: flex;padding-top: 5px" >\n' +
+                '     <label for="location" style="margin-right: 40px">Location</label>\n' +
+                '     <input type="text" name="location" id="location" value="' + result.location + '" required="required"><!--required to check for empty-->\n' +
+                '   </div>\n' +
+                '   <div class="inputBox" style="display: flex;padding-top: 5px" >\n' +
+                '     <label for="location" style="margin-right: 20px">Description</label>\n' +
+                '     <textarea type="text" name="desc" id="desc" value="" required="required">' + result.content + '</textarea>' +
+                '   </div>\n' +
+                ' </div>' +
+                '</form>'
+            ,
+            onContentReady: function () {
+                $('#myTimeInput').timepicker({
+                    'step': 30,
+                    'minTime': '9:00am',
+                    'maxTime': '5:30pm',
+                    'beforeShow': function () {
+                        // 延迟以等待 timepicker 完全初始化
+                        setTimeout(function () {
+                            // jQuery UI 时间选择器使用 jQuery UI dialog 组件来展示时间选择器
+                            // dialog 的 z-index 值设置在其父元素上
+                            $('.ui-timepicker-div').parent().css('z-index', 99999999999999);
+                        }, 0);
+                    }
+                });
+
+            },
+            buttons: {
+                Save: async function () {
+                    var startdate = this.$content.find('#startdate').val();
+                    var desc = this.$content.find('#desc').val();
+                    var starttime = this.$content.find('#myTimeInput').val();
+                    var location = this.$content.find('#location').val();
+
+                    var jsonData = {
+                        "startdate": startdate,
+                        "starttime": starttime,
+                        "desc": desc,
+                        "location": location
+                    }
+                    formId = "#myTableProject"
+                    $.ajax({
+                        url: "/speed/addEvent",
+                        type: "post",
+                        dataType: "JSON",
+                        data: jsonData,
+                    }).then(result => {
+                        if ($.fn.dataTable.isDataTable(formId)) {
+                            console.log("dataTable1")
+                            console.log(result)
+                            let dataTable1 = $(formId).dataTable();
+                            dataTable1.fnClearTable()
+                            dataTable1.fnAddData(result, true)
+                        }
+                    })
+
+                },
+                cancel: function () {
+                }
+
+
+            }
+        })
+    })
+
+
+}
+
 function checkStudentProfile(studentId) {
     $.ajax({
         url: "/studentQuestions/getByStudentId",
@@ -1316,12 +1437,8 @@ function addOrUpdateUser(type) {
             var formData = serializeData("form#regiForm");
             var skills = $("#regiForm input[name='stu_skills']:checked");
             let skillsVale = Array.from(skills).map(input => input.value);
-            if (skillsVale.length < 1) {
-                $.alert("You have to choose at least one skill !")
-                return false;
-            }
             let $text = $("#text a");
-            if ($text != undefined) {
+            if ($text != undefined && $text.length > 0) {
                 formData['fileLocation'] = $text[0].pathname.replaceAll("/download/", "")
             }
 
@@ -1411,9 +1528,9 @@ function viewCompanyProject(comId) {
             let item = data.data[i];
             options += "<tr>" +
                 "<td class='hide' name='proId' value='" + item['id'] + "'>" + item['id'] + "</td>" +
-                "<td>" + item['project_title'] + "</td>" +
-                "<td>" + item['type_name'] + "</td>" +
-                "<td>" + item['company_name'] + "</td>"
+                "<td style='width: 50%;padding-right: 150px;'>" + item['project_title'] + "</td>" +
+                "<td style='width: 25%'>" + item['type_name'] + "</td>" +
+                "<td style='width: 25%'>" + item['company_name'] + "</td>"
         }
 
         console.log(options)
@@ -1490,6 +1607,8 @@ function addPreferredProject() {
                 "  <label for='option1" + item['id'] + "'>Yes</label>" +
                 "  <input type='radio' id='option" + item['id'] + "' name='option" + item['id'] + "' value='1'>" +
                 "  <label for='option2" + item['id'] + "'>Maybe</label>" +
+                "  <input type='radio' id='option" + item['id'] + "' name='option" + item['id'] + "' value='0'>" +
+                "  <label for='option3" + item['id'] + "'>No</label>" +
                 "</td>" +
                 "" +
                 "</tr>";
