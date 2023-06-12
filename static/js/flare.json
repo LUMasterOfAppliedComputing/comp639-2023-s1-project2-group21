@@ -62,7 +62,7 @@
    ]
   },
   {
-   "name": "Alliance Group",
+   "name": "available students",
    "children": [
     {"name": "matt wu", "value": 100},
     {"name": "Colors liu", "value": 67},

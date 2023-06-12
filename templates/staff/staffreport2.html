@@ -65,12 +65,129 @@
     
     
           <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div style="margin-left: 200px;height:1200px;width:1000px;display: flex; justify-content:space-around;flex-wrap: wrap"float:left>
-        <div id="main" style="height:600px;width:500px;justify-content:space-around;"></div>
-       
+    <div style="margin-left: 200px;height:1200px;width:1440px;display: flex; justify-content:space-around;flex-wrap: wrap"float:left>
+        <div id="main1" style="height:600px;width:500px;justify-content:space-around;"></div>
+        <div id="main" style="height:800px;width:600px;justify-content:space-around;"></div>
     </div>
     <script type="text/javascript">
         // 基于准备好的dom，初始化echarts实例
+        //report 1
+
+var chartDom1 = document.getElementById('main1');
+var myChart1 = echarts.init(chartDom1);
+var option1;
+
+option1 = {
+  xAxis: {
+    data: ['placements', 'students', 'company']
+  },
+  yAxis: {},
+  dataGroupId: '',
+  animationDurationUpdate: 500,
+  series: {
+    type: 'bar',
+    id: 'sales',
+    data: [
+      {
+        value: 15,
+        groupId: 'placements'
+      },
+      {
+        value: 20,
+        groupId: 'students'
+      },
+      {
+        value: 8,
+        groupId: 'company'
+      }
+    ],
+    universalTransition: {
+      enabled: true,
+      divideShape: 'clone'
+    }
+  }
+};
+const drilldownData = [
+  {
+    dataGroupId: 'placements',
+    data: [
+      ['initial', 15],
+      ['match', 10],
+      ['selected', 8],
+      ['available', 7]
+    ]
+  },
+  {
+    dataGroupId: 'students',
+    data: [
+      ['all', 20],
+      ['has project', 2],
+      ['selected', 12],
+      ['available', 8]
+    ]
+  },
+  {
+    dataGroupId: 'company',
+    data: [
+      ['number', 8],
+      ['project', 12],
+      ['initial', 15],
+      ['available', 8]
+    ]
+  }
+];
+myChart1.on('click', function (event) {
+  if (event.data) {
+    var subData = drilldownData.find(function (data) {
+      return data.dataGroupId === event.data.groupId;
+    });
+    if (!subData) {
+      return;
+    }
+    myChart1.setOption({
+      xAxis: {
+        data: subData.data.map(function (item) {
+          return item[0];
+        })
+      },
+      series: {
+        type: 'bar',
+        id: 'sales',
+        dataGroupId: subData.dataGroupId,
+        data: subData.data.map(function (item) {
+          return item[1];
+        }),
+        universalTransition: {
+          enabled: true,
+          divideShape: 'clone'
+        }
+      },
+      graphic: [
+        {
+          type: 'text',
+          left: 50,
+          top: 20,
+          style: {
+            text: 'Back',
+            fontSize: 18
+          },
+          onclick: function () {
+            myChart1.setOption(option1);
+          }
+        }
+      ]
+    });
+  }
+});
+
+option1 && myChart1.setOption(option1);
+
+
+        
+
+
+
+        //report 2
 
  var ROOT_PATH = 'https://echarts.apache.org/examples';
 
