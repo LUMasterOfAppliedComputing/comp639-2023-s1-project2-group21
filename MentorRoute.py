@@ -157,6 +157,11 @@ def addPreferStudent():
     return make_response(jsonify(data), 200)
 
 
+@mentorRoute.route('/contactstaff')
+def contactstaff():
+    return render_template("/mentor/contactstaff.html")
+
+
 
 @mentorRoute.route('/studentMentor/remove',methods=["POST"])
 def removePreStudent():
@@ -168,3 +173,4 @@ def removePreStudent():
 
 
     return make_response(jsonify(user), 200)
+
