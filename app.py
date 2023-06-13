@@ -151,4 +151,8 @@ def staffreport1():
 def staffreport2():
     return render_template("staff/staffreport2.html")
 
+@app.route("/staffreport3")
+def staffreport3():
+    return render_template("staff/staffreport3.html")
+
 
