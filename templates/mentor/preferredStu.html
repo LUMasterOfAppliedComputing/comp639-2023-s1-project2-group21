@@ -2,6 +2,9 @@
 {% block content %}
     <div style="padding-top:50px;min-height: 700px">
         <div class="container widthFull">
+            {% if session['role'] ==1 %}
+                <button class="btn btn-primary" style="margin-top: 20px;margin-bottom: 20px" onclick="preferStudents()">Edit Preference
+                </button> {% else %}{% endif %}
             <table id="myTablePreStudent" class="display">
                 <thead>
                 <tr>
@@ -20,7 +23,6 @@
                 <tbody>
                 </tbody>
             </table>
-            {% if session['role'] ==1 %} <button class="btn btn-primary" onclick="preferStudents()">Prefer students</button> {% else %}{% endif %}
         </div>
     </div>
 
@@ -28,12 +30,17 @@
         var ulr = '/student/getMentorPreferred'
         var btn = [
             {
-                "btnName": "View Profile",
+                "btnName": "Profile",
                 "func": "checkStudentProfile"
+            },
+              {
+                "btnName": "Remove",
+                "func": "removeMentorStudent"
             }
+
         ];
         $(function () {
-            renderDataTable('#myTablePreStudent',ulr, [
+            renderDataTable('#myTablePreStudent', ulr, [
                 {"data": null},
                 {"data": "first_name"},
                 {"data": "last_name"},
@@ -41,12 +48,14 @@
                 {"data": "phone"},
                 {"data": "email"},
                 {"data": "skill"},
-                {"data": "cv",render: function(data, type, row, meta){
-                if(type === 'display'){
-                    data = '<a href="/download/' + data + '">' + data + '</a>';
-                }
-                return data;
-            }},
+                {
+                    "data": "cv", render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            data = '<a href="/download/' + data + '">' + data + '</a>';
+                        }
+                        return data;
+                    }
+                },
                 {"data": "will"}
             ], true, true, 9, btn);
         })

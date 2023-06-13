@@ -38,19 +38,24 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                 console.log(meta)
                                 console.log(type)
                                 console.log(row)
-                                debugger
                                 btns.forEach(button => {
                                     console.log(button.btnName)
                                     if (button.btnName == 'Edit' && meta.if_current_mentor != '1') {
                                         btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
-                                    } else if (button.btnName == 'Interview') {
+                                    }
+                                        // else if (button.btnName == 'Skills' && meta.if_current_mentor != '1') {
+                                        //     btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                    // }
+                                    else if (button.btnName == 'Interview') {
                                         if (meta.status_value == 0) {
                                             btn += "<input type='button' onclick='manageInterview(" + (meta.interview_id) + ")'  value='Update'> "
                                             btn += "<input type='button' onclick='CancelInter(" + (meta.interview_id) + ")'  value='Cancel'> "
                                         } else if (meta.status_value == 1) {
                                             btn += " "
                                         } else if (meta.status_value == 2) {
-                                            btn += "<input type='button' onclick='sendOffer(" + (meta.id) + ")' value='Send Offer'> "
+                                            btn += "<input type='button' onclick='sendOffer(" + (meta.id) + "," + meta.project_id + " ," + meta.interview_id + ")' value='Send Offer'> "
+                                        } else if (meta.status_value == 4) {
+                                            btn += " "
                                         } else if (meta.status_value == null) {
                                             var myobj = {
                                                 "pj": meta.project,
@@ -64,7 +69,6 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                             btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
                                         }
                                     } else {
-                                        debugger
                                         btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
                                     }
 
@@ -275,6 +279,66 @@ $(function () {
 
 })
 
+function removeMentorStudent(sid) {
+
+    $.confirm({
+        theme: 'dark',
+        title: 'Remove project',
+        content: 'Are you sure to remove this student from your preference？',
+        buttons: {
+            Confirm: async function () {
+                var formData = serializeData("form#mentorForm")
+                $.ajax({
+                    url: "/studentMentor/remove",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {sid: sid}
+                }).then(data => {
+                    if ($.fn.dataTable.isDataTable("#myTablePreStudent")) {
+                        let dataTable1 = $("#myTablePreStudent").dataTable();
+                        dataTable1.fnClearTable()
+                        dataTable1.fnAddData(data, true)
+                    }
+                })
+
+            },
+            cancel: function () {
+            }
+
+        }
+    })
+}
+
+function removePreproject(pid) {
+
+    $.confirm({
+        theme: 'dark',
+        title: 'Remove project',
+        content: 'Are you sure to remove this project from your preference？',
+        buttons: {
+            Confirm: async function () {
+                var formData = serializeData("form#mentorForm")
+                $.ajax({
+                    url: "/studentProject/remove",
+                    type: "GET",
+                    dataType: "JSON",
+                    data: {pid: pid}
+                }).then(data => {
+                    if ($.fn.dataTable.isDataTable("#myTableOne")) {
+                        let dataTable1 = $("#myTableOne").dataTable();
+                        dataTable1.fnClearTable()
+                        dataTable1.fnAddData(data, true)
+                    }
+                })
+
+            },
+            cancel: function () {
+            }
+
+        }
+    })
+}
+
 function checkInterview(thisButn) {
     var pj = thisButn.dataset.pj
     var stu_id = thisButn.dataset.stu_id
@@ -454,6 +518,19 @@ function editMentor(mId) {
 
 }
 
+function checkPassword(inp) {
+    let pass1 = $("#password").val();
+    let pass2 = $("#compassword").val();
+    if (pass1 != pass2 && (pass1 != "" && pass2 != "")) {
+        $(inp).addClass("error")
+    } else {
+        $("#password").removeClass("error")
+        $("#compassword").removeClass("error")
+    }
+
+
+}
+
 function deleteMentor(mId) {
 
     $.confirm({
@@ -464,7 +541,7 @@ function deleteMentor(mId) {
             Confirm: async function () {
                 var formData = serializeData("form#mentorForm")
                 $.ajax({
-                    url: "/mentor/deleteJson/"+mId,
+                    url: "/mentor/deleteJson/" + mId,
                     type: "GET",
                     dataType: "JSON",
                 }).then(data => {
@@ -530,8 +607,16 @@ function manageInterview(intv_id) {
     })
 }
 
-function sendOffer(student_id) {
-    $.alert("" + student_id)
+function sendOffer(student_id, pid, intvid) {
+
+    $.ajax({
+        url: "/match/sendOffer",
+        type: "get",
+        dataType: "JSON",
+        data: {"stu_id": student_id, "pid": pid, "intvId": intvid},
+    }).then(data => {
+
+    })
 }
 
 function notiDetail(id) {
@@ -587,23 +672,6 @@ function sendRequest(url, data, method, ifDirect) {
     })
 }
 
-function doUnsubscribe(data) {
-    $.confirm({
-        theme: 'dark',
-        title: 'Unsubscription',
-        content: 'Are you sure that you wanna quit from Lincoln Fitness Club?',
-        buttons: {
-            confirm: function () {
-                deleteMember(data, 0)
-                location.href = "/logout"
-            },
-            cancel: function () {
-
-            }
-
-        }
-    });
-}
 
 function deleteMember(data, ifDirect) {
     var formData = {'userId': data}
@@ -727,7 +795,7 @@ function validateQueForm() {
         }
     });
     let valid = form.valid();
-    debugger
+
     if (!valid) {
         $.MessageBox("please fill out all required information in correct format");
     }
@@ -766,6 +834,13 @@ function sendEmailPassword(email) {
 }
 
 function validateForm() {
+    $.validator.addMethod("greaterThan12Years", function (value, element) {
+        var inputDate = new Date(value);
+        var currentDate = new Date();
+        var twelveYearsAgo = new Date().setFullYear(currentDate.getFullYear() - 12);
+
+        return inputDate < twelveYearsAgo;
+    }, "Date should be greater than 12 years from the current date.");
 
     var form = $("#regiForm");
     form.validate({
@@ -796,7 +871,11 @@ function validateForm() {
                 digits: true
             },
             gender: "required",
-            dob: "required",
+            dob: {
+                required: true,
+                date: true,
+                greaterThan12Years: true
+            },
             email: {
                 required: true,
                 email: true
@@ -810,10 +889,22 @@ function validateForm() {
                 required: "password is required",
                 minlength: "password length should be greater than 6 "
             },
+            dob: {
+                required: "Please enter a date",
+                date: "You must be at least 12 years old"
+            },
             email: "please enter a valid email",
+        }, errorPlacement: function (error, element) {
+            // Custom error placement
+            error.insertAfter(element);
+            error.css('color', 'red');
+            error.css('max-width','200px !important')// Example: Set error message color to red
         },
-        errorPlacement: function (error, element) {
-            return true;
+        errorElement: "div", // Wrap error messages in a div element
+        wrapper: "div",
+        submitHandler: function (form) {
+            // Handle form submission
+            form.submit();
         }
     });
     let valid = form.valid();
@@ -1032,8 +1123,6 @@ function preferStudents() {
             idArr.push($(this).val());
         }
     });
-    //todo add to mentor prefer student table.
-    alert(idArr)
 
     $.ajax({
         url: "/student/getStudentsByIds?idArr=" + idArr,
@@ -1056,13 +1145,15 @@ function preferStudents() {
             options += "<tr>" +
                 "<td class='hide' name='stuId' value='" + student['id'] + "'>" + student['id'] + "</td>" +
                 "<td>" + student['first_name'] + "\t" + student["last_name"] + "</td>" +
-                "<td>" + studentElement + "</td>" +
-                "<td  style=\"padding-right: 100px\"><select id=\"menProject" + student['id'] + "\" name=\"menProject\" class=\"menCompany form-control\">'" + selection + "'</select></td>" +
+                "<td style=''>" + studentElement + "</td>" +
+                "<td  style=\"width:300px;padding-right: 100px\"><select id=\"menProject" + student['id'] + "\" name=\"menProject\" class=\"menCompany form-control\">'" + selection + "'</select></td>" +
                 "<td >" +
                 "  <input type='radio' id='option" + student['id'] + "' name='option" + student['id'] + "' value='2'>" +
                 "  <label for='option1" + student['id'] + "'>Yes</label>" +
                 "  <input type='radio' id='option" + student['id'] + "' name='option" + student['id'] + "' value='1'>" +
                 "  <label for='option2" + student['id'] + "'>Maybe</label>" +
+                "  <input type='radio' id='option" + student['id'] + "' name='option" + student['id'] + "' value='0'>" +
+                "  <label for='option3" + student['id'] + "'>No</label>" +
                 "</td>" +
                 "" +
                 "</tr>";
@@ -1080,8 +1171,8 @@ function preferStudents() {
                 '        <thead>\n' +
                 '          <tr class="odd">\n' +
                 '           <th width="18%">Student Name</th>\n' +
-                '           <th  width="38%">Skills</th>\n' +
-                '           <th  width="24%" style="padding-right: 100px">Project Allocation</th>\n' +
+                '           <th  width="33%">Skills</th>\n' +
+                '           <th  width="30%" style="padding-right: 100px">Project Allocation</th>\n' +
                 '           <th  width="20%">Willings</th>\n' +
                 '          </tr>\n' +
                 '        </thead>\n' +
@@ -1101,7 +1192,7 @@ function preferStudents() {
                             "will": $("input[name='option" + this.innerHTML + "']:checked").val() == null ? 0 : $("input[name='option" + this.innerHTML + "']:checked").val()
                         });
                     });
-                    debugger
+
                     let myJson = JSON.stringify(sidList);
 
                     $.ajax({
@@ -1204,6 +1295,95 @@ function checkUserStatus(id) {
             $.alert("Looks like you haven't completed our survey, before you use our system you must complete all of them")
         }
     })
+}
+
+function addSpeedInterview() {
+    $.ajax({
+        url: "/speed/getEvent",
+        type: "GET",
+
+    }).then(result => {
+        console.log(result)
+        $.confirm({
+            theme: 'dark',
+            title: 'Speed Interview',
+            content: '' +
+                '<form id="mentorForm" class="formName">' +
+                '<div class="form-group justify-content-center">' +
+                '   <div class="inputBox">\n' +
+                '     <label for="date" style="margin-right: 64px;padding-top: 5px">Date</label>\n' +
+                '     <input type="date" name="startdate"  value="' + result.interviewDate.split(' ')[0] + '" id="startdate" min="2023-06-16" required="required"><!--required to check for empty-->\n' +
+                '   </div>\n' +
+                '   <div class="inputBox">\n' +
+                '    <label for="starttime" style="margin-right: 83px;padding-top: 5px">At </label>\n' +
+                '    <input type="text" id="myTimeInput" value="' + result.interviewDate.split(' ')[1] + '">\n' +
+                '   </div>\n' +
+                '   <div class="inputBox" style="display: flex;padding-top: 5px" >\n' +
+                '     <label for="location" style="margin-right: 40px">Location</label>\n' +
+                '     <input type="text" name="location" id="location" value="' + result.location + '" required="required"><!--required to check for empty-->\n' +
+                '   </div>\n' +
+                '   <div class="inputBox" style="display: flex;padding-top: 5px" >\n' +
+                '     <label for="location" style="margin-right: 20px">Description</label>\n' +
+                '     <textarea type="text" name="desc" id="desc" value="" required="required">' + result.content + '</textarea>' +
+                '   </div>\n' +
+                ' </div>' +
+                '</form>'
+            ,
+            onContentReady: function () {
+                $('#myTimeInput').timepicker({
+                    'step': 30,
+                    'minTime': '9:00am',
+                    'maxTime': '5:30pm',
+                    'beforeShow': function () {
+                        // 延迟以等待 timepicker 完全初始化
+                        setTimeout(function () {
+                            // jQuery UI 时间选择器使用 jQuery UI dialog 组件来展示时间选择器
+                            // dialog 的 z-index 值设置在其父元素上
+                            $('.ui-timepicker-div').parent().css('z-index', 99999999999999);
+                        }, 0);
+                    }
+                });
+
+            },
+            buttons: {
+                Save: async function () {
+                    var startdate = this.$content.find('#startdate').val();
+                    var desc = this.$content.find('#desc').val();
+                    var starttime = this.$content.find('#myTimeInput').val();
+                    var location = this.$content.find('#location').val();
+
+                    var jsonData = {
+                        "startdate": startdate,
+                        "starttime": starttime,
+                        "desc": desc,
+                        "location": location
+                    }
+                    formId = "#myTableProject"
+                    $.ajax({
+                        url: "/speed/addEvent",
+                        type: "post",
+                        dataType: "JSON",
+                        data: jsonData,
+                    }).then(result => {
+                        if ($.fn.dataTable.isDataTable(formId)) {
+                            console.log("dataTable1")
+                            console.log(result)
+                            let dataTable1 = $(formId).dataTable();
+                            dataTable1.fnClearTable()
+                            dataTable1.fnAddData(result, true)
+                        }
+                    })
+
+                },
+                cancel: function () {
+                }
+
+
+            }
+        })
+    })
+
+
 }
 
 function checkStudentProfile(studentId) {
@@ -1310,18 +1490,15 @@ function uploadFile() {
 
 
 function addOrUpdateUser(type) {
+
     //add or update a student
     if (type == 2) {
         if (validateForm()) {
             var formData = serializeData("form#regiForm");
             var skills = $("#regiForm input[name='stu_skills']:checked");
             let skillsVale = Array.from(skills).map(input => input.value);
-            if (skillsVale.length < 1) {
-                $.alert("You have to choose at least one skill !")
-                return false;
-            }
             let $text = $("#text a");
-            if ($text != undefined) {
+            if ($text != undefined && $text.length > 0) {
                 formData['fileLocation'] = $text[0].pathname.replaceAll("/download/", "")
             }
 
@@ -1411,9 +1588,9 @@ function viewCompanyProject(comId) {
             let item = data.data[i];
             options += "<tr>" +
                 "<td class='hide' name='proId' value='" + item['id'] + "'>" + item['id'] + "</td>" +
-                "<td>" + item['project_title'] + "</td>" +
-                "<td>" + item['type_name'] + "</td>" +
-                "<td>" + item['company_name'] + "</td>"
+                "<td style='width: 50%;padding-right: 150px;'>" + item['project_title'] + "</td>" +
+                "<td style='width: 25%'>" + item['type_name'] + "</td>" +
+                "<td style='width: 25%'>" + item['company_name'] + "</td>"
         }
 
         console.log(options)
@@ -1449,10 +1626,17 @@ function processMatching() {
     $.ajax({
         url: "/match/processMatch",
         type: "GET",
-    }).then(data => {
-        if (data.code == 'ok') {
-            $.alert("Matches notifications are sent successfully!")
-        }
+        beforeSend: function () {
+            // 在 AJAX 请求发送前显示 loading 动画
+            $("#loading").show();
+        },
+        complete: function (data) {
+            $("#loading").hide();
+            if (data.responseJSON.code == 'ok') {
+
+                $.alert("Matches notifications are sent successfully!")
+            }
+        },
     })
 }
 
@@ -1490,6 +1674,8 @@ function addPreferredProject() {
                 "  <label for='option1" + item['id'] + "'>Yes</label>" +
                 "  <input type='radio' id='option" + item['id'] + "' name='option" + item['id'] + "' value='1'>" +
                 "  <label for='option2" + item['id'] + "'>Maybe</label>" +
+                "  <input type='radio' id='option" + item['id'] + "' name='option" + item['id'] + "' value='0'>" +
+                "  <label for='option3" + item['id'] + "'>No</label>" +
                 "</td>" +
                 "" +
                 "</tr>";
@@ -1528,7 +1714,7 @@ function addPreferredProject() {
                             "will": $("input[name='option" + this.innerHTML + "']:checked").val() == null ? 0 : $("input[name='option" + this.innerHTML + "']:checked").val()
                         });
                     });
-                    debugger
+
                     let myJson = JSON.stringify(pidList);
 
                     $.ajax({
@@ -1639,7 +1825,7 @@ async function resetPassword(id) {
 
 
 function resetPassword2(fromdata) {
-    debugger
+
     $.ajax({
         url: "/users/resetpassword",
         type: "POST",
@@ -1674,7 +1860,7 @@ async function addNewProjectOrupdate(pid) {
 
         var str = ''
         if (pid == null) {
-            debugger
+
             str = '' +
                 '<form id="projectForm" class="formName">' +
                 '<div class="form-group">' +
@@ -1685,15 +1871,15 @@ async function addNewProjectOrupdate(pid) {
                 '<label>Number of students</label>' +
                 '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" required />' +
                 '<label>Project start date</label>' +
-                '<input type="text" placeholder="" name="start_date" class="fname form-control" required />' +
+                '<input type="date" placeholder="" name="start_date" class="fname form-control" required />' +
                 '<label>Project end date</label>' +
-                '<input type="text" placeholder="" name="end_date" class="fname form-control" required />' +
+                '<input type="date" placeholder="" name="end_date" class="fname form-control" required />' +
                 '<label> Company type</label>' +
                 '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
                 '</div>' +
                 '</form>'
         } else {
-            debugger
+
             let projectitem = data.projects[0];
             str = '' +
                 '<form id="projectForm" class="formName">' +
@@ -1811,14 +1997,14 @@ function updateSkill(pid) {
         data: {"pid": pid},
 
     }).then(data => {
-        debugger
+
         console.log(data);
         var options = "";
 
 
         var str = ''
 
-        debugger
+
 
         str = '' +
             '<form id="regiForm" class="formName">' +
@@ -1843,7 +2029,7 @@ function updateSkill(pid) {
 
         str += '</div>' + '</form>'
 
-        debugger
+
 
         $.confirm({
             theme: 'dark',
@@ -1878,7 +2064,6 @@ function updateSkill(pid) {
 }
 
 function addOrUpdateProjectSkill(fromdata) {
-    debugger
 
 
     var formData = serializeData("form#regiForm");

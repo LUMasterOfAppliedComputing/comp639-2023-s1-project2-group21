@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, session, redirect, jsonify, make_response, json
 
-from queries import UsersQueries, MentorQueries, ProjectQueries, CompanyQueries
+from queries import UsersQueries, MentorQueries, ProjectQueries, CompanyQueries, StudentQueries
 from utils import MD5Helper
 
 mentorRoute = Blueprint('mentorRoute', __name__)
@@ -156,6 +156,21 @@ def addPreferStudent():
     data = {"message": "ok", "code": "ok"}
     return make_response(jsonify(data), 200)
 
+
 @mentorRoute.route('/contactstaff')
 def contactstaff():
     return render_template("/mentor/contactstaff.html")
+
+
+
+@mentorRoute.route('/studentMentor/remove',methods=["POST"])
+def removePreStudent():
+    sid = request.form.get("sid")
+    MentorQueries.deleteByStudentIds(session['user_id'],sid)
+
+    userId = session['user_id']
+    user = StudentQueries.getPreferredStudent(userId)
+
+
+    return make_response(jsonify(user), 200)
+

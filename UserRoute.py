@@ -1,9 +1,11 @@
 import functools
+import json
 
-from flask import Blueprint, render_template, request, session, make_response, jsonify
+from flask import Blueprint, render_template, request, session, make_response, jsonify, url_for
 
 from enums.PlacementStatus import SubscripStatus
-from queries import UsersQueries, ExternalStudentQueries, MentorQueries, StudentQueries, StudentSkillQueries
+from queries import UsersQueries, ExternalStudentQueries, MentorQueries, StudentQueries, StudentSkillQueries, \
+    QuestionQueries
 from utils import MD5Helper, SMTPHelper
 
 userRoute = Blueprint('userRoute', __name__)
@@ -109,9 +111,11 @@ def addOrUpdateUser():
                         preferName = request.form.get("preferName")
                         # id,student_id_no, alternative_name, preferred_name, phone, cv, project_preference, personal_statements, placement_status,dob
                         StudentQueries.insert(id, studentNo, alternativeName, preferName, phone, "", "", "",
-                                              SubscripStatus.not_completed_profile.value, gender,
+                                              SubscripStatus.not_available.value, gender,
                                               dob)
-            data = {'message': 'Profile has been added successfully', 'code': 'ok'}
+                data = {'message': 'Profile has been added successfully', 'code': 'ok'}
+            else:
+                data = {'message': 'You have successfully registered', 'code': 'ok'}
 
         else:
             rowCount = UsersQueries.update(userId, firstname, lastname)
@@ -164,10 +168,11 @@ def login():
 
     userData = UsersQueries.getUserByEmail(email)  # check if the email and role is matched
     if len(userData) > 0:
+        print(userData)
         data = userData[0]
         checkResult = MD5Helper.check_match(data['password'], password)
         if not checkResult:
-            return render_template("users.html", errorMsg="Login details incorrect. Please try again")
+            return render_template("login.html", data="Login details incorrect. Please try again")
         session['user_id'] = data['user_id']  # if matched, put the user on session variable.
         session['name'] = data['first_name'] + " " + data['last_name']
         role = data['role']
@@ -176,17 +181,29 @@ def login():
         match role:  # render different page by role
             case 0:
                 # staff
-                return render_template('staff/staffbase.html')
+                return render_template('students.html')
             case 1:
                 # Mentor
-                return render_template('mentor/mentorbase.html')
+                return render_template('students.html')
             case 2:
                 # Student
-                return render_template('student/studentbase.html')
-
+                user_id_ = session['user_id']
+                user = StudentQueries.getStudentById(user_id_)
+                if user[0]['placement_status'] ==3:
+                    questions = QuestionQueries.getAll(user_id_)
+                    for que in questions:
+                        str = que['question'].replace('\r', '').replace('\n', '')
+                        strjson = json.loads(str)
+                        que['question'] = strjson
+                    return render_template("question.html", questions=questions, errorMsg="Please complete our survey first")
+                elif user[0]['placement_status'] ==1 :
+                    return render_template("student/matchproject.html",message="Congratulations, you got an offer!")
+                else:
+                    studentSkills = StudentSkillQueries.getAllByStudentId(user_id_)
+                    return render_template("register.html", user=user[0], studentSkills=studentSkills)
 
     else:  # if not matched, pop-up return error message
-        return render_template("users.html", errorMsg="Login details incorrect. Please try again")
+        return render_template("login.html", data="Login details incorrect. Please try again")
 
 
 # user logout, email and role need to be passed, to match t
