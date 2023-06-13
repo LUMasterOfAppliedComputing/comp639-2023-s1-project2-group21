@@ -158,13 +158,16 @@ def sendOffer():
     intvId = request.args.get("intvId")
 
     # update student placement status to accept offer
-    matchedProjects = StudentQueries.update_status(stu_id,1)
+    StudentQueries.update_status(stu_id,1)
 
     # update inter view status
-    matchedProjects = InterviewsQueries.update(intvId,4)
+    InterviewsQueries.update(intvId,4)
 
     # update project remain number of student
     ProjectQueries.update_num_of_stu(pid)
+
+    data = {"message": 'ok', 'code': 'ok'}
+    matchedProjects = MatchQueries.getProjectMatchList(session['user_id'])
 
     return make_response(jsonify(matchedProjects), 200)
 
