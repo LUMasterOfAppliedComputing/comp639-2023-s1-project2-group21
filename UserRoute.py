@@ -168,6 +168,7 @@ def login():
 
     userData = UsersQueries.getUserByEmail(email)  # check if the email and role is matched
     if len(userData) > 0:
+        print(userData)
         data = userData[0]
         checkResult = MD5Helper.check_match(data['password'], password)
         if not checkResult:

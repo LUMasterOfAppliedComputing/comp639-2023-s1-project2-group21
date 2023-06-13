@@ -66,13 +66,13 @@ def getStudentMatchList(user_id):
                         `match` sp
                         INNER JOIN student stu ON sp.student_id = stu.id 
                         AND stu.placement_status != 2 
-                        INNER JOIN mentor_student ms on ms.student_id = stu.id and ms.project_id = sp.project_id
-                        INNER JOIN `user` u on u.user_id = ms.mentor_id
-                        INNER JOIN project p on p.id = sp.project_id
-                        INNER JOIN mentor m on m.mentor_id = p.mentor_id
-                        INNER JOIN company com on com.id = m.company_id
-                        INNER JOIN project_type tp on tp.type_id = project_type
-                        left JOIN interviews intv on intv.project_id = p.id
+                        left JOIN mentor_student ms on ms.student_id = stu.id and ms.project_id = sp.project_id
+                        left JOIN `user` u on u.user_id = ms.mentor_id
+                        left JOIN project p on p.id = sp.project_id
+                        left JOIN mentor m on m.mentor_id = p.mentor_id
+                        left JOIN company com on com.id = m.company_id
+                        left JOIN project_type tp on tp.type_id = project_type
+                        left JOIN interviews intv on intv.project_id = sp.project_id and sp.student_id = intv.student_id
                         where stu.id = %s  and p.remain_number_of_student>0 """ % user_id
     id = db.DBOperator(sqlCommand)
     return id
