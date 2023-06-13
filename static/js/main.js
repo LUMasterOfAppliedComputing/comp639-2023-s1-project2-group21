@@ -43,9 +43,9 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                     if (button.btnName == 'Edit' && meta.if_current_mentor != '1') {
                                         btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
                                     }
-                                        // else if (button.btnName == 'Skills' && meta.if_current_mentor != '1') {
-                                        //     btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
-                                    // }
+                                    else if (button.btnName == 'Skills' && meta.if_current_mentor != '1') {
+                                        btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                      }
                                     else if (button.btnName == 'Interview') {
                                         if (meta.status_value == 0) {
                                             btn += "<input type='button' onclick='manageInterview(" + (meta.interview_id) + ")'  value='Update'> "
@@ -545,7 +545,10 @@ function deleteMentor(mId) {
                     type: "GET",
                     dataType: "JSON",
                 }).then(data => {
-                    if ($.fn.dataTable.isDataTable("#myTableOne")) {
+                    if(data.code!= 'ok'){
+                        $.alert(data.message)
+                    }
+                    else if($.fn.dataTable.isDataTable("#myTableOne")) {
                         let dataTable1 = $("#myTableOne").dataTable();
                         dataTable1.fnClearTable()
                         dataTable1.fnAddData(data, true)
@@ -614,9 +617,25 @@ function sendOffer(student_id, pid, intvid) {
         type: "get",
         dataType: "JSON",
         data: {"stu_id": student_id, "pid": pid, "intvId": intvid},
-    }).then(data => {
 
-    })
+        beforeSend: function () {
+            // 在 AJAX 请求发送前显示 loading 动画
+        },
+        complete: function (data) {
+
+            $.alert("Matches notifications are sent successfully!")
+
+
+        },
+    }).then(data => {
+             if ($.fn.dataTable.isDataTable("#myTableProject")) {
+                    console.log("dataTable1")
+                    console.log(data)
+                    let dataTable1 = $("#myTableProject").dataTable();
+                    dataTable1.fnClearTable()
+                    dataTable1.fnAddData(data, true)
+            }
+        })
 }
 
 function notiDetail(id) {
@@ -898,7 +917,7 @@ function validateForm() {
             // Custom error placement
             error.insertAfter(element);
             error.css('color', 'red');
-            error.css('max-width','200px !important')// Example: Set error message color to red
+            error.css('max-width', '200px !important')// Example: Set error message color to red
         },
         errorElement: "div", // Wrap error messages in a div element
         wrapper: "div",
@@ -2005,7 +2024,6 @@ function updateSkill(pid) {
         var str = ''
 
 
-
         str = '' +
             '<form id="regiForm" class="formName">' +
             '<div class="form-group">' +
@@ -2028,7 +2046,6 @@ function updateSkill(pid) {
         }
 
         str += '</div>' + '</form>'
-
 
 
         $.confirm({

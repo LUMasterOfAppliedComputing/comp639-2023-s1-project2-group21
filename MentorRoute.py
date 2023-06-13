@@ -23,6 +23,11 @@ def delete(id):
 
 @mentorRoute.route('/mentor/deleteJson/<id>')
 def deleteJson(id):
+    projects =ProjectQueries.getProjectAll(None,None,id)
+    if len(projects)>0:
+        data = {"message": "Mentor deleted failed as their projects need to be deleted first! ", "code": "error"}
+        return make_response(jsonify(data), 200)
+
     deleteId = UsersQueries.delete(id)
     mentors = MentorQueries.getAll()
     return make_response(jsonify(mentors), 200)

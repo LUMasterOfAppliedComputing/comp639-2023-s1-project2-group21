@@ -4,7 +4,7 @@
     <div style="padding-top:50px;min-height: 700px">
         <div class="container widthFull">
             {% if session['role'] == 1 %}
-			<button class="btn btn-primary" onclick="addNewProjectOrupdate()">Add new Project</button>
+			<button class="btn btn-primary"  style="margin-top: 20px;margin-bottom: 20px"  onclick="addNewProjectOrupdate()">Add new Project</button>
             {% endif %}
             <table id="myTableOne" class="display">
                 <thead>
@@ -41,7 +41,7 @@
             btn = [{
                 "btnName": "Preferred Students",
                 "func": "checkPreferredStudent"
-            },
+             },
                 {
 
                 "btnName": "Edit",
