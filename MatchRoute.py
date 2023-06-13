@@ -2,11 +2,11 @@ import datetime
 import json
 
 import pandas as pd
-from flask import Blueprint, make_response, jsonify, session, render_template
+from flask import Blueprint, make_response, jsonify, session, render_template, request
 
 import db
 from StudentRoute import checkStudentProfileAndSurvey
-from queries import StudentQueries, MentorQueries, MatchQueries
+from queries import StudentQueries, MentorQueries, MatchQueries, ProjectQueries, InterviewsQueries
 from utils import SMTPHelper
 
 matchRoute = Blueprint('matchRoute', __name__)
@@ -25,7 +25,7 @@ def combine_lists2D():
                         concat(first_name," ",last_name) as name
                         FROM student stu 
                         LEFT JOIN user u ON u.user_id = stu.id
-                        where stu.placement_status = 0
+                        where stu.placement_status !=2
                         """)
     students = cursor.fetchall()
 
@@ -44,7 +44,7 @@ def combine_lists2D():
                     FROM
                         student_project sp
                         INNER JOIN  student stu ON sp.student_id = stu.id 
-                        AND stu.placement_status = 0
+                        AND (stu.placement_status !=2) 
                         """)
     student_projects = cursor.fetchall()
 
@@ -149,3 +149,25 @@ def studentMatchList():
 def mentorMatchList():
     matchedProjects = MatchQueries.getProjectMatchList(session['user_id'])
     return make_response(jsonify(matchedProjects), 200)
+
+
+@matchRoute.route('/match/sendOffer',methods=['get'])
+def sendOffer():
+    stu_id = request.args.get("stu_id")
+    pid = request.args.get("pid")
+    intvId = request.args.get("intvId")
+
+    # update student placement status to accept offer
+    matchedProjects = StudentQueries.update_status(stu_id,1)
+
+    # update inter view status
+    matchedProjects = InterviewsQueries.update(intvId,4)
+
+    # update project remain number of student
+    ProjectQueries.update_num_of_stu(pid)
+
+    return make_response(jsonify(matchedProjects), 200)
+
+
+
+

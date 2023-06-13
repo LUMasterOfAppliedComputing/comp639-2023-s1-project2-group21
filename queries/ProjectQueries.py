@@ -76,6 +76,14 @@ def update(id, project_title, description, number_of_student, project_type, star
     return result;
 
 
+def update_num_of_stu(id):
+    sqlCommand = """UPDATE project SET remain_number_of_student = remain_number_of_student -1 
+                     WHERE id = '%s' and remain_number_of_student >0 """ % ( id)
+
+    result = db.DBOperatorInsertedId(sqlCommand)
+    return result;
+
+
 def delete(id):
     sqlCommand = """DELETE FROM project WHERE id = '%s'""" % id
      

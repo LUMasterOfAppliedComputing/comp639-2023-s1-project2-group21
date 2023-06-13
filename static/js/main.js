@@ -44,8 +44,8 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                     if (button.btnName == 'Edit' && meta.if_current_mentor != '1') {
                                         btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
                                     }
-                                    // else if (button.btnName == 'Skills' && meta.if_current_mentor != '1') {
-                                    //     btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
+                                        // else if (button.btnName == 'Skills' && meta.if_current_mentor != '1') {
+                                        //     btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' class='hide' value='" + button['btnName'] + "'> "
                                     // }
                                     else if (button.btnName == 'Interview') {
                                         if (meta.status_value == 0) {
@@ -54,7 +54,9 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                         } else if (meta.status_value == 1) {
                                             btn += " "
                                         } else if (meta.status_value == 2) {
-                                            btn += "<input type='button' onclick='sendOffer(" + (meta.id) + ")' value='Send Offer'> "
+                                            btn += "<input type='button' onclick='sendOffer(" + (meta.id) + "," + meta.project_id + " ," + meta.interview_id + ")' value='Send Offer'> "
+                                        } else if (meta.status_value == 4) {
+                                            btn += " "
                                         } else if (meta.status_value == null) {
                                             var myobj = {
                                                 "pj": meta.project,
@@ -279,7 +281,37 @@ $(function () {
 
 })
 
-function  removePreproject(pid){
+function removeMentorStudent(sid) {
+
+    $.confirm({
+        theme: 'dark',
+        title: 'Remove project',
+        content: 'Are you sure to remove this student from your preference？',
+        buttons: {
+            Confirm: async function () {
+                var formData = serializeData("form#mentorForm")
+                $.ajax({
+                    url: "/studentMentor/remove",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {sid: sid}
+                }).then(data => {
+                    if ($.fn.dataTable.isDataTable("#myTablePreStudent")) {
+                        let dataTable1 = $("#myTablePreStudent").dataTable();
+                        dataTable1.fnClearTable()
+                        dataTable1.fnAddData(data, true)
+                    }
+                })
+
+            },
+            cancel: function () {
+            }
+
+        }
+    })
+}
+
+function removePreproject(pid) {
 
     $.confirm({
         theme: 'dark',
@@ -292,7 +324,7 @@ function  removePreproject(pid){
                     url: "/studentProject/remove",
                     type: "GET",
                     dataType: "JSON",
-                    data: {pid:pid}
+                    data: {pid: pid}
                 }).then(data => {
                     if ($.fn.dataTable.isDataTable("#myTableOne")) {
                         let dataTable1 = $("#myTableOne").dataTable();
@@ -577,8 +609,16 @@ function manageInterview(intv_id) {
     })
 }
 
-function sendOffer(student_id) {
-    $.alert("" + student_id)
+function sendOffer(student_id, pid, intvid) {
+
+    $.ajax({
+        url: "/match/sendOffer",
+        type: "get",
+        dataType: "JSON",
+        data: {"stu_id": student_id, "pid": pid, "intvId": intvid},
+    }).then(data => {
+
+    })
 }
 
 function notiDetail(id) {
@@ -796,6 +836,13 @@ function sendEmailPassword(email) {
 }
 
 function validateForm() {
+    $.validator.addMethod("greaterThan12Years", function (value, element) {
+        var inputDate = new Date(value);
+        var currentDate = new Date();
+        var twelveYearsAgo = new Date().setFullYear(currentDate.getFullYear() - 12);
+
+        return inputDate < twelveYearsAgo;
+    }, "Date should be greater than 12 years from the current date.");
 
     var form = $("#regiForm");
     form.validate({
@@ -826,7 +873,11 @@ function validateForm() {
                 digits: true
             },
             gender: "required",
-            dob: "required",
+            dob: {
+                required: true,
+                date: true,
+                greaterThan12Years: true
+            },
             email: {
                 required: true,
                 email: true
@@ -840,10 +891,22 @@ function validateForm() {
                 required: "password is required",
                 minlength: "password length should be greater than 6 "
             },
+            dob: {
+                required: "Please enter a date",
+                date: "You must be at least 12 years old"
+            },
             email: "please enter a valid email",
+        }, errorPlacement: function (error, element) {
+            // Custom error placement
+            error.insertAfter(element); // Place error message after the input element
+            error.css('color', 'red');
+            error.removeClass("error")//  Place error message after the input element
         },
-        errorPlacement: function (error, element) {
-            return true;
+        errorElement: "div", // Wrap error messages in a div element
+        wrapper: "div",
+        submitHandler: function (form) {
+            // Handle form submission
+            form.submit();
         }
     });
     let valid = form.valid();
@@ -1062,8 +1125,6 @@ function preferStudents() {
             idArr.push($(this).val());
         }
     });
-    //todo add to mentor prefer student table.
-    alert(idArr)
 
     $.ajax({
         url: "/student/getStudentsByIds?idArr=" + idArr,
@@ -1086,8 +1147,8 @@ function preferStudents() {
             options += "<tr>" +
                 "<td class='hide' name='stuId' value='" + student['id'] + "'>" + student['id'] + "</td>" +
                 "<td>" + student['first_name'] + "\t" + student["last_name"] + "</td>" +
-                "<td>" + studentElement + "</td>" +
-                "<td  style=\"padding-right: 100px\"><select id=\"menProject" + student['id'] + "\" name=\"menProject\" class=\"menCompany form-control\">'" + selection + "'</select></td>" +
+                "<td style=''>" + studentElement + "</td>" +
+                "<td  style=\"width:300px;padding-right: 100px\"><select id=\"menProject" + student['id'] + "\" name=\"menProject\" class=\"menCompany form-control\">'" + selection + "'</select></td>" +
                 "<td >" +
                 "  <input type='radio' id='option" + student['id'] + "' name='option" + student['id'] + "' value='2'>" +
                 "  <label for='option1" + student['id'] + "'>Yes</label>" +
@@ -1112,8 +1173,8 @@ function preferStudents() {
                 '        <thead>\n' +
                 '          <tr class="odd">\n' +
                 '           <th width="18%">Student Name</th>\n' +
-                '           <th  width="38%">Skills</th>\n' +
-                '           <th  width="24%" style="padding-right: 100px">Project Allocation</th>\n' +
+                '           <th  width="33%">Skills</th>\n' +
+                '           <th  width="30%" style="padding-right: 100px">Project Allocation</th>\n' +
                 '           <th  width="20%">Willings</th>\n' +
                 '          </tr>\n' +
                 '        </thead>\n' +
@@ -1431,6 +1492,7 @@ function uploadFile() {
 
 
 function addOrUpdateUser(type) {
+
     //add or update a student
     if (type == 2) {
         if (validateForm()) {
@@ -1566,10 +1628,17 @@ function processMatching() {
     $.ajax({
         url: "/match/processMatch",
         type: "GET",
-    }).then(data => {
-        if (data.code == 'ok') {
-            $.alert("Matches notifications are sent successfully!")
-        }
+        beforeSend: function () {
+            // 在 AJAX 请求发送前显示 loading 动画
+            $("#loading").show();
+        },
+        complete: function (data) {
+            $("#loading").hide();
+            if (data.responseJSON.code == 'ok') {
+
+                $.alert("Matches notifications are sent successfully!")
+            }
+        },
     })
 }
 

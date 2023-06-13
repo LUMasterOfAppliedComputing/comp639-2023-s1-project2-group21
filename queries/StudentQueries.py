@@ -64,10 +64,16 @@ def update(id, alternative_name, preferred_name, phone, cv, project_preference, 
     id = db.DBOperator_update(sqlCommand)
     return id;
 
+def update_status(id,  status ):
+    sqlCommand = """UPDATE student set placement_status=%s  WHERE id = '%s'""" % (status,id)
+    print(sqlCommand)
+    id = db.DBOperator_update(sqlCommand)
+    return id;
+
 
 def updatePlacementStatus(id, placement_status):
     sqlCommand = """UPDATE student set placement_status='%s'
-                        WHERE id = '%s'""" % ( placement_status, id)
+                        WHERE id = '%s' """ % ( placement_status, id)
     print(sqlCommand)
     id = db.DBOperator_update(sqlCommand)
     return id;

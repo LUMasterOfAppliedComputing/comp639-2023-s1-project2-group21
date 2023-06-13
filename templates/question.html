@@ -4,51 +4,7 @@
     <body>
 
     <script>
-        $.ajax({
-            url: "/speed/getOneByIdAndType",
-            type: "get",
-        }).then(result => {
-            if (result.code != 'ok') {
-                $.ajax({
-                    url: "/speed/getEvent",
-                    type: "GET",
 
-                }).then(result => {
-                    console.log(result)
-                    $.confirm({
-                        theme: 'dark',
-                        title: 'Speed Interview',
-                        content: '<br>Would you like to participate the Speed network Interview on ' + result.interviewDate + ' at ' + result.location + '?' +
-                            '<br><br>By pressing "No", you will be logout from our system.',
-                        buttons: {
-                            Yes: async function () {
-                                $.ajax({
-                                    url: "/speed/add",
-                                    type: "get",
-                                    dataType: "JSON",
-                                    data:{event_id:result.event_id}
-                                }).then(result => {
-
-                                })
-
-                            },
-                            No: function () {
-                                setTimeout(2000)
-                                location.href = "/users/logOut"
-
-                            }
-
-
-                        }
-                    })
-                })
-            }else {
-              {% if errorMsg %}
-                    var errorMsgs = "{{  errorMsg  }}";
-                    $.alert(errorMsgs)
-              {% endif %}
-            }
-        })
 
     </script>
 
@@ -133,5 +89,55 @@
         </div>
     </section>
     </body>
+    <script>
+    $(function (){
+        console.log("123123")
+        $.ajax({
+            url: "/speed/getOneByIdAndType",
+            type: "get",
+        }).then(result => {
+            if (result.code != 'ok') {
+                $.ajax({
+                    url: "/speed/getEvent",
+                    type: "GET",
+                }).then(result => {
+                    console.log(result)
+                    $.confirm({
+                        theme: 'dark',
+                        title: 'Speed Interview',
+                        content: '<br>Would you like to participate the Speed network Interview on ' + result.interviewDate + ' at ' + result.location + '?' +
+                            '<br><br>By pressing "No", you will be logout from our system.',
+                        buttons: {
+                            Yes: async function () {
+                                $.ajax({
+                                    url: "/speed/add",
+                                    type: "get",
+                                    dataType: "JSON",
+                                    data:{event_id:result.event_id}
+                                }).then(result => {
+
+                                })
+
+                            },
+                            No: function () {
+                                setTimeout(2000)
+                                location.href = "/users/logOut"
+
+                            }
+
+
+                        }
+                    })
+                })
+            }else {
+              {% if errorMsg %}
+                    var errorMsgs = "{{  errorMsg  }}";
+                    $.alert(errorMsgs)
+              {% endif %}
+            }
+        })
+    })
+
+    </script>
 
 {% endblock %}

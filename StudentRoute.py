@@ -70,9 +70,13 @@ def checkStudentProfileAndSurvey(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         userId = session['user_id']
+        if session['role'] == 0:
+            print('start request')
+            res = func(*args, **kwargs)
+            return res
         user = StudentQueries.getStudentById(userId)
         if len(user) > 0:
-            if user[0]['placement_status'] != 0:
+            if user[0]['placement_status'] == 2:
                     questions = QuestionQueries.getAll(userId)
                     for que in questions:
                         str = que['question'].replace('\r', '').replace('\n', '')
@@ -86,6 +90,7 @@ def checkStudentProfileAndSurvey(func):
                 res = func(*args, **kwargs)
                 return res
         else:
+
             return render_template("error.html", data='student doesn\'t exist!')
 
     return wrapper

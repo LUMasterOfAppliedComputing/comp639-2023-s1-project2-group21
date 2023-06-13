@@ -54,7 +54,11 @@ def delete(id):
 
 
 def deleteByStudentIds(mentor_id, ids):
-    sId = ",".join(ids)
+    sId= []
+    if len(ids.split(',')) >1:
+        sId = ",".join(ids)
+    else:
+        sId= ids
     sqlCommand = """DELETE FROM mentor_student WHERE mentor_id = '%s' and student_id in (%s)""" % (mentor_id, sId)
     deleteResult = db.DBOperator_update(sqlCommand)
     return deleteResult
