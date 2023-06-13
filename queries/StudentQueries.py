@@ -37,7 +37,7 @@ def getAll():
                         END as placement_status
                     FROM
                         student stu
-                        LEFT JOIN USER u ON u.user_id = stu.id 
+                        LEFT JOIN user u ON u.user_id = stu.id 
                         LEFT JOIN student_skills sk on stu.id = sk.student_id
                         LEFT JOIN techs_and_skills tk on tk.id = skill_id
                     WHERE
@@ -128,7 +128,7 @@ def getStudentsByIds(ids):
                             END as placement_status
                         FROM
                             student stu
-                            LEFT JOIN USER u ON u.user_id = stu.id 
+                            LEFT JOIN user u ON u.user_id = stu.id 
                             LEFT JOIN student_skills sk on stu.id = sk.student_id
                             LEFT JOIN techs_and_skills tk on tk.id = skill_id
                         WHERE
@@ -161,7 +161,7 @@ def getPreferredStudent(mid):
                     FROM
 						mentor_student ms 
                         LEFT JOIN student stu on ms.student_id = stu.id
-                        LEFT JOIN USER u ON u.user_id = stu.id 
+                        LEFT JOIN user u ON u.user_id = stu.id 
                         LEFT JOIN student_skills sk on stu.id = sk.student_id
                         LEFT JOIN techs_and_skills tk on tk.id = skill_id
                     WHERE
@@ -195,7 +195,7 @@ def getAllRanked(pid):
                         END as placement_status
                     FROM
                         student stu
-                        LEFT JOIN USER u ON u.user_id = stu.id
+                        LEFT JOIN user u ON u.user_id = stu.id
                         LEFT JOIN student_skills sk ON stu.id = sk.student_id
                         LEFT JOIN techs_and_skills tk ON tk.id = skill_id
                         LEFT JOIN student_project sp on sp.student_id = user_id and sp.project_id ='%s'
