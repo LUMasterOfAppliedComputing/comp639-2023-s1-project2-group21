@@ -106,7 +106,7 @@ def getMentorListinfo(userIds):
                         * 
                     FROM
                         mentor m
-                        JOIN USER u ON m.mentor_id = u.user_id
+                        JOIN user u ON m.mentor_id = u.user_id
                         LEFT JOIN company c ON c.id = m.company_id 
                         LEFT JOIN project p on p.mentor_id = u.user_id
                     WHERE

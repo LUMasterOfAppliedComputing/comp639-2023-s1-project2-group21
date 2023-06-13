@@ -38,7 +38,6 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                 console.log(meta)
                                 console.log(type)
                                 console.log(row)
-                                debugger
                                 btns.forEach(button => {
                                     console.log(button.btnName)
                                     if (button.btnName == 'Edit' && meta.if_current_mentor != '1') {
@@ -70,7 +69,6 @@ function renderDataTable(formId, url, columns, flag, checkboxFlag, target, btns)
                                             btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
                                         }
                                     } else {
-                                        debugger
                                         btn += "<input type='button' onclick='" + button['func'] + "(" + (meta.id) + ")' value='" + button['btnName'] + "'> "
                                     }
 
@@ -797,7 +795,7 @@ function validateQueForm() {
         }
     });
     let valid = form.valid();
-    debugger
+
     if (!valid) {
         $.MessageBox("please fill out all required information in correct format");
     }
@@ -898,9 +896,9 @@ function validateForm() {
             email: "please enter a valid email",
         }, errorPlacement: function (error, element) {
             // Custom error placement
-            error.insertAfter(element); // Place error message after the input element
+            error.insertAfter(element);
             error.css('color', 'red');
-            error.removeClass("error")//  Place error message after the input element
+            error.css('max-width','200px !important')// Example: Set error message color to red
         },
         errorElement: "div", // Wrap error messages in a div element
         wrapper: "div",
@@ -1194,7 +1192,7 @@ function preferStudents() {
                             "will": $("input[name='option" + this.innerHTML + "']:checked").val() == null ? 0 : $("input[name='option" + this.innerHTML + "']:checked").val()
                         });
                     });
-                    debugger
+
                     let myJson = JSON.stringify(sidList);
 
                     $.ajax({
@@ -1716,7 +1714,7 @@ function addPreferredProject() {
                             "will": $("input[name='option" + this.innerHTML + "']:checked").val() == null ? 0 : $("input[name='option" + this.innerHTML + "']:checked").val()
                         });
                     });
-                    debugger
+
                     let myJson = JSON.stringify(pidList);
 
                     $.ajax({
@@ -1827,7 +1825,7 @@ async function resetPassword(id) {
 
 
 function resetPassword2(fromdata) {
-    debugger
+
     $.ajax({
         url: "/users/resetpassword",
         type: "POST",
@@ -1862,7 +1860,7 @@ async function addNewProjectOrupdate(pid) {
 
         var str = ''
         if (pid == null) {
-            debugger
+
             str = '' +
                 '<form id="projectForm" class="formName">' +
                 '<div class="form-group">' +
@@ -1881,7 +1879,7 @@ async function addNewProjectOrupdate(pid) {
                 '</div>' +
                 '</form>'
         } else {
-            debugger
+
             let projectitem = data.projects[0];
             str = '' +
                 '<form id="projectForm" class="formName">' +
@@ -1999,14 +1997,14 @@ function updateSkill(pid) {
         data: {"pid": pid},
 
     }).then(data => {
-        debugger
+
         console.log(data);
         var options = "";
 
 
         var str = ''
 
-        debugger
+
 
         str = '' +
             '<form id="regiForm" class="formName">' +
@@ -2031,7 +2029,7 @@ function updateSkill(pid) {
 
         str += '</div>' + '</form>'
 
-        debugger
+
 
         $.confirm({
             theme: 'dark',
@@ -2066,7 +2064,6 @@ function updateSkill(pid) {
 }
 
 function addOrUpdateProjectSkill(fromdata) {
-    debugger
 
 
     var formData = serializeData("form#regiForm");
