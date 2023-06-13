@@ -5,8 +5,8 @@ from email.mime.multipart import MIMEMultipart
 # email details
 from flask import session
 
-sender_email = 'leon846666@gmail.com'
-sender_password = 'iuchylrjfizaadpz'
+sender_email = 'lincolnplacementstaff@gmail.com'
+sender_password = 'pnqydbmsytwdegki'
 
 # create message object
 

@@ -3,13 +3,16 @@
     <body>
     <div style="padding-top:50px;min-height: 700px">
         <div class="container widthFull">
-            <button class="btn btn-primary" style="margin: 30px 0 30px 30px" onclick="addPreferredProject()">Add preference</button>
+            <button class="btn btn-primary" style="margin: 30px 0 30px 30px" onclick="addPreferredProject()">Add
+                preference
+            </button>
             <table id="myTableProject" class="display">
                 <thead>
                 <tr>
                     <th scope="col"></th>
                     <th scope="col">Project Title</th>
                     <th scope="col">Description</th>
+                    <th scope="col">Required Skills</th>
                     <th scope="col">number of students</th>
                     <th scope="col">project type</th>
                     <th scope="col">start date</th>
@@ -35,13 +38,14 @@
                 {"data": null},
                 {"data": "project_title"},
                 {"data": "description"},
+                {"data": "skills"},
                 {"data": "number_of_student"},
                 {"data": "type_name"},
                 {"data": "start_date"},
                 {"data": "end_date"},
                 {"data": "remain_number_of_student"},
                 {"data": "company_name"},
-            ], true, true, 9, btn);
+            ], true, true, 10, btn);
 
         })
 
