@@ -28,7 +28,7 @@ def getMentorMatch():
                     FROM
                         mentor_student ms
                         LEFT JOIN user u ON u.user_id = ms.student_id
-                        left JOIN student stu ON u.user_id = stu.id and stu.placement_status = 0
+                        left JOIN student stu ON u.user_id = stu.id and stu.placement_status != 2
                     GROUP BY
                         ms.project_id """
     id = db.DBOperator(sqlCommand)
@@ -56,6 +56,8 @@ def getStudentMatchList(user_id):
                         "Interview Passed" 
                         WHEN intv.interview_status = 3 THEN 
                         "Offer accepted"
+                         WHEN intv.interview_status = 4 THEN 
+                        "Offer accepted"
                          
                         ELSE
                             intv.interview_status
@@ -63,14 +65,14 @@ def getStudentMatchList(user_id):
                     FROM
                         `match` sp
                         INNER JOIN student stu ON sp.student_id = stu.id 
-                        AND stu.placement_status = 0 
-                        INNER JOIN mentor_student ms on ms.student_id = stu.id and ms.project_id = sp.project_id
-                        INNER JOIN `user` u on u.user_id = ms.mentor_id
-                        INNER JOIN project p on p.id = sp.project_id
-                        INNER JOIN mentor m on m.mentor_id = p.mentor_id
-                        INNER JOIN company com on com.id = m.company_id
-                        INNER JOIN project_type tp on tp.type_id = project_type
-                        left JOIN interviews intv on intv.project_id = p.id
+                        AND stu.placement_status != 2 
+                        left JOIN mentor_student ms on ms.student_id = stu.id and ms.project_id = sp.project_id
+                        left JOIN `user` u on u.user_id = ms.mentor_id
+                        left JOIN project p on p.id = sp.project_id
+                        left JOIN mentor m on m.mentor_id = p.mentor_id
+                        left JOIN company com on com.id = m.company_id
+                        left JOIN project_type tp on tp.type_id = project_type
+                        left JOIN interviews intv on intv.project_id = sp.project_id and sp.student_id = intv.student_id
                         where stu.id = %s  and p.remain_number_of_student>0 """ % user_id
     id = db.DBOperator(sqlCommand)
     return id
@@ -103,6 +105,8 @@ def getProjectMatchList(mentor):
                         WHEN intv.interview_status = 2 THEN
                         "Interview Passed" 
                         WHEN intv.interview_status = 3 THEN
+                        "Offer accepted" 
+                        WHEN intv.interview_status = 4 THEN
                         "Offer accepted" ELSE intv.interview_status 
                     END AS status,
                     intv.interview_status AS status_value,
@@ -110,7 +114,7 @@ def getProjectMatchList(mentor):
                 FROM
                     `match` sp
                     INNER JOIN student stu ON sp.student_id = stu.id 
-                    AND stu.placement_status = 0
+                    AND (stu.placement_status = 0 or stu.placement_status = 1)
                     INNER JOIN mentor_student ms ON ms.student_id = stu.id 
                     AND ms.project_id = sp.project_id
                     INNER JOIN `user` u ON u.user_id = stu.id

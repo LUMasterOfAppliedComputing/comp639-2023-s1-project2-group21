@@ -22,7 +22,7 @@
                 </tbody>
             </table>
             {% if  session['role'] ==2 %}
-                <button class="btn btn-primary" onclick="addPreferredProject()">Add preferred</button>
+                <button class="btn btn-primary" onclick="addPreferredProject()">Edit Preference</button>
             {% endif %}
         </div>
     </div>
@@ -48,6 +48,20 @@
 
             ;
         {% endif %}
+       {% if session['role'] ==2 %}
+            btn = [{
+                "btnName": "Remove",
+                "func": "removePreproject"
+            },
+                {
+                    "btnName": "Edit",
+                    "func": "alert"
+                }
+            ]
+
+            ;
+        {% endif %}
+
 
 
         $(function () {
@@ -62,7 +76,7 @@
                 {"data": "end_date","width":"10%"},
                 {"data": "remain_number_of_student"},
                 {"data": "company_name"},
-            ], false, true, 9, btn);
+            ], true, true, 10, btn);
 
         })
 

@@ -5,7 +5,12 @@
 
 {% extends "base.html" %}
 {% block content %}
-
+    <script>
+        {% if data %}
+            var data = '{{ data }}'
+            $.alert(data)
+        {% endif %}
+    </script>
     <body>
     <!-- //portfolio -->
     <section class="w3l-apply-6">

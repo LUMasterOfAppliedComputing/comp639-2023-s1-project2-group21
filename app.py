@@ -19,6 +19,7 @@ from UserRoute import userRoute
 from MatchRoute import matchRoute
 from queries import StudentQueries, StudentSkillQueries
 from utils import MD5Helper
+from SpeedInterviewRoute import speedInterviewRoute
 import uuid
 from flask import send_from_directory
 
@@ -42,6 +43,7 @@ app.register_blueprint(projectRoute)
 app.register_blueprint(studentProjectRoute)
 app.register_blueprint(studentSkillRoute)
 app.register_blueprint(matchRoute)
+app.register_blueprint(speedInterviewRoute)
 
 
 @app.route("/")  # home page
@@ -148,5 +150,9 @@ def staffreport1():
 @app.route("/staffreport2")
 def staffreport2():
     return render_template("staff/staffreport2.html")
+
+@app.route("/staffreport3")
+def staffreport3():
+    return render_template("staff/staffreport3.html")
 
 
