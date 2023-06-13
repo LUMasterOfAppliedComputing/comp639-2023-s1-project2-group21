@@ -2,6 +2,7 @@ import json
 
 from flask import Blueprint, render_template, request, session, make_response, jsonify
 
+from StudentRoute import checkStudentProfileAndSurvey
 from queries import StudentProjectQueries
 
 studentProjectRoute = Blueprint('StudentProjectRoute', __name__)
@@ -30,6 +31,7 @@ def addPreferProject():
     return make_response(jsonify(data), 200)
 
 @studentProjectRoute.route('/studentProject/preferProject')
+@checkStudentProfileAndSurvey
 def preferProject():
     return render_template("studentProject.html")
 
@@ -38,6 +40,14 @@ def preferProject():
 def getPreferredProject():
     projects = StudentProjectQueries.preferredProject(session['user_id'])
     return make_response(jsonify(projects), 200)
+
+@studentProjectRoute.route('/studentProject/remove',methods=['get'])
+def remove():
+    pid=request.args.get("pid")
+    StudentProjectQueries.delete(session['user_id'],pid)
+    projects = StudentProjectQueries.preferredProject(session['user_id'])
+    return make_response(jsonify(projects), 200)
+
 
 
 def remove_elements(a, b):

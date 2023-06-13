@@ -26,6 +26,11 @@
         </div>
     </div>
     <script>
+        {% if message %}
+            var msg = '{{ message }}'
+            $.alert(msg)
+        {% endif %}
+
         var btn = []
 
 
@@ -45,7 +50,7 @@
         })
 
     </script>
-    <!-- //footer -->
+
     </body>
 
 {% endblock %}
