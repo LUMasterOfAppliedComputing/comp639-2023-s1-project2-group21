@@ -1871,9 +1871,9 @@ async function addNewProjectOrupdate(pid) {
                 '<label>Number of students</label>' +
                 '<input type="text" placeholder="10" name="Number_of_student" class="fname form-control" required />' +
                 '<label>Project start date</label>' +
-                '<input type="text" placeholder="" name="start_date" class="fname form-control" required />' +
+                '<input type="date" placeholder="" name="start_date" class="fname form-control" required />' +
                 '<label>Project end date</label>' +
-                '<input type="text" placeholder="" name="end_date" class="fname form-control" required />' +
+                '<input type="date" placeholder="" name="end_date" class="fname form-control" required />' +
                 '<label> Company type</label>' +
                 '<select id="project type" name="projecttype" class="menCompany form-control">' + options + '</select>' +
                 '</div>' +
