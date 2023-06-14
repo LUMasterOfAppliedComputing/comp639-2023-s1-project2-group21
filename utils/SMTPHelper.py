@@ -62,12 +62,12 @@ def sentMentorMatchingNotify(student,mentor):
         smtp.login(sender_email, sender_password)
         smtp.send_message(msg)
 
-def sendEmail(subject,body):
+def sendEmail(subject,body,email):
     msg = MIMEMultipart()
     msg['From'] = sender_email
     # establish connection with SMTP server
     msg['To'] = sender_email
-    msg['Subject'] = subject
+    msg['Subject'] = subject + " from :" + email
     msg.attach(MIMEText(body, 'html'))
 
     with smtplib.SMTP('smtp.gmail.com', 587) as smtp:

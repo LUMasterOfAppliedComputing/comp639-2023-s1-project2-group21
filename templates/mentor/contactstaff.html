@@ -1,47 +1,61 @@
 {% extends "base.html" %}
 {% block content %}
 
-
-  <html>
-<head>
 <style>
-.flex-container {
-  display: flex;
+  .flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 
-}
+  .flex-container form {
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 5px;
+  }
 
-.flex-container > div {
-  background-color: #ffffff;
-  margin: 5px;
-  padding: 20px;
-  font-size: 20px;
-}
+  .flex-container form label {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .flex-container form input[type="text"],
+  .flex-container form textarea {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .flex-container form input[type="submit"] {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #3d4ad8;
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  .flex-container form input[type="submit"]:hover {
+    background-color: #3d4ad8;
+  }
 </style>
-</head>
-<body>
-
-<h1>Create a Flex Container</h1>
-{{MSG}}
-<form action="/contactstaffsend" method="post">
 <div class="flex-container">
-  <div>      
-    <label for="Subject">Subject</label>
-    <input type="text" id="subject" name="subject" placeholder="Enter subject..">    
-</div>  
-</div>  
+  <form action="/contactstaffsend" method="post">
+    {{MSG}}
+    <label for="subject">Subject</label>
+    <input type="text" id="subject" name="subject" placeholder="Enter subject..">
 
-  <div class="flex-container">
-    <div>
-        <label for="body">Body</label>
-        <textarea id="body" name="body" placeholder="Write something.." style="height:200px"></textarea>
-      </div>
-      <div>
-        <input type="submit" value="Submit" style="height:200px">
-      </div>
-</form>
+    <label for="body">Body</label>
+    <textarea id="body" name="body" placeholder="Write something to staff.." rows="8"></textarea>
 
-</body>
-</html>
-  
+    <input type="submit" value="Submit">
+  </form>
+</div>
 
 {% endblock %}
