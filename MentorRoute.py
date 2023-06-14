@@ -172,7 +172,8 @@ def contactstaffmail():
     subject = request.form.get("subject")
     body = request.form.get("body")
     SMTPHelper.sendEmail(subject,body)
-    return render_template("/mentor/contactstaff.html")
+    MSG = 'Thank you! Email has been sent!'
+    return render_template("/mentor/contactstaff.html", MSG=MSG)
 
 
 @mentorRoute.route('/studentMentor/remove',methods=["POST"])
