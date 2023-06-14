@@ -169,10 +169,12 @@ def contactstaff():
 
 @mentorRoute.route('/contactstaffsend', methods=['POST'])
 def contactstaffmail():
+    mentor=MentorQueries.getMentorinfo(session['user_id'])
     subject = request.form.get("subject")
     body = request.form.get("body")
-    SMTPHelper.sendEmail(subject,body)
-    return render_template("/mentor/contactstaff.html")
+    SMTPHelper.sendEmail(subject,body,mentor[0]['email'])
+    MSG = 'Thank you! Email has been sent!'
+    return render_template("/mentor/contactstaff.html", MSG=MSG)
 
 
 @mentorRoute.route('/studentMentor/remove',methods=["POST"])
