@@ -622,10 +622,7 @@ function sendOffer(student_id, pid, intvid) {
             // 在 AJAX 请求发送前显示 loading 动画
         },
         complete: function (data) {
-
-            $.alert("Matches notifications are sent successfully!")
-
-
+            $.alert("Offer are sent successfully!")
         },
     }).then(data => {
              if ($.fn.dataTable.isDataTable("#myTableProject")) {
