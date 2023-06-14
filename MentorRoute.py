@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, session, redirect, jsonify, make_response, json
 
 from queries import UsersQueries, MentorQueries, ProjectQueries, CompanyQueries, StudentQueries
-from utils import MD5Helper
+from utils import MD5Helper,SMTPHelper
+
 
 mentorRoute = Blueprint('mentorRoute', __name__)
 
@@ -166,6 +167,12 @@ def addPreferStudent():
 def contactstaff():
     return render_template("/mentor/contactstaff.html")
 
+@mentorRoute.route('/contactstaffsend', methods=['POST'])
+def contactstaffmail():
+    subject = request.form.get("subject")
+    body = request.form.get("body")
+    SMTPHelper.sendEmail(subject,body)
+    return render_template("/mentor/contactstaff.html")
 
 
 @mentorRoute.route('/studentMentor/remove',methods=["POST"])
