@@ -155,4 +155,8 @@ def staffreport2():
 def staffreport3():
     return render_template("staff/staffreport3.html")
 
+@app.route("/contact1")
+def contact1():
+    return render_template("contact.html")
+
 

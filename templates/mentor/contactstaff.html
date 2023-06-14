@@ -1,87 +1,61 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- <style>
-    .flex-container {
-      display: flex;
-    }
-    
-    .flex-container > div {
-      background-color: #f1f1f1;
-      margin: 10px;
-      padding: 20px;
-      font-size: 300px;
-    }
-    </style>
-<div class="flex-container">
-    <form action="action_page.php">
-     <div>
-      <label for="fname">First Name</label>
-      <input type="text" id="fname" name="firstname" placeholder="Your name..">
-    </div>
-      <label for="lname">Last Name</label>
-      <input type="text" id="lname" name="lastname" placeholder="Your last name..">
-    <div>
-      <label for="email">Email</label>
-      <input type="text" id="lname" name="lastname" placeholder="Your last name..">    
-    </div>
-  
-    <div>
-      <label for="subject">Subject</label>
-      <textarea id="subject" name="subject" placeholder="Write something.." style="height:200px"></textarea>
-    </div>
-      <input type="submit" value="Submit">
-  
-    </form>
-  </div> -->
 
-
-  <html>
-<head>
 <style>
-.flex-container {
-  display: flex;
+  .flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 
-}
+  .flex-container form {
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 5px;
+  }
 
-.flex-container > div {
-  background-color: #ffffff;
-  margin: 5px;
-  padding: 20px;
-  font-size: 20px;
-}
+  .flex-container form label {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .flex-container form input[type="text"],
+  .flex-container form textarea {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .flex-container form input[type="submit"] {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #3d4ad8;
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  .flex-container form input[type="submit"]:hover {
+    background-color: #3d4ad8;
+  }
 </style>
-</head>
-<body>
-
-<h1>Create a Flex Container</h1>
-<form>
 <div class="flex-container">
-  <div>      <label for="fname">First Name</label>
-    <input type="text" id="fname" name="firstname" placeholder="Your name..">
-</div>
-  <div>
-    <label for="lname">Last Name</label>
-    <input type="text" id="lname" name="lastname" placeholder="Your last name..">
-</div>
-  <div>      
-    <label for="email">Email</label>
-    <input type="text" id="lname" name="lastname" placeholder="Your last name..">    
-</div>  
-</div>  
-<!-- <div>
+  <form action="/contactstaffsend" method="post">
+    {{MSG}}
     <label for="subject">Subject</label>
-    <textarea id="subject" name="subject" placeholder="Write something.." style="height:200px"></textarea>
-  </div> -->
-  <div class="flex-container">
-    <div>
-        <label for="subject">Subject</label>
-        <textarea id="subject" name="subject" placeholder="Write something.." style="height:200px"></textarea>
-      </div>
-        <input type="submit" value="Submit" style="height:40px">
-</form>
+    <input type="text" id="subject" name="subject" placeholder="Enter subject..">
 
-</body>
-</html>
-  
+    <label for="body">Body</label>
+    <textarea id="body" name="body" placeholder="Write something to staff.." rows="8"></textarea>
+
+    <input type="submit" value="Submit">
+  </form>
+</div>
 
 {% endblock %}
